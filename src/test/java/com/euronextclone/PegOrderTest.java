@@ -115,7 +115,6 @@ public class PegOrderTest
     }
 
     private boolean receivedTrade = false;
-    private int received
     public void setReceivedTrade() {
         this.receivedTrade = true;
     }
