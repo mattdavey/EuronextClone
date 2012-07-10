@@ -3,14 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5bcb5f9d-816a-465a-99a5-9842380429c8" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/Order.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/Order.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Limit.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Limit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketOrder.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketOrder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketToLimit.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketToLimit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Peg.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Peg.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/PegWithLimit.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/PegWithLimit.java" />
     </list>
     <ignored path="Matcher.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -67,7 +59,17 @@
     <favorites_list name="Matcher" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="16" column="0" selection-start="636" selection-end="636" vertical-scroll-proportion="0.50209206">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -514,7 +516,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1440" height="874" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -530,7 +532,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19755746" sideWeight="0.6706507" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19755746" sideWeight="0.6706507" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32934928" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -711,16 +713,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="21" selection-start="571" selection-end="571" vertical-scroll-proportion="0.31380752">
+        <state line="32" column="37" selection-start="1142" selection-end="1142" vertical-scroll-proportion="0.24686192">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="37" selection-start="1142" selection-end="1142" vertical-scroll-proportion="0.24686192">
+        <state line="16" column="0" selection-start="636" selection-end="636" vertical-scroll-proportion="0.50209206">
           <folding />
         </state>
       </provider>
