@@ -1,7 +1,6 @@
 package com.euronextclone;
 
 import com.euronextclone.ordertypes.Limit;
-import sun.beans.editors.DoubleEditor;
 
 import java.util.*;
 
@@ -20,12 +19,13 @@ public class OrderBook
 
     public boolean match(Order newOrder)
     {
-        final ArrayList rebalance = new ArrayList();
+        final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (Order order : orders)
         {
             if(order.getPrice().value() != newOrder.getPrice().value())
                 continue;
+
             if(order.getQuantity() == newOrder.getQuantity())
             {
                 orders.remove(order);
@@ -99,6 +99,7 @@ public class OrderBook
             return;
 
         checkForTopOfBookPeg();
+        setBestLimit();
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
@@ -112,6 +113,15 @@ public class OrderBook
         {
             orders.removeAll(rebalance);
             add(rebalance);
+        }
+    }
+
+    private void setBestLimit() {
+        for (final Order order : orders) {
+            if (order.getPrice().hasPrice()) {
+                bestLimit.update(order.getPrice().value());
+                break;
+            }
         }
     }
 
@@ -131,13 +141,11 @@ public class OrderBook
             }
             orders.clear();
         }
-        else
-            bestLimit.update(orders.get(0).getPrice().value());
     }
 
     private void add(ArrayList<Order> rebalance)
     {
-        for (Order order : rebalance) {
+        for (final Order order : rebalance) {
             add(order);
         }
     }
@@ -149,7 +157,7 @@ public class OrderBook
 
     public void dump()
     {
-        for (Order order : orders)
+        for (final Order order : orders)
             order.dump();
     }
 

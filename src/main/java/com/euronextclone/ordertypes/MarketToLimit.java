@@ -4,11 +4,6 @@ import com.euronextclone.OrderPrice;
 
 public class MarketToLimit extends BaseOrderType
 {
-
-    public MarketToLimit()
-    {
-    }
-
     public String format(double price, double limit)
     {
         return "MTL";

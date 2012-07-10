@@ -4,11 +4,6 @@ import com.euronextclone.OrderPrice;
 
 public class PegWithLimit extends BaseOrderType
 {
-
-    public PegWithLimit()
-    {
-    }
-
     public String format(double price, double limit)
     {
         return String.format("PEG (%s)[%s]", new Object[] {

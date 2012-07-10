@@ -1,15 +1,9 @@
 package com.euronextclone.ordertypes;
 
-
 import com.euronextclone.OrderPrice;
 
 public class Limit extends BaseOrderType
 {
-
-    public Limit()
-    {
-    }
-
     public String format(double price, double limit)
     {
         return Double.toString(price).replace('.', ',');

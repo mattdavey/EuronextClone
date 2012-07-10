@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="disruptor-2.10.1-javadoc">
+    <CLASSES />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/libs/disruptor-2.10.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

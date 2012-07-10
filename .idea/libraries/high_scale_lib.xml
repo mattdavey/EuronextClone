@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="high-scale-lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/high-scale-lib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/high-scale-lib.jar!/" />
+    </SOURCES>
+  </library>
+</component>

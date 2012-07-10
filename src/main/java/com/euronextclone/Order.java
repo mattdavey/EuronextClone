@@ -4,9 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Order
 {
-    enum OrderSide {Buy, Sell};
+    public enum OrderSide {Buy, Sell};
 
-    public Order(String broker, int quantity, OrderPrice price, OrderSide side)
+    public Order(final String broker, final int quantity, final OrderPrice price, final OrderSide side)
     {
         id = c.incrementAndGet();
         this.price = price;
@@ -35,7 +35,7 @@ public class Order
         return id;
     }
 
-    public void decrementQuantity(int quantity)
+    public void decrementQuantity(final int quantity)
     {
         this.quantity -= quantity;
     }
@@ -47,9 +47,7 @@ public class Order
 
     public void dump()
     {
-        System.out.println(String.format("%s %d %d %s", new Object[] {
-            broker, Integer.valueOf(id), Integer.valueOf(quantity), price.toString()
-        }));
+        System.out.println(String.format("%s %d %d %s", broker, id, quantity, price));
     }
 
     private static AtomicInteger c = new AtomicInteger(0);

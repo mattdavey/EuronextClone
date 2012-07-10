@@ -8,12 +8,12 @@ public class MatchingUnit
         sellOrderBook = new OrderBook(Order.OrderSide.Sell);
     }
 
-    public void newOrder(Order.OrderSide side, String broker, int quantity, OrderPrice price)
+    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
     {
         matchOrder(side, broker, quantity, price);
     }
 
-    private void matchOrder(Order.OrderSide side, String broker, int quantity, OrderPrice price)
+    private void matchOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
     {
         final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
         final Order order = new Order(broker, quantity, price, side);
@@ -24,13 +24,13 @@ public class MatchingUnit
         }
     }
 
-    public int orderBookDepth(Order.OrderSide side)
+    public int orderBookDepth(final Order.OrderSide side)
     {
         final OrderBook orders = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
         return orders.orderBookDepth();
     }
 
-    public String getBestLimit(Order.OrderSide side)
+    public String getBestLimit(final Order.OrderSide side)
     {
         return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit().toString() : buyOrderBook.getBestLimit().toString();
     }
