@@ -1,11 +1,19 @@
 package com.euronextclone;
 
 import com.euronextclone.ordertypes.Limit;
+import hu.akarnokd.reactive4java.reactive.DefaultObservable;
+import hu.akarnokd.reactive4java.reactive.Observable;
+import hu.akarnokd.reactive4java.reactive.Observer;
 
-import java.util.*;
+import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class OrderBook
+public class OrderBook implements Observable<Trade>
 {
+    /** The observable helper. */
+    DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+
     public OrderBook(Order.OrderSide buy)
     {
         bookSide = buy;
@@ -59,9 +67,10 @@ public class OrderBook
 
     private void generateTrade(Order newOrder, Order order, int tradeQuantity)
     {
-        System.out.println(String.format("Trade: Buy Broker %s, Sell Broker %s, Quantity %d, Price %f", new Object[] {
-            bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), Integer.valueOf(tradeQuantity), Double.valueOf(newOrder.getPrice().value())
-        }));
+        notifier.next(new Trade(bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), tradeQuantity, newOrder.getPrice().value()));
+//        System.out.println(String.format("Trade: Buy Broker %s, Sell Broker %s, Quantity %d, Price %f", new Object[] {
+//            bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), Integer.valueOf(tradeQuantity), Double.valueOf(newOrder.getPrice().value())
+//        }));
     }
 
     public void addOrder(Order order)
@@ -164,4 +173,8 @@ public class OrderBook
     private final LinkedList<Order> orders = new LinkedList<Order>();
     private OrderPrice bestLimit;
     private final Order.OrderSide bookSide;
+
+    public Closeable register(Observer<? super Trade> observer) {
+        return notifier.register(observer);
+    }
 }

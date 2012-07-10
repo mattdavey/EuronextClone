@@ -1,11 +1,31 @@
 package com.euronextclone;
 
-public class MatchingUnit
+import hu.akarnokd.reactive4java.base.Action1;
+import hu.akarnokd.reactive4java.reactive.DefaultObservable;
+import hu.akarnokd.reactive4java.reactive.Observable;
+import hu.akarnokd.reactive4java.reactive.Observer;
+import hu.akarnokd.reactive4java.reactive.Reactive;
+
+import java.io.Closeable;
+
+public class MatchingUnit implements Observable<Trade>
 {
     public MatchingUnit()
     {
         buyOrderBook = new OrderBook(Order.OrderSide.Buy);
         sellOrderBook = new OrderBook(Order.OrderSide.Sell);
+
+        buyOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
+            public void invoke(Trade value) {
+                notifier.next(value);
+            }
+        }));
+
+        sellOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
+            public void invoke(Trade value) {
+                notifier.next(value);
+            }
+        }));
     }
 
     public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
@@ -47,4 +67,11 @@ public class MatchingUnit
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
+
+    /** The observable helper. */
+    DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+
+    public Closeable register(Observer<? super Trade> observer) {
+        return notifier.register(observer);
+    }
 }

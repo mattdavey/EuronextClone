@@ -2,9 +2,16 @@ package com.euronextclone;
 
 import com.euronextclone.ordertypes.Limit;
 import com.euronextclone.ordertypes.Peg;
+import hu.akarnokd.reactive4java.base.Action1;
+import hu.akarnokd.reactive4java.reactive.Reactive;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import java.io.Closeable;
+import java.io.IOException;
+
+import static org.hamcrest.core.Is.is;
 
 public class PegOrderTest
 {
@@ -29,6 +36,7 @@ public class PegOrderTest
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
+
         MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(4)));
         MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(3)));
     }
@@ -48,17 +56,29 @@ public class PegOrderTest
     }
 
     @Test
-    public void addBuyLimitOrderWithMatchTest()
-    {
+    public void addBuyLimitOrderWithMatchTest() throws IOException {
         MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
         matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderPrice(new Limit(), 10.800000000000001D));
+
+        Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
+            @Override
+            public void invoke(Trade value) {
+                assert value.getPrice() == 10.9;
+                assert value.getSellBroker() == "C";
+                assert value.getBuyBroker() == "G";
+                assert value.getQuantity() == 100;
+                setReceivedTrade();
+            }
+        }));
+
         matchingUnit.newOrder(Order.OrderSide.Buy, "G", 100, new OrderPrice(new Limit(), 10.9D));
 
-        matchingUnit.dump();
+        close.close();
 
+        MatcherAssert.assertThat("Received Trade", receivedTrade, is(true));
         MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(5)));
         MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(3)));
         MatcherAssert.assertThat("Best Limit", matchingUnit.getBestLimit(Order.OrderSide.Buy), Matchers.is("10,8"));
@@ -66,20 +86,37 @@ public class PegOrderTest
     }
 
     @Test
-    public void addSellLimitOrderWithMatchTest()
-    {
+    public void addSellLimitOrderWithMatchTest() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
         matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderPrice(new Limit(), 10.800000000000001D));
         matchingUnit.newOrder(Order.OrderSide.Buy, "G", 100, new OrderPrice(new Limit(), 10.9D));
+
+        Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
+            @Override
+            public void invoke(Trade value) {
+                assert value.getPrice() == 10.8;
+                assert value.getSellBroker() == "E";
+                assert value.getBuyBroker() == "G";
+                assert value.getQuantity() == 200;
+                setReceivedTrade();
+            }
+        }));
+
         matchingUnit.newOrder(Order.OrderSide.Sell, "G", 250, new OrderPrice(new Limit(), 10.800000000000001D));
-        matchingUnit.dump();
+        close.close();
 
         MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(4)));
         MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(3)));
         MatcherAssert.assertThat("Best Limit", matchingUnit.getBestLimit(Order.OrderSide.Buy), Matchers.is("10,5"));
         MatcherAssert.assertThat("Best Sell Limit", matchingUnit.getBestLimit(Order.OrderSide.Sell), Matchers.is("10,9"));
+    }
+
+    private boolean receivedTrade = false;
+    private int received
+    public void setReceivedTrade() {
+        this.receivedTrade = true;
     }
 }

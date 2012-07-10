@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="reactive4java-0.96.2 (2)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/reactive4java-0.96.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/reactive4java-0.96.2.jar!/" />
+    </SOURCES>
+  </library>
+</component>
