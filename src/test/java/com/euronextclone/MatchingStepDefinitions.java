@@ -78,31 +78,31 @@ public class MatchingStepDefinitions {
     @Then("^the book looks like:$")
     public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
         List<MontageRow> rows = expectedBooks.asList(MontageRow.class);
-        List<TestOrder> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
-        List<TestOrder> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
+        List<OrderRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
+        List<OrderRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
 
-        List<TestOrder> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(TestOrder.FROM_ORDER).toImmutableList();
-        List<TestOrder> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(TestOrder.FROM_ORDER).toImmutableList();
+        List<OrderRow> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderRow.FROM_ORDER).toImmutableList();
+        List<OrderRow> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderRow.FROM_ORDER).toImmutableList();
 
         assertEquals(expectedBids, actualBids);
         assertEquals(expectedAsks, actualAsks);
     }
 
-    private static class TestOrder {
+    private static class OrderRow {
         private String broker;
         private int orderId;
         private int quantity;
         private String price;
 
-        public static final Function<? super Order, TestOrder> FROM_ORDER = new Function<Order, TestOrder>() {
+        public static final Function<? super Order, OrderRow> FROM_ORDER = new Function<Order, OrderRow>() {
             @Override
-            public TestOrder apply(final Order input) {
-                TestOrder order = new TestOrder();
-                order.setBroker(input.getBroker());
-                order.setOrderId(input.getId());
-                order.setPrice(input.getPrice().toString());
-                order.setQuantity(input.getQuantity());
-                return order;
+            public OrderRow apply(final Order input) {
+                OrderRow orderRow = new OrderRow();
+                orderRow.setBroker(input.getBroker());
+                orderRow.setOrderId(input.getId());
+                orderRow.setPrice(input.getPrice().toString());
+                orderRow.setQuantity(input.getQuantity());
+                return orderRow;
             }
         };
 
@@ -111,12 +111,12 @@ public class MatchingStepDefinitions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            TestOrder order = (TestOrder) o;
+            OrderRow orderRow = (OrderRow) o;
 
-            if (orderId != order.orderId) return false;
-            if (quantity != order.quantity) return false;
-            if (!broker.equals(order.broker)) return false;
-            if (!price.equals(order.price)) return false;
+            if (orderId != orderRow.orderId) return false;
+            if (quantity != orderRow.quantity) return false;
+            if (!broker.equals(orderRow.broker)) return false;
+            if (!price.equals(orderRow.price)) return false;
 
             return true;
         }
@@ -181,27 +181,27 @@ public class MatchingStepDefinitions {
             }
         };
 
-        public static final Function<? super MontageRow, TestOrder> TO_TEST_BID = new Function<MontageRow, TestOrder>() {
+        public static final Function<? super MontageRow, OrderRow> TO_TEST_BID = new Function<MontageRow, OrderRow>() {
             @Override
-            public TestOrder apply(final MontageRow input) {
-                TestOrder order = new TestOrder();
-                order.setBroker(input.bidBroker);
-                order.setOrderId(input.bidOrderId);
-                order.setPrice(input.bidPrice);
-                order.setQuantity(input.bidQuantity);
-                return order;
+            public OrderRow apply(final MontageRow input) {
+                OrderRow orderRow = new OrderRow();
+                orderRow.setBroker(input.bidBroker);
+                orderRow.setOrderId(input.bidOrderId);
+                orderRow.setPrice(input.bidPrice);
+                orderRow.setQuantity(input.bidQuantity);
+                return orderRow;
             }
         };
 
-        public static final Function<? super MontageRow, TestOrder> TO_TEST_ASK = new Function<MontageRow, TestOrder>() {
+        public static final Function<? super MontageRow, OrderRow> TO_TEST_ASK = new Function<MontageRow, OrderRow>() {
             @Override
-            public TestOrder apply(final MontageRow input) {
-                TestOrder order = new TestOrder();
-                order.setBroker(input.askBroker);
-                order.setOrderId(input.askOrderId);
-                order.setPrice(input.askPrice);
-                order.setQuantity(input.askQuantity);
-                return order;
+            public OrderRow apply(final MontageRow input) {
+                OrderRow orderRow = new OrderRow();
+                orderRow.setBroker(input.askBroker);
+                orderRow.setOrderId(input.askOrderId);
+                orderRow.setPrice(input.askPrice);
+                orderRow.setQuantity(input.askQuantity);
+                return orderRow;
             }
         };
 
@@ -226,69 +226,6 @@ public class MatchingStepDefinitions {
             }
         };
 
-        public String getBidBroker() {
-            return bidBroker;
-        }
-
-        public void setBidBroker(String bidBroker) {
-            this.bidBroker = bidBroker;
-        }
-
-        public Integer getBidOrderId() {
-            return bidOrderId;
-        }
-
-        public void setBidOrderId(Integer bidOrderId) {
-            this.bidOrderId = bidOrderId;
-        }
-
-        public Integer getBidQuantity() {
-            return bidQuantity;
-        }
-
-        public void setBidQuantity(Integer bidQuantity) {
-            this.bidQuantity = bidQuantity;
-        }
-
-        public String getBidPrice() {
-            return bidPrice;
-        }
-
-        public void setBidPrice(String bidPrice) {
-            this.bidPrice = bidPrice;
-        }
-
-        public String getAskBroker() {
-            return askBroker;
-        }
-
-        public void setAskBroker(String askBroker) {
-            this.askBroker = askBroker;
-        }
-
-        public Integer getAskOrderId() {
-            return askOrderId;
-        }
-
-        public void setAskOrderId(Integer askOrderId) {
-            this.askOrderId = askOrderId;
-        }
-
-        public Integer getAskQuantity() {
-            return askQuantity;
-        }
-
-        public void setAskQuantity(Integer askQuantity) {
-            this.askQuantity = askQuantity;
-        }
-
-        public String getAskPrice() {
-            return askPrice;
-        }
-
-        public void setAskPrice(String askPrice) {
-            this.askPrice = askPrice;
-        }
 
         private static OrderPrice parseOrderPrice(String price) {
             if ("MTL".equals(price)) {
@@ -346,32 +283,16 @@ public class MatchingStepDefinitions {
             return result;
         }
 
-        public String getBuyingBroker() {
-            return buyingBroker;
-        }
-
         public void setBuyingBroker(String buyingBroker) {
             this.buyingBroker = buyingBroker;
-        }
-
-        public String getSellingBroker() {
-            return sellingBroker;
         }
 
         public void setSellingBroker(String sellingBroker) {
             this.sellingBroker = sellingBroker;
         }
 
-        public int getQuantity() {
-            return quantity;
-        }
-
         public void setQuantity(int quantity) {
             this.quantity = quantity;
-        }
-
-        public double getPrice() {
-            return price;
         }
 
         public void setPrice(double price) {
