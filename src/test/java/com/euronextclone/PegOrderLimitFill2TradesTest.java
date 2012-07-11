@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
 
-public class PegOrderLimitFill2TradesTest
+public class PegOrderLimitFill2TradesTest extends BaseReactiveTest
 {
     private void buyOrders(MatchingUnit matchingUnit)
     {
@@ -34,25 +34,25 @@ public class PegOrderLimitFill2TradesTest
     @Test
     public void newBuyAndSellOrderTest()
     {
-        MatchingUnit matchingUnit = new MatchingUnit();
+        final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
         matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderPrice(new Limit(), 11.699999999999999D));
 
-        MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(5)));
-        MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(3)));
+        MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
+        MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(3));
     }
 
     @Test
     public void newSellLimitOrderTest() throws IOException {
-        MatchingUnit matchingUnit = new MatchingUnit();
+        final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
         matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderPrice(new Limit(), 11.699999999999999D));
 
-        Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
+        final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
             public void invoke(Trade value) {
                 int count = incTradeCount();
@@ -76,14 +76,8 @@ public class PegOrderLimitFill2TradesTest
         matchingUnit.newOrder(Order.OrderSide.Sell, "A", 270, new OrderPrice(new Limit(), 11.699999999999999D));
         close.close();
 
-        MatcherAssert.assertThat("Received Trade", receivedTradeCount, is(2));
-        MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(3)));
-        MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(3)));
-    }
-
-    private int receivedTradeCount = 0;
-
-    private int incTradeCount() {
-        return receivedTradeCount++;
+        MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));
+        MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(3));
+        MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(3));
     }
 }

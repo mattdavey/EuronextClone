@@ -20,7 +20,6 @@ public class MatchingUnit implements Observable<Trade>
                 notifier.next(value);
             }
         }));
-
         sellOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
             public void invoke(Trade value) {
                 notifier.next(value);
@@ -41,6 +40,16 @@ public class MatchingUnit implements Observable<Trade>
         {
             final OrderBook orderBook = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
             orderBook.addOrder(order);
+        }
+
+        calcIndicativeMatchPrice();
+    }
+
+    private void calcIndicativeMatchPrice() {
+        if (buyOrderBook.getIMP().getQuantity() > sellOrderBook.getIMP().getQuantity()) {
+            imp = buyOrderBook.getIMP().getOrderPrice().value();
+        } else {
+            imp = sellOrderBook.getIMP().getOrderPrice().value();
         }
     }
 
@@ -67,11 +76,16 @@ public class MatchingUnit implements Observable<Trade>
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
+    private double imp = Double.MIN_VALUE;
 
     /** The observable helper. */
-    DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+    private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
     public Closeable register(Observer<? super Trade> observer) {
         return notifier.register(observer);
+    }
+
+    public double getIndicativeMatchPrice() {
+        return imp;
     }
 }

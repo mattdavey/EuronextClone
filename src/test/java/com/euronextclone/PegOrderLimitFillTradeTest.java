@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
 
-public class PegOrderLimitFillTradeTest
+public class PegOrderLimitFillTradeTest extends BaseReactiveTest
 {
     private void buyOrders(MatchingUnit matchingUnit)
     {
@@ -26,27 +26,22 @@ public class PegOrderLimitFillTradeTest
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
 
-        Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
+        final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
             public void invoke(Trade value) {
                 assert value.getPrice() == 11.5;
                 assert value.getSellBroker() == "C";
                 assert value.getBuyBroker() == "A";
                 assert value.getQuantity() == 200;
-                setReceivedTrade();
+                incTradeCount();
             }
         }));
 
         matchingUnit.newOrder(Order.OrderSide.Sell, "C", 200, new OrderPrice(new Limit(), 11.5D));
         close.close();
 
-        MatcherAssert.assertThat("Received Trade", receivedTrade, is(true));
-        MatcherAssert.assertThat("Buy Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Buy)), Matchers.is(Integer.valueOf(0)));
-        MatcherAssert.assertThat("Sell Order Depth", Integer.valueOf(matchingUnit.orderBookDepth(Order.OrderSide.Sell)), Matchers.is(Integer.valueOf(0)));
-    }
-
-    private boolean receivedTrade = false;
-    public void setReceivedTrade() {
-        this.receivedTrade = true;
+        MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(1));
+        MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(0));
+        MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(0));
     }
 }

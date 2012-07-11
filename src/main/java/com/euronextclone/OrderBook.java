@@ -12,24 +12,24 @@ import java.util.LinkedList;
 public class OrderBook implements Observable<Trade>
 {
     /** The observable helper. */
-    DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+    final private DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
-    public OrderBook(Order.OrderSide buy)
+    public OrderBook(final Order.OrderSide side)
     {
-        bookSide = buy;
-        bestLimit = new OrderPrice(new Limit(), buy != Order.OrderSide.Buy ? Double.MAX_VALUE: Double.MIN_VALUE);
+        bookSide = side;
+        bestLimit = new IndicativeMatchPrice(side);
     }
 
     public OrderPrice getBestLimit()
     {
-        return bestLimit;
+        return bestLimit.getOrderPrice();
     }
 
-    public boolean match(Order newOrder)
+    public boolean match(final Order newOrder)
     {
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
-        for (Order order : orders)
+        for (final Order order : orders)
         {
             if(order.getPrice().value() != newOrder.getPrice().value())
                 continue;
@@ -45,7 +45,8 @@ public class OrderBook implements Observable<Trade>
             {
                 order.decrementQuantity(newOrder.getQuantity());
                 if(!newOrder.getPrice().hasPrice())
-                    newOrder.getPrice().update(bestLimit.value());
+                    newOrder.getPrice().update(bestLimit.getOrderPrice().value());
+
                 generateTrade(newOrder, order, newOrder.getQuantity());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
@@ -65,7 +66,7 @@ public class OrderBook implements Observable<Trade>
         return newOrder.getQuantity() != 0;
     }
 
-    private void generateTrade(Order newOrder, Order order, int tradeQuantity)
+    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity)
     {
         notifier.next(new Trade(bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), tradeQuantity, newOrder.getPrice().value()));
 //        System.out.println(String.format("Trade: Buy Broker %s, Sell Broker %s, Quantity %d, Price %f", new Object[] {
@@ -73,25 +74,21 @@ public class OrderBook implements Observable<Trade>
 //        }));
     }
 
-    public void addOrder(Order order)
+    public void addOrder(final Order order)
     {
         add(order);
-        if(bookSide == Order.OrderSide.Buy && order.getPrice().value() > bestLimit.value())
+        if ((bookSide == Order.OrderSide.Buy && order.getPrice().value() > bestLimit.getOrderPrice().value()) ||
+            (bookSide == Order.OrderSide.Sell && order.getPrice().value() < bestLimit.getOrderPrice().value()))
         {
-            bestLimit = order.getPrice();
-            updatePegOrders();
-        } else
-        if(bookSide == Order.OrderSide.Sell && order.getPrice().value() < bestLimit.value())
-        {
-            bestLimit = order.getPrice();
+            bestLimit.getOrderPrice().update(order.getPrice().value());
             updatePegOrders();
         }
     }
 
-    private void add(Order newOrder)
+    private void add(final Order newOrder)
     {
         int count = 0;
-        for (Order order : orders)
+        for (final Order order : orders)
         {
             int comparePrice = order.getPrice().compareTo(newOrder.getPrice());
             if(bookSide == Order.OrderSide.Buy && comparePrice < 0 || bookSide == Order.OrderSide.Sell && comparePrice > 0)
@@ -108,13 +105,12 @@ public class OrderBook implements Observable<Trade>
             return;
 
         checkForTopOfBookPeg();
-        setBestLimit();
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (Order order : orders)
         {
-            if(order.getPrice().updateBestLimit(bestLimit))
+            if(order.getPrice().updateBestLimit(bestLimit.getOrderPrice()))
                 rebalance.add(order);
         }
 
@@ -128,7 +124,7 @@ public class OrderBook implements Observable<Trade>
     private void setBestLimit() {
         for (final Order order : orders) {
             if (order.getPrice().hasPrice()) {
-                bestLimit.update(order.getPrice().value());
+                bestLimit.getOrderPrice().update(order.getPrice().value());
                 break;
             }
         }
@@ -136,23 +132,31 @@ public class OrderBook implements Observable<Trade>
 
     private void checkForTopOfBookPeg()
     {
+//        setBestLimit();
+
+        bestLimit.resetQuantity();
+
         if(!(orders.get(0)).getPrice().getOrderType().canBeTopOfBook())
         {
-            for (Order order : orders)
+            for (final Order order : orders)
             {
+                bestLimit.addQuantity(order.getQuantity());
                 if(order.getPrice().getOrderType().canBeTopOfBook())
                 {
-                    bestLimit.update(order.getPrice().value());
+                    bestLimit.getOrderPrice().update(order.getPrice().value());
                     orders.remove(order);
                     orders.add(0, order);
                     return;
                 }
             }
             orders.clear();
+        } else {
+            bestLimit.getOrderPrice().update(orders.get(0).getPrice().value());
+            bestLimit.addQuantity(orders.get(0).getQuantity());
         }
     }
 
-    private void add(ArrayList<Order> rebalance)
+    private void add(final ArrayList<Order> rebalance)
     {
         for (final Order order : rebalance) {
             add(order);
@@ -171,10 +175,14 @@ public class OrderBook implements Observable<Trade>
     }
 
     private final LinkedList<Order> orders = new LinkedList<Order>();
-    private OrderPrice bestLimit;
+    private IndicativeMatchPrice bestLimit;
     private final Order.OrderSide bookSide;
 
     public Closeable register(Observer<? super Trade> observer) {
         return notifier.register(observer);
+    }
+
+    public IndicativeMatchPrice getIMP() {
+        return bestLimit;
     }
 }

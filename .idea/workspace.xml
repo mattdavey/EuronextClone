@@ -3,9 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="5bcb5f9d-816a-465a-99a5-9842380429c8" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" afterPath="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/euronextclone/MarketToLimitOrderTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/euronextclone/MarketToLimitOrderTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFill2TradesTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFill2TradesTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFillTradeTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFillTradeTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java" afterPath="$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java" />
     </list>
     <ignored path="Matcher.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,6 +27,21 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <line_breakpoints>
+      <breakpoint url="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java" line="74" class="com.euronextclone.PureMarketOrderTest" package="com.euronextclone">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </line_breakpoints>
     <breakpoint_any>
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -62,7 +81,47 @@
     <favorites_list name="Matcher" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="MatchingUnit.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="81" column="21" selection-start="2757" selection-end="2757" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#582#712#0" expanded="true" />
+                <element signature="e#701#702#0" expanded="true" />
+                <element signature="e#767#897#0" expanded="true" />
+                <element signature="e#886#887#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PureMarketOrderTest.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="74" column="0" selection-start="3029" selection-end="3029" vertical-scroll-proportion="1.5633802">
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1531#2927#0" expanded="true" />
+                <element signature="e#2916#2917#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OrderBook.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="184" column="24" selection-start="5939" selection-end="5939" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#838#845#0" expanded="true" />
+                <element signature="e#5698#5705#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -75,10 +134,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderPrice.java" />
-        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/MarketToLimitOrderTest.java" />
-        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/Order.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketOrder.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketToLimit.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Peg.java" />
@@ -86,11 +141,15 @@
         <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Limit.java" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/Trade.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" />
-        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/BaseReactiveTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFillTradeTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/MarketToLimitOrderTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFill2TradesTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/IndicativeMatchPrice.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java" />
       </list>
     </option>
   </component>
@@ -246,6 +305,7 @@
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java/com/euronextclone" />
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
@@ -258,6 +318,11 @@
     <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.euronextclone" />
+      <recent name="com.EuronextClone" />
+      <recent name="com.matt" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/test/java/com/euronextclone" />
       <recent name="$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes" />
@@ -265,12 +330,30 @@
       <recent name="$PROJECT_DIR$/src/main/java/com/EuronextClone" />
       <recent name="$PROJECT_DIR$/src/main/java/com/EuronextClone/ordertypes" />
     </key>
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="com.EuronextClone" />
-      <recent name="com.matt" />
-    </key>
   </component>
-  <component name="RunManager" selected="JUnit.PegOrderLimitFill2TradesTest.newSellLimitOrderTest">
+  <component name="RunManager" selected="JUnit.All in Matcher">
+    <configuration default="false" name="PegOrderLimitFillTradeTest" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="Matcher" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.euronextclone" />
+      <option name="MAIN_CLASS_NAME" value="com.euronextclone.PegOrderLimitFillTradeTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="false" name="All in Matcher" type="JUnit" factoryName="JUnit" temporary="true">
       <module name="Matcher" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -299,6 +382,54 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="PegOrderTest.addSellLimitOrderWithMatchTest" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="Matcher" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.euronextclone" />
+      <option name="MAIN_CLASS_NAME" value="com.euronextclone.PegOrderTest" />
+      <option name="METHOD_NAME" value="addSellLimitOrderWithMatchTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="com.euronextclone in Matcher" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="Matcher" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.euronextclone" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="false" name="PureMarketOrderTest.marketOrderTotallyFilled" type="JUnit" factoryName="JUnit" temporary="true">
       <module name="Matcher" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -306,84 +437,6 @@
       <option name="PACKAGE_NAME" value="com.euronextclone" />
       <option name="MAIN_CLASS_NAME" value="com.euronextclone.PureMarketOrderTest" />
       <option name="METHOD_NAME" value="marketOrderTotallyFilled" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="PegOrderTest.addBuyLimitOrderWithMatchTest" type="JUnit" factoryName="JUnit" temporary="true">
-      <module name="Matcher" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.euronextclone" />
-      <option name="MAIN_CLASS_NAME" value="com.euronextclone.PegOrderTest" />
-      <option name="METHOD_NAME" value="addBuyLimitOrderWithMatchTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="PegOrderLimitFillTradeTest.newPEGLimitOrderTest" type="JUnit" factoryName="JUnit" temporary="true">
-      <module name="Matcher" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.euronextclone" />
-      <option name="MAIN_CLASS_NAME" value="com.euronextclone.PegOrderLimitFillTradeTest" />
-      <option name="METHOD_NAME" value="newPEGLimitOrderTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="PegOrderLimitFill2TradesTest.newSellLimitOrderTest" type="JUnit" factoryName="JUnit" temporary="true">
-      <module name="Matcher" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.euronextclone" />
-      <option name="MAIN_CLASS_NAME" value="com.euronextclone.PegOrderLimitFill2TradesTest" />
-      <option name="METHOD_NAME" value="newSellLimitOrderTest" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -478,11 +531,11 @@
       </method>
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.All in Matcher" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.PureMarketOrderTest.marketOrderTotallyFilled" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.PegOrderTest.addBuyLimitOrderWithMatchTest" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.PegOrderLimitFillTradeTest.newPEGLimitOrderTest" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.PegOrderLimitFill2TradesTest.newSellLimitOrderTest" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.PegOrderLimitFillTradeTest" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.All in Matcher" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.PegOrderTest.addSellLimitOrderWithMatchTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.com.euronextclone in Matcher" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.PureMarketOrderTest.marketOrderTotallyFilled" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -524,7 +577,7 @@
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3984064" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3984064" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32934928" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -533,7 +586,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19755746" sideWeight="0.6015936" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19755746" sideWeight="0.6015936" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32934928" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -602,71 +655,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/Order.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Limit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="38" selection-end="38" vertical-scroll-proportion="0.031380754">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/PegWithLimit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="75" selection-start="179" selection-end="179" vertical-scroll-proportion="0.18828452">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/Peg.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="118" selection-end="118" vertical-scroll-proportion="0.18828452">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/OrderType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="28" selection-start="215" selection-end="215" vertical-scroll-proportion="0.31380752">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketToLimit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="128" selection-end="128" vertical-scroll-proportion="0.18828452">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/OrderPrice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="25" selection-start="1460" selection-end="1460" vertical-scroll-proportion="1.9769875">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketOrder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="126" selection-end="126" vertical-scroll-proportion="0.18828452">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="26" selection-start="1216" selection-end="1216" vertical-scroll-proportion="0.66139954">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state line="19" column="17" selection-start="703" selection-end="703" vertical-scroll-proportion="0.5962343">
@@ -676,49 +664,131 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/Trade.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="13" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java">
+    <entry file="jar://$PROJECT_DIR$/libs/reactive4java-0.96.2.jar!/hu/akarnokd/reactive4java/reactive/Reactive.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="46" selection-start="2475" selection-end="2475" vertical-scroll-proportion="2.0774648">
+        <state line="8256" column="0" selection-start="254967" selection-end="254967" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java">
+    <entry file="jar://$PROJECT_DIR$/libs/reactive4java-0.96.2.jar!/hu/akarnokd/reactive4java/reactive/DefaultObservable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="0" selection-start="2246" selection-end="2246" vertical-scroll-proportion="0.69007266">
+        <state line="96" column="0" selection-start="3588" selection-end="3588" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFillTradeTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="0" selection-start="1955" selection-end="1955" vertical-scroll-proportion="0.7820823">
+        <state line="47" column="14" selection-start="1800" selection-end="1800" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#988#1340#0" expanded="true" />
+            <element signature="e#1329#1330#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderLimitFill2TradesTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="41" selection-start="2973" selection-end="2973" vertical-scroll-proportion="0.65375304">
+        <state line="31" column="14" selection-start="1359" selection-end="1359" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#2321#3122#0" expanded="true" />
-            <element signature="e#3111#3112#0" expanded="true" />
+            <element signature="e#2296#3097#0" expanded="true" />
+            <element signature="e#3086#3087#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/MarketToLimitOrderTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="181" selection-end="181" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PegOrderTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="81" column="0" selection-start="3320" selection-end="3397" vertical-scroll-proportion="0.6174334">
+        <state line="13" column="14" selection-start="369" selection-end="369" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#2766#3118#0" expanded="true" />
+            <element signature="e#3107#3108#0" expanded="true" />
+            <element signature="e#4312#5113#0" expanded="true" />
+            <element signature="e#5102#5103#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/BaseReactiveTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="64" selection-start="271" selection-end="271" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/ordertypes/MarketOrder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="0" selection-start="77" selection-end="77" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/OrderPrice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="0" selection-start="172" selection-end="172" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/IndicativeMatchPrice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="14" selection-start="520" selection-end="520" vertical-scroll-proportion="0.5070422">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/Order.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="22" selection-start="786" selection-end="786" vertical-scroll-proportion="0.33333334">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/OrderBook.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="184" column="24" selection-start="5939" selection-end="5939" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#838#845#0" expanded="true" />
+            <element signature="e#5698#5705#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/euronextclone/MatchingUnit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="81" column="21" selection-start="2757" selection-end="2757" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#582#712#0" expanded="true" />
+            <element signature="e#701#702#0" expanded="true" />
+            <element signature="e#767#897#0" expanded="true" />
+            <element signature="e#886#887#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/euronextclone/PureMarketOrderTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="74" column="0" selection-start="3029" selection-end="3029" vertical-scroll-proportion="1.5633802">
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#1531#2927#0" expanded="true" />
+            <element signature="e#2916#2917#0" expanded="true" />
           </folding>
         </state>
       </provider>
