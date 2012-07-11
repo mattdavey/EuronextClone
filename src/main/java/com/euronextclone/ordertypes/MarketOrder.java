@@ -4,6 +4,8 @@ import com.euronextclone.OrderPrice;
 
 public class MarketOrder extends BaseOrderType
 {
+    public static final MarketOrder INSTANCE = new MarketOrder();
+
     public String format(double price, double limit)
     {
         return "MO";
