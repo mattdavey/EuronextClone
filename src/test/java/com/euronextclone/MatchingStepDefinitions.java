@@ -70,10 +70,9 @@ public class MatchingStepDefinitions {
 
     @Then("^the following trades are generated:$")
     public void the_following_trades_are_generated(DataTable expectedTradesTable) throws Throwable {
-        List<TradeRow> rows = expectedTradesTable.asList(TradeRow.class);
-
-        List<Trade> expectedTrades = FluentIterable.from(rows).transform(TradeRow.TO_TRADE).toImmutableList();
-        //assertEquals(expectedTrades, generatedTrades);
+        List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
+        List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
+        assertEquals(expectedTrades, actualTrades);
     }
 
     @Then("^the book looks like:$")
@@ -308,13 +307,44 @@ public class MatchingStepDefinitions {
         private int quantity;
         private double price;
 
-
-        public static final Function<? super TradeRow, Trade> TO_TRADE = new Function<TradeRow, Trade>() {
+        public static final Function<? super Trade, TradeRow> FROM_TRADE = new Function<Trade, TradeRow>() {
             @Override
-            public Trade apply(TradeRow input) {
-                return new Trade(input.getSellingBroker(), input.getBuyingBroker(), input.getQuantity(), input.getPrice());
+            public TradeRow apply(Trade input) {
+                TradeRow tradeRow = new TradeRow();
+                tradeRow.setBuyingBroker(input.getBuyBroker());
+                tradeRow.setPrice(input.getPrice());
+                tradeRow.setQuantity(input.getQuantity());
+                tradeRow.setSellingBroker(input.getSellBroker());
+                return tradeRow;
             }
         };
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TradeRow tradeRow = (TradeRow) o;
+
+            if (Double.compare(tradeRow.price, price) != 0) return false;
+            if (quantity != tradeRow.quantity) return false;
+            if (!buyingBroker.equals(tradeRow.buyingBroker)) return false;
+            if (!sellingBroker.equals(tradeRow.sellingBroker)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            result = buyingBroker.hashCode();
+            result = 31 * result + sellingBroker.hashCode();
+            result = 31 * result + quantity;
+            temp = price != +0.0d ? Double.doubleToLongBits(price) : 0L;
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
 
         public String getBuyingBroker() {
             return buyingBroker;
