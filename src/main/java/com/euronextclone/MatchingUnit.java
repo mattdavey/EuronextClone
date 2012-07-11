@@ -27,12 +27,12 @@ public class MatchingUnit implements Observable<Trade>
         }));
     }
 
-    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
-    {
-        matchOrder(side, broker, quantity, price);
+    public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
+        final OrderBook book = getBook(side);
+        book.addOrder(new Order(broker, quantity, price, side));
     }
 
-    private void matchOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
+    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
     {
         final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
         final Order order = new Order(broker, quantity, price, side);
@@ -55,7 +55,7 @@ public class MatchingUnit implements Observable<Trade>
 
     public int orderBookDepth(final Order.OrderSide side)
     {
-        final OrderBook orders = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
+        final OrderBook orders = getBook(side);
         return orders.orderBookDepth();
     }
 
@@ -87,5 +87,20 @@ public class MatchingUnit implements Observable<Trade>
 
     public double getIndicativeMatchPrice() {
         return imp;
+    }
+
+    private void matchOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
+    {
+        final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
+        final Order order = new Order(broker, quantity, price, side);
+        if(matchOrderBook.match(order))
+        {
+            final OrderBook orderBook = getBook(side);
+            orderBook.addOrder(order);
+        }
+    }
+
+    private OrderBook getBook(Order.OrderSide side) {
+        return side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
     }
 }
