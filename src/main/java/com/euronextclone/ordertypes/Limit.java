@@ -4,6 +4,8 @@ import com.euronextclone.OrderPrice;
 
 public class Limit extends BaseOrderType
 {
+    public static final Limit INSTANCE = new Limit();
+
     public String format(double price, double limit)
     {
         return Double.toString(price).replace('.', ',');

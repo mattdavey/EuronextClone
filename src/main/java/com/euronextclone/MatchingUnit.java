@@ -7,6 +7,7 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import java.io.Closeable;
+import java.util.List;
 
 public class MatchingUnit implements Observable<Trade>
 {
@@ -25,6 +26,14 @@ public class MatchingUnit implements Observable<Trade>
                 notifier.next(value);
             }
         }));
+    }
+
+    public void auction() {
+        // TODO: match everything you can from the books
+    }
+
+    public List<Order> getOrders(final Order.OrderSide side) {
+        return getBook(side).getOrders();
     }
 
     public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
