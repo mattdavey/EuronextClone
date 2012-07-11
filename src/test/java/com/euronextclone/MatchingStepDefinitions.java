@@ -25,9 +25,6 @@ public class MatchingStepDefinitions {
 
     @Given("^the following orders submitted to the book:$")
     public void the_following_orders_submitted_to_the_book(DataTable ordersTable) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        // throw new PendingException();
 
         List<MontageRow> rows = ordersTable.asList(MontageRow.class);
 
@@ -44,8 +41,8 @@ public class MatchingStepDefinitions {
 
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // throw new PendingException();
+
+        matchingUnit.auction();
     }
 
     @Then("^the following trades are generated:$")

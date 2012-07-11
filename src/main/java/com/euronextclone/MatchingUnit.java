@@ -27,6 +27,10 @@ public class MatchingUnit implements Observable<Trade>
         }));
     }
 
+    public void auction() {
+        // TODO: match everything you can from the books
+    }
+
     public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
         final OrderBook book = getBook(side);
         book.addOrder(new Order(broker, quantity, price, side));
