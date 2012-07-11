@@ -46,14 +46,14 @@ public class MatchingStepDefinitions {
     }
 
     @Then("^the following trades are generated:$")
-    public void the_following_trades_are_generated(DataTable arg1) throws Throwable {
+    public void the_following_trades_are_generated(DataTable trades) throws Throwable {
         // Express the Regexp above with the code you wish you had
         // For automatic conversion, change DataTable to List<YourType>
         // throw new PendingException();
     }
 
     @Then("^the book looks like:$")
-    public void the_book_looks_like(DataTable arg1) throws Throwable {
+    public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
         // Express the Regexp above with the code you wish you had
         // For automatic conversion, change DataTable to List<YourType>
         // throw new PendingException();
