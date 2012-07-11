@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -8,6 +7,7 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class OrderBook implements Observable<Trade>
 {
@@ -184,5 +184,9 @@ public class OrderBook implements Observable<Trade>
 
     public IndicativeMatchPrice getIMP() {
         return bestLimit;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
 }

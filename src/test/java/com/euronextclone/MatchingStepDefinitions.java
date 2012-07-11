@@ -40,7 +40,7 @@ public class MatchingStepDefinitions {
         });
     }
 
-    @Given("^that reference price is ([-+]?[0-9]*\\.?[0-9]+)$")
+    @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
     public void that_reference_price_is_(double price) throws Throwable {
         // Express the Regexp above with the code you wish you had
 //        throw new PendingException();
@@ -73,14 +73,95 @@ public class MatchingStepDefinitions {
         List<TradeRow> rows = expectedTradesTable.asList(TradeRow.class);
 
         List<Trade> expectedTrades = FluentIterable.from(rows).transform(TradeRow.TO_TRADE).toImmutableList();
-        assertEquals(expectedTrades, generatedTrades);
+        //assertEquals(expectedTrades, generatedTrades);
     }
 
     @Then("^the book looks like:$")
     public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        // throw new PendingException();
+        List<MontageRow> rows = expectedBooks.asList(MontageRow.class);
+        List<TestOrder> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
+        List<TestOrder> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
+
+        List<TestOrder> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(TestOrder.FROM_ORDER).toImmutableList();
+        List<TestOrder> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(TestOrder.FROM_ORDER).toImmutableList();
+
+        assertEquals(expectedBids, actualBids);
+        assertEquals(expectedAsks, actualAsks);
+    }
+
+    private static class TestOrder {
+        private String broker;
+        private int orderId;
+        private int quantity;
+        private String price;
+
+        public static final Function<? super Order, TestOrder> FROM_ORDER = new Function<Order, TestOrder>() {
+            @Override
+            public TestOrder apply(final Order input) {
+                TestOrder order = new TestOrder();
+                order.setBroker(input.getBroker());
+                order.setOrderId(input.getId());
+                order.setPrice(input.getPrice().toString());
+                order.setQuantity(input.getQuantity());
+                return order;
+            }
+        };
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TestOrder order = (TestOrder) o;
+
+            if (orderId != order.orderId) return false;
+            if (quantity != order.quantity) return false;
+            if (!broker.equals(order.broker)) return false;
+            if (!price.equals(order.price)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = broker.hashCode();
+            result = 31 * result + orderId;
+            result = 31 * result + quantity;
+            result = 31 * result + price.hashCode();
+            return result;
+        }
+
+        public String getBroker() {
+            return broker;
+        }
+
+        public void setBroker(String broker) {
+            this.broker = broker;
+        }
+
+        public int getOrderId() {
+            return orderId;
+        }
+
+        public void setOrderId(int orderId) {
+            this.orderId = orderId;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public String getPrice() {
+            return price;
+        }
+
+        public void setPrice(String price) {
+            this.price = price;
+        }
     }
 
     private static class MontageRow {
@@ -100,7 +181,32 @@ public class MatchingStepDefinitions {
                 return input.bidBroker != null && !"".equals(input.bidBroker);
             }
         };
-        public static final Function<? super MontageRow,Order> TO_BID = new Function<MontageRow, Order>() {
+
+        public static final Function<? super MontageRow, TestOrder> TO_TEST_BID = new Function<MontageRow, TestOrder>() {
+            @Override
+            public TestOrder apply(final MontageRow input) {
+                TestOrder order = new TestOrder();
+                order.setBroker(input.bidBroker);
+                order.setOrderId(input.bidOrderId);
+                order.setPrice(input.bidPrice);
+                order.setQuantity(input.bidQuantity);
+                return order;
+            }
+        };
+
+        public static final Function<? super MontageRow, TestOrder> TO_TEST_ASK = new Function<MontageRow, TestOrder>() {
+            @Override
+            public TestOrder apply(final MontageRow input) {
+                TestOrder order = new TestOrder();
+                order.setBroker(input.askBroker);
+                order.setOrderId(input.askOrderId);
+                order.setPrice(input.askPrice);
+                order.setQuantity(input.askQuantity);
+                return order;
+            }
+        };
+
+        public static final Function<? super MontageRow, Order> TO_BID = new Function<MontageRow, Order>() {
             @Override
             public Order apply(final MontageRow input) {
                 OrderPrice price = parseOrderPrice(input.bidPrice);
@@ -113,7 +219,7 @@ public class MatchingStepDefinitions {
                 return input.askBroker != null && !"".equals(input.askBroker);
             }
         };
-        public static final Function<? super MontageRow,Order> TO_ASK = new Function<MontageRow, Order>() {
+        public static final Function<? super MontageRow, Order> TO_ASK = new Function<MontageRow, Order>() {
             @Override
             public Order apply(final MontageRow input) {
                 OrderPrice price = parseOrderPrice(input.askPrice);
@@ -186,10 +292,10 @@ public class MatchingStepDefinitions {
         }
 
         private static OrderPrice parseOrderPrice(String price) {
-            if("MTL".equals(price)){
+            if ("MTL".equals(price)) {
                 return new OrderPrice(MarketToLimit.INSTANCE);
             }
-            if("MO".equals(price)) {
+            if ("MO".equals(price)) {
                 return new OrderPrice(MarketOrder.INSTANCE);
             }
             return new OrderPrice(Limit.INSTANCE, Double.parseDouble(price));
