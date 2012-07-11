@@ -28,7 +28,7 @@ Feature: Market Price Matching Rules
     When class auction completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
-      | A             | D              | 40       | 10    | 
+      | A             | D              | 40       | 10    |
       | G             | D              | 5        | 10    |
     And the book looks like:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |

@@ -18,12 +18,12 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-public class MatchingStepDefinitions {
+public class AuctionMatchingStepDefinitions {
 
     private final MatchingUnit matchingUnit = new MatchingUnit();
     private final List<Trade> generatedTrades = new ArrayList<Trade>();
 
-    public MatchingStepDefinitions() {
+    public AuctionMatchingStepDefinitions() {
         matchingUnit.register(new Observer<Trade>() {
             @Override
             public void next(Trade trade) {
