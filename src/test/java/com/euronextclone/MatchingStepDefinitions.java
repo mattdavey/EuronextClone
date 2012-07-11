@@ -10,15 +10,38 @@ import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
+import hu.akarnokd.reactive4java.reactive.Observer;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
 
 public class MatchingStepDefinitions {
 
     private final MatchingUnit matchingUnit = new MatchingUnit();
+    private final List<Trade> generatedTrades = new ArrayList<Trade>();
+
+    public MatchingStepDefinitions() {
+        matchingUnit.register(new Observer<Trade>() {
+            @Override
+            public void next(Trade trade) {
+                generatedTrades.add(trade);
+            }
+
+            @Override
+            public void error(@Nonnull Throwable throwable) {
+            }
+
+            @Override
+            public void finish() {
+            }
+        });
+    }
 
     @Given("^that reference price is ([-+]?[0-9]*\\.?[0-9]+)$")
-    public void that_reference_price_is_(int arg1) throws Throwable {
+    public void that_reference_price_is_(double price) throws Throwable {
         // Express the Regexp above with the code you wish you had
 //        throw new PendingException();
     }
@@ -46,10 +69,11 @@ public class MatchingStepDefinitions {
     }
 
     @Then("^the following trades are generated:$")
-    public void the_following_trades_are_generated(DataTable trades) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        // throw new PendingException();
+    public void the_following_trades_are_generated(DataTable expectedTradesTable) throws Throwable {
+        List<TradeRow> rows = expectedTradesTable.asList(TradeRow.class);
+
+        List<Trade> expectedTrades = FluentIterable.from(rows).transform(TradeRow.TO_TRADE).toImmutableList();
+        assertEquals(expectedTrades, generatedTrades);
     }
 
     @Then("^the book looks like:$")
@@ -169,6 +193,53 @@ public class MatchingStepDefinitions {
                 return new OrderPrice(MarketOrder.INSTANCE);
             }
             return new OrderPrice(Limit.INSTANCE, Double.parseDouble(price));
+        }
+    }
+
+    private static class TradeRow {
+        private String buyingBroker;
+        private String sellingBroker;
+        private int quantity;
+        private double price;
+
+
+        public static final Function<? super TradeRow, Trade> TO_TRADE = new Function<TradeRow, Trade>() {
+            @Override
+            public Trade apply(TradeRow input) {
+                return new Trade(input.getSellingBroker(), input.getBuyingBroker(), input.getQuantity(), input.getPrice());
+            }
+        };
+
+        public String getBuyingBroker() {
+            return buyingBroker;
+        }
+
+        public void setBuyingBroker(String buyingBroker) {
+            this.buyingBroker = buyingBroker;
+        }
+
+        public String getSellingBroker() {
+            return sellingBroker;
+        }
+
+        public void setSellingBroker(String sellingBroker) {
+            this.sellingBroker = sellingBroker;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
         }
     }
 }
