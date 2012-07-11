@@ -17,10 +17,10 @@ public class MatchingStepDefinitions {
 
     private final MatchingUnit matchingUnit = new MatchingUnit();
 
-    @Given("^that reference price is (\\d+)$")
-    public void that_reference_price_is(int arg1) throws Throwable {
+    @Given("^that reference price is ([-+]?[0-9]*\\.?[0-9]+)$")
+    public void that_reference_price_is_(int arg1) throws Throwable {
         // Express the Regexp above with the code you wish you had
-        // throw new PendingException();
+//        throw new PendingException();
     }
 
     @Given("^the following orders submitted to the book:$")

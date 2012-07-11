@@ -1,6 +1,6 @@
 Feature: Market Price Matching Rules
   Scenario: the market order is totally filled
-    Given that reference price is 10
+    Given that reference price is 10.0
     And the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
       | A          | 1           | 50           | MTL       | MTL       | 40           | 4           | D          |
