@@ -11,6 +11,16 @@ import java.util.List;
 
 public class MatchingUnit implements Observable<Trade>
 {
+    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading };
+
+    private final OrderBook buyOrderBook;
+    private final OrderBook sellOrderBook;
+    private double imp = Double.MIN_VALUE;
+    private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
+
+    /** The observable helper. */
+    private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+
     public MatchingUnit()
     {
         buyOrderBook = new OrderBook(Order.OrderSide.Buy);
@@ -38,27 +48,47 @@ public class MatchingUnit implements Observable<Trade>
 
     public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
         final OrderBook book = getBook(side);
-        book.addOrder(new Order(broker, quantity, price, side));
+        book.add(new Order(broker, quantity, price, side));
     }
 
     public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
     {
-        final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
         final Order order = new Order(broker, quantity, price, side);
-        if(matchOrderBook.match(order))
-        {
-            final OrderBook orderBook = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
-            orderBook.addOrder(order);
+        final OrderBook orderBook = add(side, order);
+
+        if (currentContinuousTradingProcess != ContinuousTradingProcess.PreOpeningPhase) {
+            final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
+                if (!matchOrderBook.match(order, currentContinuousTradingProcess))
+                {
+                    orderBook.remove(order);
+                }
+            }
+    }
+
+    private OrderBook add(final Order.OrderSide side, final Order order) {
+        final OrderBook orderBook = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
+        orderBook.add(order);
+
+        // Think IMP only used in Auctions - Need to confirm
+        if (currentContinuousTradingProcess == ContinuousTradingProcess.OpeningAuction ||
+                currentContinuousTradingProcess == ContinuousTradingProcess.ClosingAuction) {
+            calcIndicativeMatchPrice();
         }
 
-        calcIndicativeMatchPrice();
+        return orderBook;
     }
 
     private void calcIndicativeMatchPrice() {
-        if (buyOrderBook.getIMP().getQuantity() > sellOrderBook.getIMP().getQuantity()) {
-            imp = buyOrderBook.getIMP().getOrderPrice().value();
-        } else {
+        if (buyOrderBook.getIMP().getOrderPrice().hasPrice() && sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
+            if (buyOrderBook.getIMP().getQuantity() > sellOrderBook.getIMP().getQuantity()) {
+                imp = buyOrderBook.getIMP().getOrderPrice().value();
+            } else {
+                imp = sellOrderBook.getIMP().getOrderPrice().value();
+            }
+        } else if (!buyOrderBook.getIMP().getOrderPrice().hasPrice() && sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
             imp = sellOrderBook.getIMP().getOrderPrice().value();
+        } else if (buyOrderBook.getIMP().getOrderPrice().hasPrice() && !sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
+            imp = buyOrderBook.getIMP().getOrderPrice().value();
         }
     }
 
@@ -83,33 +113,11 @@ public class MatchingUnit implements Observable<Trade>
         System.out.println();
     }
 
-    private final OrderBook buyOrderBook;
-    private final OrderBook sellOrderBook;
-    private double imp = Double.MIN_VALUE;
-
-    /** The observable helper. */
-    private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
-
     public Closeable register(Observer<? super Trade> observer) {
         return notifier.register(observer);
     }
 
-    public double getIndicativeMatchPrice() {
-        return imp;
-    }
-
-    private void matchOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
-    {
-        final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
-        final Order order = new Order(broker, quantity, price, side);
-        if(matchOrderBook.match(order))
-        {
-            final OrderBook orderBook = getBook(side);
-            orderBook.addOrder(order);
-        }
-    }
-
-    private OrderBook getBook(Order.OrderSide side) {
+    private OrderBook getBook(final Order.OrderSide side) {
         return side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
     }
 }

@@ -1,5 +1,6 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.MarketToLimit;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -11,6 +12,10 @@ import java.util.List;
 
 public class OrderBook implements Observable<Trade>
 {
+    private final LinkedList<Order> orders = new LinkedList<Order>();
+    private IndicativeMatchPrice bestLimit;
+    private final Order.OrderSide bookSide;
+
     /** The observable helper. */
     final private DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
@@ -25,36 +30,48 @@ public class OrderBook implements Observable<Trade>
         return bestLimit.getOrderPrice();
     }
 
-    public boolean match(final Order newOrder)
+    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess mode)
     {
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (final Order order : orders)
         {
-            if(order.getPrice().value() != newOrder.getPrice().value())
+            if (order.getPrice().hasPrice() && newOrder.getPrice().hasPrice() &&
+                    order.getPrice().value() != newOrder.getPrice().value())
                 continue;
 
-            if(order.getQuantity() == newOrder.getQuantity())
+            if (order.getQuantity() == newOrder.getQuantity())
             {
                 orders.remove(order);
                 generateTrade(newOrder, order, order.getQuantity());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
-            if(order.getQuantity() > newOrder.getQuantity())
+
+            if (order.getQuantity() > newOrder.getQuantity())
             {
+                if (!order.getPrice().hasPrice()) {
+                    order.getPrice().convertToLimit(newOrder.getPrice().value());
+                }
+
                 order.decrementQuantity(newOrder.getQuantity());
-                if(!newOrder.getPrice().hasPrice())
+                if (!newOrder.getPrice().hasPrice())
                     newOrder.getPrice().update(bestLimit.getOrderPrice().value());
 
                 generateTrade(newOrder, order, newOrder.getQuantity());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
-            if(order.getQuantity() < newOrder.getQuantity())
+
+            if (order.getQuantity() < newOrder.getQuantity())
             {
                 rebalance.add(order);
+                if (!newOrder.getPrice().hasPrice() && newOrder.getPrice().getOrderType() instanceof MarketToLimit)
+                    newOrder.getPrice().updateToLimitOrder(bestLimit.getOrderPrice().value());
+
                 generateTrade(newOrder, order, order.getQuantity());
+
+
                 newOrder.decrementQuantity(order.getQuantity());
             }
         }
@@ -69,23 +86,34 @@ public class OrderBook implements Observable<Trade>
     private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity)
     {
         notifier.next(new Trade(bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), tradeQuantity, newOrder.getPrice().value()));
+
 //        System.out.println(String.format("Trade: Buy Broker %s, Sell Broker %s, Quantity %d, Price %f", new Object[] {
 //            bookSide != Order.OrderSide.Sell ? order.getBroker() : newOrder.getBroker(), bookSide != Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(), Integer.valueOf(tradeQuantity), Double.valueOf(newOrder.getPrice().value())
 //        }));
     }
 
-    public void addOrder(final Order order)
-    {
-        add(order);
-        if ((bookSide == Order.OrderSide.Buy && order.getPrice().value() > bestLimit.getOrderPrice().value()) ||
-            (bookSide == Order.OrderSide.Sell && order.getPrice().value() < bestLimit.getOrderPrice().value()))
-        {
-            bestLimit.getOrderPrice().update(order.getPrice().value());
-            updatePegOrders();
-        }
+
+    public void remove(Order order) {
+        orders.remove(order);
+        updatePegOrders();
     }
 
-    private void add(final Order newOrder)
+    public void add(final Order order)
+    {
+        placeOrderInBook(order);
+
+        // First order in book
+//        if (order.getPrice().getOrderType() instanceof MarketToLimit) {
+//            if (!bestLimit.getOrderPrice().hasPrice() && order.getPrice().hasPrice()) {
+//                bestLimit.getOrderPrice().update(order.getPrice().value());
+//                return;
+//            }
+//        }
+
+        updatePegOrders();
+    }
+
+    private void placeOrderInBook(final Order newOrder)
     {
         int count = 0;
         for (final Order order : orders)
@@ -104,7 +132,7 @@ public class OrderBook implements Observable<Trade>
         if(orders.size() == 0)
             return;
 
-        checkForTopOfBookPeg();
+        validateBook();
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
@@ -121,22 +149,14 @@ public class OrderBook implements Observable<Trade>
         }
     }
 
-    private void setBestLimit() {
-        for (final Order order : orders) {
-            if (order.getPrice().hasPrice()) {
-                bestLimit.getOrderPrice().update(order.getPrice().value());
-                break;
-            }
-        }
-    }
-
-    private void checkForTopOfBookPeg()
+    private void validateBook()
     {
-//        setBestLimit();
+        if (orders.size() == 0)
+            return;
 
-        bestLimit.resetQuantity();
+        bestLimit.reset();
 
-        if(!(orders.get(0)).getPrice().getOrderType().canBeTopOfBook())
+        if (!(orders.get(0)).getPrice().getOrderType().canBeTopOfBook())
         {
             for (final Order order : orders)
             {
@@ -146,20 +166,29 @@ public class OrderBook implements Observable<Trade>
                     bestLimit.getOrderPrice().update(order.getPrice().value());
                     orders.remove(order);
                     orders.add(0, order);
-                    return;
+                    break;
                 }
             }
+
             orders.clear();
         } else {
-            bestLimit.getOrderPrice().update(orders.get(0).getPrice().value());
-            bestLimit.addQuantity(orders.get(0).getQuantity());
+            // Order book should be good, just reset best
+            for (final Order order : orders)
+            {
+                if (order.getPrice().hasPrice())
+                {
+                    bestLimit.getOrderPrice().update(order.getPrice().value());
+                    bestLimit.addQuantity(order.getQuantity());
+                    break;
+                }
+            }
         }
     }
 
     private void add(final ArrayList<Order> rebalance)
     {
         for (final Order order : rebalance) {
-            add(order);
+            placeOrderInBook(order);
         }
     }
 
@@ -173,10 +202,6 @@ public class OrderBook implements Observable<Trade>
         for (final Order order : orders)
             order.dump();
     }
-
-    private final LinkedList<Order> orders = new LinkedList<Order>();
-    private IndicativeMatchPrice bestLimit;
-    private final Order.OrderSide bookSide;
 
     public Closeable register(Observer<? super Trade> observer) {
         return notifier.register(observer);

@@ -1,46 +1,41 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
 import com.euronextclone.ordertypes.OrderType;
 
-public class OrderPrice
-    implements Comparable
+public class OrderPrice implements Comparable
 {
-
-    public OrderPrice(OrderType orderType)
+    public OrderPrice(final OrderType orderType)
     {
-        price = 0.0D;
-        hasPrice = false;
-        limit = 0.0D;
-        hasLimit = false;
         this.orderType = orderType;
     }
 
-    public OrderPrice(OrderType orderType, double price)
+    public OrderPrice(final OrderType orderType, final double price)
     {
-        this.price = 0.0D;
-        hasPrice = false;
-        limit = 0.0D;
-        hasLimit = false;
-        this.orderType = orderType;
+        this(orderType);
         update(price);
     }
 
-    public OrderPrice(OrderType orderType, double price, double limit)
+    public OrderPrice(final OrderType orderType, final double price, final double limit)
     {
-        this.price = 0.0D;
-        hasPrice = false;
-        this.limit = 0.0D;
-        hasLimit = false;
+        this(orderType, price);
         this.limit = limit;
-        hasLimit = true;
-        this.orderType = orderType;
-        update(price);
     }
 
-    public void update(double value)
+    public void convertToLimit(final double value) {
+        this.orderType = Limit.INSTANCE;
+        this.price = value;
+    }
+
+    public void updateToLimitOrder(final double value)
     {
         price = value;
-        hasPrice = true;
+        orderType = Limit.INSTANCE;
+    }
+
+    public void update(final double value)
+    {
+        price = value;
     }
 
     public OrderType getOrderType()
@@ -55,12 +50,12 @@ public class OrderPrice
 
     public boolean hasPrice()
     {
-        return hasPrice;
+        return price != Double.MAX_VALUE;
     }
 
     public boolean hasLimit()
     {
-        return hasLimit;
+        return limit != Double.MAX_VALUE;
     }
 
     public double value()
@@ -73,12 +68,12 @@ public class OrderPrice
         return orderType.format(price, limit);
     }
 
-    public boolean updateBestLimit(OrderPrice bestLimit)
+    public boolean updateBestLimit(final OrderPrice bestLimit)
     {
         return orderType.markToBestLimit(this, bestLimit);
     }
 
-    public int compareTo(OrderPrice passedOrderPrice)
+    public int compareTo(final OrderPrice passedOrderPrice)
     {
         int orderTypeCompare = orderType.compareTo(passedOrderPrice.getOrderType());
         if(orderTypeCompare == 0)
@@ -101,9 +96,7 @@ public class OrderPrice
         return compareTo((OrderPrice)x0);
     }
 
-    private double price;
-    private boolean hasPrice;
-    private double limit;
-    private boolean hasLimit;
-    private final OrderType orderType;
+    private double price = Double.MAX_VALUE;
+    private double limit = Double.MAX_VALUE;
+    private OrderType orderType;
 }

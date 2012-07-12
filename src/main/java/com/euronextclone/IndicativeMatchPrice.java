@@ -7,11 +7,12 @@ public class IndicativeMatchPrice {
     private int quantity;
 
     public IndicativeMatchPrice(final Order.OrderSide side) {
-        price = new OrderPrice(new Limit(), side != Order.OrderSide.Buy ? Double.MAX_VALUE: Double.MIN_VALUE);
+        price = new OrderPrice(new Limit());
     }
 
-    public void resetQuantity() {
+    public void reset() {
         quantity=0;
+        price.update(0);
     }
 
     public void addQuantity(final int quantity) {

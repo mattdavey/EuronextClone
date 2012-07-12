@@ -31,24 +31,26 @@ public class PegOrderTest extends BaseReactiveTest
     }
 
     @Test
-    public void newBuyAndSellOrderTest()
+    public void example1Step1Test()
     {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
+        matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(4));
         MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(3));
     }
 
     @Test
-    public void addLimitOrderWithoutMatchTest()
+    public void example1Step2Test()
     {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
-
+        matchingUnit.dump();
         matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderPrice(new Limit(), 10.800000000000001D));
+        matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
         MatcherAssert.assertThat("Best Buy Limit", matchingUnit.getBestLimit(Order.OrderSide.Buy), Matchers.is("10,8"));
@@ -56,7 +58,7 @@ public class PegOrderTest extends BaseReactiveTest
     }
 
     @Test
-    public void addBuyLimitOrderWithMatchTest() throws IOException {
+    public void example1Step3Test() throws IOException {
         MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
@@ -86,7 +88,7 @@ public class PegOrderTest extends BaseReactiveTest
     }
 
     @Test
-    public void addSellLimitOrderWithMatchTest() throws IOException {
+    public void example1Step4Test() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
@@ -115,6 +117,7 @@ public class PegOrderTest extends BaseReactiveTest
             }
         }));
 
+        matchingUnit.dump();
         matchingUnit.newOrder(Order.OrderSide.Sell, "G", 250, new OrderPrice(new Limit(), 10.800000000000001D));
         close.close();
 
