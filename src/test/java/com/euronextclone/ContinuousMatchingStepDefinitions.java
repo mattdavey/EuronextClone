@@ -5,12 +5,21 @@ import com.euronextclone.ordertypes.MarketOrder;
 import com.euronextclone.ordertypes.MarketToLimit;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
+import cucumber.runtime.PendingException;
+import cucumber.table.DataTable;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ContinuousMatchingStepDefinitions {
     private final MatchingUnit matchingUnit = new MatchingUnit();
+
+    @Given("^the following orders are submitted in this order:$")
+    public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
+        // Express the Regexp above with the code you wish you had
+        // For automatic conversion, change DataTable to List<YourType>
+        throw new PendingException();
+    }
 
     @Given("^the MTL buy order from broker \"([^\"]*)\" for (\\d+) shares$")
     public void the_MTL_buy_order_from_broker_for_shares(String broker, int quantity) throws Throwable {
@@ -49,5 +58,10 @@ public class ContinuousMatchingStepDefinitions {
     public void remaining_sell_order_book_depth_is(int expectedDepth) throws Throwable {
 
         assertThat(matchingUnit.orderBookDepth(Order.OrderSide.Sell), is(expectedDepth));
+    }
+
+    private static class OrderRow {
+        private String broker;
+        private Order.OrderSide side;
     }
 }
