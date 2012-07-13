@@ -43,8 +43,8 @@ Feature: Pegged orders
       | G      | Sell | 250      | Limit      | 10.800000000000001 |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
-      | G             | E              | 200      | 10.8  |
-      | G             | B              | 50       | 10.8  |
+      | E             | G              | 200      | 10.8  |
+      | B             | G              | 50       | 10.8  |
     And remaining buy order book depth is 4
     And remaining sell order book depth is 3
     And best limits are:
