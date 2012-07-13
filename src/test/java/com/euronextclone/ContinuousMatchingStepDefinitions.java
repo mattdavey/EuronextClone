@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import cucumber.table.DataTable;

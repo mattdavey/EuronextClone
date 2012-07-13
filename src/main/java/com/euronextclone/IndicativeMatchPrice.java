@@ -1,7 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
-
 public class IndicativeMatchPrice {
     private OrderPrice price;
     private int quantity;

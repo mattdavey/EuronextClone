@@ -1,4 +1,4 @@
-package com.euronextclone.ordertypes;
+package com.euronextclone;
 
 import com.euronextclone.OrderPrice;
 

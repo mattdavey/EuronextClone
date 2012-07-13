@@ -1,7 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
-
 public class OrderPrice implements Comparable {
     public OrderPrice(final OrderType orderType) {
         this.orderType = orderType;

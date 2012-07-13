@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;

@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 import org.hamcrest.MatcherAssert;

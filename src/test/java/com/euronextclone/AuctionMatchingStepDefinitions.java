@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.OrderType;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
