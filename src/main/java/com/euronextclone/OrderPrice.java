@@ -58,7 +58,7 @@ public class OrderPrice implements Comparable {
     }
 
     public int compareTo(final OrderPrice passedOrderPrice) {
-        int orderTypeCompare = compareTo(passedOrderPrice.getOrderType());
+        int orderTypeCompare = compareOrderTypes(orderType, passedOrderPrice.getOrderType());
         if (orderTypeCompare == 0) {
             if (hasPrice() && passedOrderPrice.hasPrice()) {
                 if (value() < passedOrderPrice.value())
@@ -75,7 +75,7 @@ public class OrderPrice implements Comparable {
         return compareTo((OrderPrice) x0);
     }
 
-    private int compareTo(OrderType orderTypePassed) {
+    private static int compareOrderTypes(OrderType orderType, OrderType orderTypePassed) {
         int BEFORE = -1;
         int EQUAL = 0;
         int AFTER = 1;
