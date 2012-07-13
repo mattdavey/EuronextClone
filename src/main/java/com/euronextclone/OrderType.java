@@ -2,12 +2,6 @@ package com.euronextclone;
 
 import com.euronextclone.OrderPrice;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eprystupa
- * Date: 7/12/12
- * Time: 7:47 PM
- */
 public enum OrderType {
 
     Limit {

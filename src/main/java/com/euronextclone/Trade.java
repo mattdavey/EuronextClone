@@ -6,7 +6,7 @@ public class Trade {
     private final int quantity;
     private final double price;
 
-    public Trade(final String sellBroker, final String buyBroker, final int quantity, final double price) {
+    public Trade(final String buyBroker, final String sellBroker, final int quantity, final double price) {
         this.buyBroker = buyBroker;
         this.sellBroker = sellBroker;
         this.price = price;
