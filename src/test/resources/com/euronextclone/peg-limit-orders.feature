@@ -1,6 +1,5 @@
 Feature: Pegged orders with limit
 
-  @focus
   Scenario: Peg Order Limit Fill Trade
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type   | Price | Limit |
@@ -12,3 +11,18 @@ Feature: Pegged orders with limit
       | A             | C              | 200      | 11.5  |
     And remaining buy order book depth is 0
     And remaining sell order book depth is 0
+
+  @focus
+  Scenario: New Buy And Sell Order
+    Given the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type   | Price | Limit |
+      | A      | Buy  | 200      | Limit        | 11.5  |       |
+      | B      | Buy  | 150      | PegWithLimit | 11.5  | 11.6  |
+      | B      | Buy  | 70       | Peg          | 11.5  |       |
+      | B      | Buy  | 125      | Limit        | 10.5  |       |
+      | C      | Sell | 130      | Limit        | 11.8  |       |
+      | C      | Sell | 350      | Limit        | 11.9  |       |
+      | D      | Sell | 275      | Limit        | 12.0  |       |
+      | E      | Buy  | 200      | Limit        | 11.7  |       |
+    And remaining buy order book depth is 5
+    And remaining sell order book depth is 3
