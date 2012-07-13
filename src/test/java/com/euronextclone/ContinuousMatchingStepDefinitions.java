@@ -22,7 +22,12 @@ public class ContinuousMatchingStepDefinitions {
 
         List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
         for (OrderRow orderRow : orderRows) {
-            matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price));
+
+            if (orderRow.limit == null) {
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price));
+            } else {
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price, orderRow.limit));
+            }
         }
     }
 
