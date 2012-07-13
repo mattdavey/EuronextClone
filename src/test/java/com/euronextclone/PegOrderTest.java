@@ -96,14 +96,14 @@ public class PegOrderTest extends BaseReactiveTest {
                 int count = incTradeCount();
                 switch (count) {
                     case 0:
-                        assertThat(value.getSellBroker(), is("E"));
-                        assertThat(value.getBuyBroker(), is("G"));
+                        assertThat(value.getBuyBroker(), is("E"));
+                        assertThat(value.getSellBroker(), is("G"));
                         assertThat(value.getQuantity(), is(200));
                         assertThat(value.getPrice(), is(10.8));
                         break;
                     case 1:
-                        assertThat(value.getSellBroker(), is("B"));
-                        assertThat(value.getBuyBroker(), is("G"));
+                        assertThat(value.getBuyBroker(), is("B"));
+                        assertThat(value.getSellBroker(), is("G"));
                         assertThat(value.getQuantity(), is(50));
                         assertThat(value.getPrice(), is(10.8));
                         break;
