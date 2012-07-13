@@ -16,6 +16,18 @@ public class ContinuousMatchingStepDefinitions {
     public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
 
         List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
+        for (OrderRow orderRow : orderRows) {
+            matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price));
+        }
+    }
+
+
+    @Then("^best limits are:$")
+    public void best_limits_are(DataTable limitsTable) throws Throwable {
+        List<BestLimitRow> bestLimitRows = limitsTable.asList(BestLimitRow.class);
+        for (BestLimitRow bestLimitRow : bestLimitRows) {
+            assertThat(matchingUnit.getBestLimit(bestLimitRow.side), is(bestLimitRow.limit));
+        }
     }
 
     @Given("^the MTL buy order from broker \"([^\"]*)\" for (\\d+) shares$")
@@ -61,7 +73,12 @@ public class ContinuousMatchingStepDefinitions {
         private String broker;
         private Order.OrderSide side;
         private int quantity;
-        private String orderType;
+        private OrderType orderType;
         private double price;
+    }
+
+    private static class BestLimitRow {
+        private Order.OrderSide side;
+        private String limit;
     }
 }
