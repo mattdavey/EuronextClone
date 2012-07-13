@@ -10,7 +10,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ContinuousMatchingStepDefinitions {
-    private final MatchingUnit matchingUnit = new MatchingUnit();
+
+    private final MatchingUnit matchingUnit;
+
+    public ContinuousMatchingStepDefinitions(World world) {
+        this.matchingUnit = world.getMatchingUnit();
+    }
 
     @Given("^the following orders are submitted in this order:$")
     public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {

@@ -7,34 +7,17 @@ import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
-import hu.akarnokd.reactive4java.reactive.Observer;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
 public class AuctionMatchingStepDefinitions {
 
-    private final MatchingUnit matchingUnit = new MatchingUnit();
-    private final List<Trade> generatedTrades = new ArrayList<Trade>();
+    private final MatchingUnit matchingUnit;
 
-    public AuctionMatchingStepDefinitions() {
-        matchingUnit.register(new Observer<Trade>() {
-            @Override
-            public void next(Trade trade) {
-                generatedTrades.add(trade);
-            }
-
-            @Override
-            public void error(@Nonnull Throwable throwable) {
-            }
-
-            @Override
-            public void finish() {
-            }
-        });
+    public AuctionMatchingStepDefinitions(World world) {
+        this.matchingUnit = world.getMatchingUnit();
     }
 
     @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
@@ -63,13 +46,6 @@ public class AuctionMatchingStepDefinitions {
     public void class_auction_completes() throws Throwable {
 
         matchingUnit.auction();
-    }
-
-    @Then("^the following trades are generated:$")
-    public void the_following_trades_are_generated(DataTable expectedTradesTable) throws Throwable {
-        List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
-        List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
-        assertEquals(expectedTrades, actualTrades);
     }
 
     @Then("^the book looks like:$")
@@ -232,68 +208,6 @@ public class AuctionMatchingStepDefinitions {
                 return new OrderPrice(OrderType.MarketOrder);
             }
             return new OrderPrice(OrderType.Limit, Double.parseDouble(price));
-        }
-    }
-
-    private static class TradeRow {
-        private String buyingBroker;
-        private String sellingBroker;
-        private int quantity;
-        private double price;
-
-        public static final Function<? super Trade, TradeRow> FROM_TRADE = new Function<Trade, TradeRow>() {
-            @Override
-            public TradeRow apply(Trade input) {
-                TradeRow tradeRow = new TradeRow();
-                tradeRow.setBuyingBroker(input.getBuyBroker());
-                tradeRow.setPrice(input.getPrice());
-                tradeRow.setQuantity(input.getQuantity());
-                tradeRow.setSellingBroker(input.getSellBroker());
-                return tradeRow;
-            }
-        };
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            TradeRow tradeRow = (TradeRow) o;
-
-            if (Double.compare(tradeRow.price, price) != 0) return false;
-            if (quantity != tradeRow.quantity) return false;
-            if (!buyingBroker.equals(tradeRow.buyingBroker)) return false;
-            if (!sellingBroker.equals(tradeRow.sellingBroker)) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result;
-            long temp;
-            result = buyingBroker.hashCode();
-            result = 31 * result + sellingBroker.hashCode();
-            result = 31 * result + quantity;
-            temp = price != +0.0d ? Double.doubleToLongBits(price) : 0L;
-            result = 31 * result + (int) (temp ^ (temp >>> 32));
-            return result;
-        }
-
-        public void setBuyingBroker(String buyingBroker) {
-            this.buyingBroker = buyingBroker;
-        }
-
-        public void setSellingBroker(String sellingBroker) {
-            this.sellingBroker = sellingBroker;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
-
-        public void setPrice(double price) {
-            this.price = price;
         }
     }
 }
