@@ -102,10 +102,10 @@ public class PegOrderTest extends BaseReactiveTest {
                         assertThat(value.getPrice(), is(10.8));
                         break;
                     case 1:
-                        assert value.getSellBroker() == "B";
-                        assert value.getBuyBroker() == "G";
-                        assert value.getQuantity() == 50;
-                        assert value.getPrice() == 10.8;
+                        assertThat(value.getSellBroker(), is("B"));
+                        assertThat(value.getBuyBroker(), is("G"));
+                        assertThat(value.getQuantity(), is(50));
+                        assertThat(value.getPrice(), is(10.8));
                         break;
                 }
             }
