@@ -6,7 +6,6 @@ Feature: Pure market orders
       | A      | Sell | 100      | Limit      | 10.2  |
       | B      | Sell | 60       | Limit      | 10.3  |
 
-  @focus
   Scenario: Trading Session Example
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type  | Price |
