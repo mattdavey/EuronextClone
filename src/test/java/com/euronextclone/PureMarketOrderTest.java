@@ -10,9 +10,9 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-public class PureMarketOrderTest extends BaseReactiveTest
-{
+public class PureMarketOrderTest extends BaseReactiveTest {
     @Test
     public void tradingSessionExample1() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
@@ -24,18 +24,18 @@ public class PureMarketOrderTest extends BaseReactiveTest
             public void invoke(Trade value) {
                 final int count = incTradeCount();
 
-                switch (count){
+                switch (count) {
                     case 0:
-                        assert value.getBuyBroker() == "C";
-                        assert value.getSellBroker() == "A";
-                        assert value.getQuantity() == 100;
-                        assert value.getPrice() == 10.2;
+                        assertThat(value.getBuyBroker(), is("C"));
+                        assertThat(value.getSellBroker(), is("A"));
+                        assertThat(value.getQuantity(), is(100));
+                        assertThat(value.getPrice(), is(10.2));
                         break;
                     case 1:
-                        assert value.getBuyBroker() == "C";
-                        assert value.getSellBroker() == "B";
-                        assert value.getQuantity() == 10;
-                        assert value.getPrice() == 10.3;
+                        assertThat(value.getBuyBroker(), is("C"));
+                        assertThat(value.getSellBroker(), is("B"));
+                        assertThat(value.getQuantity(), is(10));
+                        assertThat(value.getPrice(), is(10.3));
                         break;
                 }
             }
@@ -60,18 +60,18 @@ public class PureMarketOrderTest extends BaseReactiveTest
             public void invoke(Trade value) {
                 final int count = incTradeCount();
 
-                switch (count){
+                switch (count) {
                     case 0:
-                        assert value.getBuyBroker() == "C";
-                        assert value.getSellBroker() == "A";
-                        assert value.getQuantity() == 100;
-                        assert value.getPrice() == 10.2;
+                        assertThat(value.getBuyBroker(), is("C"));
+                        assertThat(value.getSellBroker(), is("A"));
+                        assertThat(value.getQuantity(), is(100));
+                        assertThat(value.getPrice(), is(10.2));
                         break;
                     case 1:
-                        assert value.getBuyBroker() == "C";
-                        assert value.getSellBroker() == "B";
-                        assert value.getQuantity() == 60;
-                        assert value.getPrice() == 10.3;
+                        assertThat(value.getBuyBroker(), is("C"));
+                        assertThat(value.getSellBroker(), is("B"));
+                        assertThat(value.getQuantity(), is(60));
+                        assertThat(value.getPrice(), is(10.3));
                         break;
                 }
             }
