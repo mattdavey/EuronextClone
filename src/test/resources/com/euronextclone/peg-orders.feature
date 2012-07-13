@@ -36,12 +36,13 @@ Feature: Pegged orders
       | Buying broker | Selling broker | Quantity | Price |
       | G             | C              | 100      | 10.9  |
 
+  @focus
   Scenario: Example 1 Step 4
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price              |
       | E      | Buy  | 200      | Limit      | 10.800000000000001 |
       | G      | Buy  | 100      | Limit      | 10.9               |
-      | G      | Buy  | 250      | Limit      | 10.9               |
+      | G      | Sell | 250      | Limit      | 10.800000000000001 |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | G             | E              | 200      | 10.8  |
