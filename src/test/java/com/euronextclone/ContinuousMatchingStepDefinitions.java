@@ -80,6 +80,7 @@ public class ContinuousMatchingStepDefinitions {
         private int quantity;
         private OrderType orderType;
         private double price;
+        private Double limit;
     }
 
     private static class BestLimitRow {
