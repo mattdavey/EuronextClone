@@ -47,3 +47,9 @@ Feature: Pegged orders
       | Buying broker | Selling broker | Quantity | Price |
       | G             | E              | 200      | 10.8  |
       | G             | B              | 50       | 10.8  |
+    And remaining buy order book depth is 4
+    And remaining sell order book depth is 3
+    And best limits are:
+      | Side | Limit |
+      | Buy  | 10,5  |
+      | Sell | 10,9  |
