@@ -5,8 +5,9 @@ import com.euronextclone.ordertypes.MarketOrder;
 import com.euronextclone.ordertypes.MarketToLimit;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
-import cucumber.runtime.PendingException;
 import cucumber.table.DataTable;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,9 +17,8 @@ public class ContinuousMatchingStepDefinitions {
 
     @Given("^the following orders are submitted in this order:$")
     public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        throw new PendingException();
+
+        List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
     }
 
     @Given("^the MTL buy order from broker \"([^\"]*)\" for (\\d+) shares$")
@@ -63,5 +63,8 @@ public class ContinuousMatchingStepDefinitions {
     private static class OrderRow {
         private String broker;
         private Order.OrderSide side;
+        private int quantity;
+        private String orderType;
+        private double price;
     }
 }

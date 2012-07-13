@@ -8,7 +8,7 @@ public interface OrderType
 
     public abstract String format(double d, double d1);
 
-    public abstract boolean markToBestLimit(OrderPrice orderprice, OrderPrice orderprice1);
+    public abstract boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit);
 
     public abstract boolean canBeTopOfBook();
 }

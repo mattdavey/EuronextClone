@@ -6,9 +6,7 @@ public class PegWithLimit extends BaseOrderType
 {
     public String format(double price, double limit)
     {
-        return String.format("PEG (%s)[%s]", new Object[] {
-            Double.toString(price).replace('.', ','), Double.toString(limit).replace('.', ',')
-        });
+        return String.format("PEG (%s)[%s]", Double.toString(price).replace('.', ','), Double.toString(limit).replace('.', ','));
     }
 
     public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit)

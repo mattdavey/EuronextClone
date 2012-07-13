@@ -1,4 +1,5 @@
 Feature: Pegged orders
+  @focus
   Scenario: New buy and sell order aaa
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price |
