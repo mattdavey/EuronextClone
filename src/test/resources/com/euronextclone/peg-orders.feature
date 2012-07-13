@@ -26,7 +26,6 @@ Feature: Pegged orders
       | Buy  | 10,8  |
       | Sell | 10,9  |
 
-  @focus
   Scenario: Example 1 Step 3
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price              |
@@ -36,7 +35,6 @@ Feature: Pegged orders
       | Buying broker | Selling broker | Quantity | Price |
       | G             | C              | 100      | 10.9  |
 
-  @focus
   Scenario: Example 1 Step 4
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price              |
