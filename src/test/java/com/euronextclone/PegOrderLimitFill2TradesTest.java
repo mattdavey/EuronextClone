@@ -10,6 +10,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
     private void buyOrders(MatchingUnit matchingUnit) {
@@ -52,16 +53,16 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
 
                 switch (count) {
                     case 0:
-                        assert value.getPrice() == 11.7;
-                        assert value.getSellBroker() == "A";
-                        assert value.getBuyBroker() == "E";
-                        assert value.getQuantity() == 200;
+                        assertThat(value.getPrice(), is(11.7));
+                        assertThat(value.getSellBroker(), is("A"));
+                        assertThat(value.getBuyBroker(), is("E"));
+                        assertThat(value.getQuantity(), is(200));
                         break;
                     case 1:
-                        assert value.getPrice() == 11.7;
-                        assert value.getSellBroker() == "A";
-                        assert value.getBuyBroker() == "B";
-                        assert value.getQuantity() == 70;
+                        assertThat(value.getPrice(), is(11.7));
+                        assertThat(value.getSellBroker(), is("A"));
+                        assertThat(value.getBuyBroker(), is("B"));
+                        assertThat(value.getQuantity(), is(70));
                         break;
                 }
             }

@@ -24,5 +24,25 @@ Feature: Pegged orders with limit
       | C      | Sell | 350      | Limit        | 11.9  |       |
       | D      | Sell | 275      | Limit        | 12.0  |       |
       | E      | Buy  | 200      | Limit        | 11.7  |       |
-    And remaining buy order book depth is 5
+    Then remaining buy order book depth is 5
+    And remaining sell order book depth is 3
+
+  @focus
+  Scenario: New Sell Order Test
+    Given the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type   | Price | Limit |
+      | A      | Buy  | 200      | Limit        | 11.5  |       |
+      | B      | Buy  | 150      | PegWithLimit | 11.5  | 11.6  |
+      | B      | Buy  | 70       | Peg          | 11.5  |       |
+      | B      | Buy  | 125      | Limit        | 10.5  |       |
+      | C      | Sell | 130      | Limit        | 11.8  |       |
+      | C      | Sell | 350      | Limit        | 11.9  |       |
+      | D      | Sell | 275      | Limit        | 12.0  |       |
+      | E      | Buy  | 200      | Limit        | 11.7  |       |
+      | A      | Sell | 270      | Limit        | 11.7  |       |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | E             | A              | 200      | 11.7  |
+      | B             | A              | 70       | 11.7  |
+    And remaining buy order book depth is 3
     And remaining sell order book depth is 3
