@@ -35,3 +35,14 @@ Feature: Pegged orders
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | G             | C              | 100      | 10.9  |
+
+  Scenario: Example 1 Step 4
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type | Price              |
+      | E      | Buy  | 200      | Limit      | 10.800000000000001 |
+      | G      | Buy  | 100      | Limit      | 10.9               |
+      | G      | Buy  | 250      | Limit      | 10.9               |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | G             | E              | 200      | 10.8  |
+      | G             | B              | 50       | 10.8  |
