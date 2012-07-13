@@ -10,27 +10,24 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-public class PegOrderTest extends BaseReactiveTest
-{
-    private void buyOrders(MatchingUnit matchingUnit)
-    {
+public class PegOrderTest extends BaseReactiveTest {
+    private void buyOrders(MatchingUnit matchingUnit) {
         matchingUnit.newOrder(Order.OrderSide.Buy, "A", 200, new OrderPrice(OrderType.Limit, 10.5D));
         matchingUnit.newOrder(Order.OrderSide.Buy, "B", 150, new OrderPrice(OrderType.Peg, 10.5D));
         matchingUnit.newOrder(Order.OrderSide.Buy, "B", 70, new OrderPrice(OrderType.Peg, 10.5D));
         matchingUnit.newOrder(Order.OrderSide.Buy, "B", 125, new OrderPrice(OrderType.Limit, 10.5D));
     }
 
-    private void sellOrders(MatchingUnit matchingUnit)
-    {
+    private void sellOrders(MatchingUnit matchingUnit) {
         matchingUnit.newOrder(Order.OrderSide.Sell, "C", 130, new OrderPrice(OrderType.Limit, 10.9D));
         matchingUnit.newOrder(Order.OrderSide.Sell, "C", 350, new OrderPrice(OrderType.Limit, 10.9D));
         matchingUnit.newOrder(Order.OrderSide.Sell, "D", 275, new OrderPrice(OrderType.Limit, 11D));
     }
 
     @Test
-    public void example1Step1Test()
-    {
+    public void example1Step1Test() {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
@@ -41,8 +38,7 @@ public class PegOrderTest extends BaseReactiveTest
     }
 
     @Test
-    public void example1Step2Test()
-    {
+    public void example1Step2Test() {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
@@ -66,10 +62,10 @@ public class PegOrderTest extends BaseReactiveTest
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
             public void invoke(Trade value) {
-                assert value.getPrice() == 10.9;
-                assert value.getSellBroker() == "C";
-                assert value.getBuyBroker() == "G";
-                assert value.getQuantity() == 100;
+                assertThat(value.getPrice(), is(10.9));
+                assertThat(value.getSellBroker(), is("C"));
+                assertThat(value.getBuyBroker(), is("G"));
+                assertThat(value.getQuantity(), is(100));
                 incTradeCount();
             }
         }));
