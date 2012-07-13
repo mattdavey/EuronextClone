@@ -12,7 +12,6 @@ Feature: Pegged orders with limit
     And remaining buy order book depth is 0
     And remaining sell order book depth is 0
 
-  @focus
   Scenario: New Buy And Sell Order
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type   | Price | Limit |
@@ -27,7 +26,6 @@ Feature: Pegged orders with limit
     Then remaining buy order book depth is 5
     And remaining sell order book depth is 3
 
-  @focus
   Scenario: New Sell Order Test
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type   | Price | Limit |

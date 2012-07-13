@@ -23,7 +23,9 @@ public class ContinuousMatchingStepDefinitions {
         List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
         for (OrderRow orderRow : orderRows) {
 
-            if (orderRow.limit == null) {
+            if (orderRow.price == null && orderRow.limit == null) {
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType));
+            } else if (orderRow.limit == null) {
                 matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price));
             } else {
                 matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price, orderRow.limit));
@@ -84,7 +86,7 @@ public class ContinuousMatchingStepDefinitions {
         private Order.OrderSide side;
         private int quantity;
         private OrderType orderType;
-        private double price;
+        private Double price;
         private Double limit;
     }
 
