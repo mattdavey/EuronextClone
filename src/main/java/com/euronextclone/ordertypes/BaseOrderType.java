@@ -1,14 +1,14 @@
 package com.euronextclone.ordertypes;
 
 public abstract class BaseOrderType
-    implements OrderType
+    implements OrderType2
 {
 
     public BaseOrderType()
     {
     }
 
-    public int compareTo(OrderType orderTypePassed)
+    public int compareTo(OrderType2 orderTypePassed)
     {
         int BEFORE = -1;
         int EQUAL = 0;
@@ -24,6 +24,6 @@ public abstract class BaseOrderType
 
     public int compareTo(Object x0)
     {
-        return compareTo((OrderType)x0);
+        return compareTo((OrderType2)x0);
     }
 }

@@ -1,8 +1,6 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.Limit;
-import com.euronextclone.ordertypes.MarketOrder;
-import com.euronextclone.ordertypes.MarketToLimit;
+import com.euronextclone.ordertypes.OrderType;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -229,12 +227,12 @@ public class AuctionMatchingStepDefinitions {
 
         private static OrderPrice parseOrderPrice(String price) {
             if ("MTL".equals(price)) {
-                return new OrderPrice(MarketToLimit.INSTANCE);
+                return new OrderPrice(OrderType.MarketToLimit);
             }
             if ("MO".equals(price)) {
-                return new OrderPrice(MarketOrder.INSTANCE);
+                return new OrderPrice(OrderType.MarketOrder);
             }
-            return new OrderPrice(Limit.INSTANCE, Double.parseDouble(price));
+            return new OrderPrice(OrderType.Limit, Double.parseDouble(price));
         }
     }
 

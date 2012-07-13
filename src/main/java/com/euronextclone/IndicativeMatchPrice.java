@@ -1,13 +1,13 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.OrderType;
 
 public class IndicativeMatchPrice {
     private OrderPrice price;
     private int quantity;
 
     public IndicativeMatchPrice(final Order.OrderSide side) {
-        price = new OrderPrice(new Limit());
+        price = new OrderPrice(OrderType.Limit);
     }
 
     public void reset() {

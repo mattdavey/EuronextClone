@@ -1,99 +1,91 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.Limit;
 import com.euronextclone.ordertypes.OrderType;
 
-public class OrderPrice implements Comparable
-{
-    public OrderPrice(final OrderType orderType)
-    {
+public class OrderPrice implements Comparable {
+    public OrderPrice(final OrderType orderType) {
         this.orderType = orderType;
     }
 
-    public OrderPrice(final OrderType orderType, final double price)
-    {
+    public OrderPrice(final OrderType orderType, final double price) {
         this(orderType);
         update(price);
     }
 
-    public OrderPrice(final OrderType orderType, final double price, final double limit)
-    {
+    public OrderPrice(final OrderType orderType, final double price, final double limit) {
         this(orderType, price);
         this.limit = limit;
     }
 
     public void convertToLimit(final double value) {
-        this.orderType = Limit.INSTANCE;
+        this.orderType = OrderType.Limit;
         this.price = value;
     }
 
-    public void updateToLimitOrder(final double value)
-    {
+    public void updateToLimitOrder(final double value) {
         price = value;
-        orderType = Limit.INSTANCE;
+        orderType = OrderType.Limit;
     }
 
-    public void update(final double value)
-    {
+    public void update(final double value) {
         price = value;
     }
 
-    public OrderType getOrderType()
-    {
+    public OrderType getOrderType() {
         return orderType;
     }
 
-    public double getLimit()
-    {
+    public double getLimit() {
         return limit;
     }
 
-    public boolean hasPrice()
-    {
+    public boolean hasPrice() {
         return price != Double.MAX_VALUE;
     }
 
-    public boolean hasLimit()
-    {
+    public boolean hasLimit() {
         return limit != Double.MAX_VALUE;
     }
 
-    public double value()
-    {
+    public double value() {
         return price;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return orderType.format(price, limit);
     }
 
-    public boolean updateBestLimit(final OrderPrice bestLimit)
-    {
+    public boolean updateBestLimit(final OrderPrice bestLimit) {
         return orderType.markToBestLimit(this, bestLimit);
     }
 
-    public int compareTo(final OrderPrice passedOrderPrice)
-    {
-        int orderTypeCompare = orderType.compareTo(passedOrderPrice.getOrderType());
-        if(orderTypeCompare == 0)
-        {
-            if(hasPrice() && passedOrderPrice.hasPrice())
-            {
-                if(value() < passedOrderPrice.value())
+    public int compareTo(final OrderPrice passedOrderPrice) {
+        int orderTypeCompare = compareTo(passedOrderPrice.getOrderType());
+        if (orderTypeCompare == 0) {
+            if (hasPrice() && passedOrderPrice.hasPrice()) {
+                if (value() < passedOrderPrice.value())
                     return -1;
                 return value() <= passedOrderPrice.value() ? 0 : 1;
             }
             return !hasPrice() ? 1 : -1;
-        } else
-        {
+        } else {
             return orderTypeCompare;
         }
     }
 
-    public int compareTo(Object x0)
-    {
-        return compareTo((OrderPrice)x0);
+    public int compareTo(Object x0) {
+        return compareTo((OrderPrice) x0);
+    }
+
+    private int compareTo(OrderType orderTypePassed) {
+        int BEFORE = -1;
+        int EQUAL = 0;
+        int AFTER = 1;
+        if (orderType == orderTypePassed)
+            return 0;
+        if (orderType.canBeTopOfBook() && !orderTypePassed.canBeTopOfBook())
+            return 1;
+        return !orderTypePassed.canBeTopOfBook() || orderType.canBeTopOfBook() ? 0 : -1;
     }
 
     private double price = Double.MAX_VALUE;

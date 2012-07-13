@@ -1,6 +1,6 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.MarketToLimit;
+import com.euronextclone.ordertypes.OrderType;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -66,7 +66,7 @@ public class OrderBook implements Observable<Trade>
             if (order.getQuantity() < newOrder.getQuantity())
             {
                 rebalance.add(order);
-                if (!newOrder.getPrice().hasPrice() && newOrder.getPrice().getOrderType() instanceof MarketToLimit)
+                if (!newOrder.getPrice().hasPrice() && newOrder.getPrice().getOrderType() == OrderType.MarketToLimit)
                     newOrder.getPrice().updateToLimitOrder(bestLimit.getOrderPrice().value());
 
                 generateTrade(newOrder, order, order.getQuantity());
