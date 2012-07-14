@@ -41,9 +41,9 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     public void auction() {
-        if (!buyOrderBook.getOrders().isEmpty()) {
-            if(!tryMatchOrder(buyOrderBook.getOrders().get(0))) {
-//                break;
+        while (!buyOrderBook.getOrders().isEmpty()) {
+            if (!tryMatchOrder(buyOrderBook.getOrders().get(0))) {
+                break;
             }
         }
     }
@@ -73,12 +73,13 @@ public class MatchingUnit implements Observable<Trade> {
 
         final Order.OrderSide side = order.getSide();
         final OrderBook book = getBook(side);
+        final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
         if (!counterBook.match(order, currentContinuousTradingProcess)) {
             book.remove(order);
         }
-        return true;
+        return startQuantity != order.getQuantity();
     }
 
     private OrderBook add(final Order.OrderSide side, final Order order) {
