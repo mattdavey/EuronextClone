@@ -164,5 +164,17 @@ public class MatchingUnitStepDefinitions {
             result = 31 * result + (limit != null ? limit.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "OrderRow{" +
+                    "broker='" + broker + '\'' +
+                    ", side=" + side +
+                    ", quantity=" + quantity +
+                    ", orderType=" + orderType +
+                    ", price=" + price +
+                    ", limit=" + limit +
+                    '}';
+        }
     }
 }

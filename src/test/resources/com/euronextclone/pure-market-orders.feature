@@ -1,6 +1,5 @@
 Feature: Pure market orders
 
-  @focus
   Scenario: Market buy order fully matches with best limit order
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type  | Price |
