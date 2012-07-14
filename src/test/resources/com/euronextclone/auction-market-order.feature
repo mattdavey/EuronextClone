@@ -23,7 +23,7 @@ Feature: Auction Phase Matching Rules
       | A             | B              | 30       | 10    |
 
   @focus
-  Scenario: Simple multi trade full match on offsetting orders
+  Scenario: Simple multi trade full match on offsetting orders (multiple fills due to to sell side)
     Given the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
       | A          | 1           | 30           | 10        | 10        | 20           | 2           | B          |
@@ -33,6 +33,18 @@ Feature: Auction Phase Matching Rules
       | Buying Broker | Selling Broker | Quantity | Price |
       | A             | B              | 20       | 10    |
       | A             | C              | 10       | 10    |
+
+  @focus
+  Scenario: Simple multi trade full match on offsetting orders (multiple fills due to to buy side)
+    Given the following orders submitted to the book:
+      | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
+      | A          | 1           | 30           | 10        | 10        | 80           | 3           | C          |
+      | B          | 2           | 50           | 10        |           |              |             |            |
+    When class auction completes
+    Then the following trades are generated:
+      | Buying Broker | Selling Broker | Quantity | Price |
+      | A             | C              | 30       | 10    |
+      | B             | C              | 50       | 10    |
 
   Scenario: the market order is totally filled
     Given that reference price is 10.0
