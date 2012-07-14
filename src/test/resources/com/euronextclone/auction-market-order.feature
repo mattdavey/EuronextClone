@@ -1,4 +1,27 @@
-Feature: Market Price Matching Rules
+Feature: Auction Phase Matching Rules
+
+  Background: Given that market is in pre-opening phase
+
+  @focus
+  Scenario: Simplest full match on offsetting limit orders
+    Given the following orders submitted to the book:
+      | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
+      | A          | 1           | 50           | 10        | 10        | 50           | 2           | B          |
+    When class auction completes
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | B              | 50       | 10    |
+
+  @focus
+  Scenario: Simplest partial match on offsetting limit orders
+    Given the following orders submitted to the book:
+      | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
+      | A          | 1           | 30           | 10        | 10        | 50           | 2           | B          |
+    When class auction completes
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | B              | 30       | 10    |
+
   Scenario: the market order is totally filled
     Given that reference price is 10.0
     And the following orders submitted to the book:
@@ -32,4 +55,4 @@ Feature: Market Price Matching Rules
       | G             | D              | 5        | 10    |
     And the book looks like:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
-      | G          | 3           | 15           |  MO       |           |              |             |            |
+      | G          | 3           | 15           | MO        |           |              |             |            |

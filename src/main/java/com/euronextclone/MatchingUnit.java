@@ -9,20 +9,22 @@ import hu.akarnokd.reactive4java.reactive.Reactive;
 import java.io.Closeable;
 import java.util.List;
 
-public class MatchingUnit implements Observable<Trade>
-{
-    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading };
+public class MatchingUnit implements Observable<Trade> {
+    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
+
+    ;
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private double imp = Double.MIN_VALUE;
     private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
 
-    /** The observable helper. */
+    /**
+     * The observable helper.
+     */
     private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
-    public MatchingUnit()
-    {
+    public MatchingUnit() {
         buyOrderBook = new OrderBook(Order.OrderSide.Buy);
         sellOrderBook = new OrderBook(Order.OrderSide.Sell);
 
@@ -39,7 +41,11 @@ public class MatchingUnit implements Observable<Trade>
     }
 
     public void auction() {
-        // TODO: match everything you can from the books
+        if (!buyOrderBook.getOrders().isEmpty()) {
+            if(!tryMatchOrder(buyOrderBook.getOrders().get(0))) {
+//                break;
+            }
+        }
     }
 
     public List<Order> getOrders(final Order.OrderSide side) {
@@ -51,18 +57,28 @@ public class MatchingUnit implements Observable<Trade>
         book.add(new Order(broker, quantity, price, side));
     }
 
-    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price)
-    {
+    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
         final Order order = new Order(broker, quantity, price, side);
         final OrderBook orderBook = add(side, order);
 
         if (currentContinuousTradingProcess != ContinuousTradingProcess.PreOpeningPhase) {
             final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
-                if (!matchOrderBook.match(order, currentContinuousTradingProcess))
-                {
-                    orderBook.remove(order);
-                }
+            if (!matchOrderBook.match(order, currentContinuousTradingProcess)) {
+                orderBook.remove(order);
             }
+        }
+    }
+
+    private boolean tryMatchOrder(Order order) {
+
+        final Order.OrderSide side = order.getSide();
+        final OrderBook book = getBook(side);
+        final OrderBook counterBook = getCounterBook(side);
+
+        if (!counterBook.match(order, currentContinuousTradingProcess)) {
+            book.remove(order);
+        }
+        return true;
     }
 
     private OrderBook add(final Order.OrderSide side, final Order order) {
@@ -92,19 +108,16 @@ public class MatchingUnit implements Observable<Trade>
         }
     }
 
-    public int orderBookDepth(final Order.OrderSide side)
-    {
+    public int orderBookDepth(final Order.OrderSide side) {
         final OrderBook orders = getBook(side);
         return orders.orderBookDepth();
     }
 
-    public String getBestLimit(final Order.OrderSide side)
-    {
+    public String getBestLimit(final Order.OrderSide side) {
         return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit().toString() : buyOrderBook.getBestLimit().toString();
     }
 
-    public void dump()
-    {
+    public void dump() {
         System.out.println();
         System.out.println("Buy Book:");
         buyOrderBook.dump();
@@ -119,5 +132,9 @@ public class MatchingUnit implements Observable<Trade>
 
     private OrderBook getBook(final Order.OrderSide side) {
         return side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
+    }
+
+    private OrderBook getCounterBook(final Order.OrderSide side) {
+        return side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
     }
 }
