@@ -2,7 +2,6 @@ Feature: Auction Phase Matching Rules
 
   Background: Given that market is in pre-opening phase
 
-  @focus
   Scenario: Simplest single trade full match on offsetting limit orders
     Given the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
@@ -12,7 +11,6 @@ Feature: Auction Phase Matching Rules
       | Buying broker | Selling broker | Quantity | Price |
       | A             | B              | 50       | 10    |
 
-  @focus
   Scenario: Simplest single trade partial match on offsetting limit orders
     Given the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
@@ -22,7 +20,6 @@ Feature: Auction Phase Matching Rules
       | Buying broker | Selling broker | Quantity | Price |
       | A             | B              | 30       | 10    |
 
-  @focus
   Scenario: Simple multi trade full match on offsetting orders (multiple fills due to to sell side)
     Given the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
@@ -34,7 +31,6 @@ Feature: Auction Phase Matching Rules
       | A             | B              | 20       | 10    |
       | A             | C              | 10       | 10    |
 
-  @focus
   Scenario: Simple multi trade full match on offsetting orders (multiple fills due to to buy side)
     Given the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
