@@ -1,6 +1,5 @@
 Feature: Basic order book construction
 
-  @focus
   Scenario: Limit buy orders are sorted from high to low
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price |
@@ -15,7 +14,6 @@ Feature: Basic order book construction
       | A      | Buy  | 100      | Limit      | 10.2  |
       | C      | Buy  | 100      | Limit      | 10.1  |
 
-  @focus
   Scenario: Limit sell orders are sorted from low to high
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price |
@@ -30,7 +28,6 @@ Feature: Basic order book construction
       | B      | Sell | 100      | Limit      | 10.3  |
       | D      | Sell | 100      | Limit      | 10.5  |
 
-  @focus
   Scenario: Equal limit orders are sorted by their arrival
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price |
@@ -46,3 +43,24 @@ Feature: Basic order book construction
       | Broker | Side | Quantity | Order Type | Price |
       | C      | Sell | 100      | Limit      | 10.3  |
       | D      | Sell | 100      | Limit      | 10.3  |
+
+  Scenario: Buy market prices are sorted by their arrival
+    Given the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | A      | Buy  | 100      | MarketOrder |       |
+      | B      | Buy  | 100      | MarketOrder |       |
+    Then "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | A      | Buy  | 100      | MarketOrder |       |
+      | B      | Buy  | 100      | MarketOrder |       |
+
+  @focus
+  Scenario: Sell market prices are sorted by their arrival
+    Given the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Sell | 100      | MarketOrder |       |
+      | D      | Sell | 100      | MarketOrder |       |
+    Then "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Sell | 100      | MarketOrder |       |
+      | D      | Sell | 100      | MarketOrder |       |

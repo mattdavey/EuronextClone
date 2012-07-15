@@ -57,15 +57,19 @@ public class OrderPrice implements Comparable {
         return orderType.markToBestLimit(this, bestLimit);
     }
 
-    public int compareTo(final OrderPrice passedOrderPrice) {
-        int orderTypeCompare = compareOrderTypes(orderType, passedOrderPrice.getOrderType());
+    public int compareTo(final OrderPrice other) {
+        int orderTypeCompare = compareOrderTypes(orderType, other.getOrderType());
         if (orderTypeCompare == 0) {
-            if (hasPrice() && passedOrderPrice.hasPrice()) {
-                if (value() < passedOrderPrice.value())
+            if (this.hasPrice() && other.hasPrice()) {
+                if (this.value() < other.value())
                     return -1;
-                return value() <= passedOrderPrice.value() ? 0 : 1;
+                return this.value() <= other.value() ? 0 : 1;
             }
-            return !hasPrice() ? 1 : -1;
+
+            if (!this.hasPrice() && !other.hasPrice()) {
+                return orderTypeCompare;
+            }
+            return !this.hasPrice() ? 1 : -1;
         } else {
             return orderTypeCompare;
         }
