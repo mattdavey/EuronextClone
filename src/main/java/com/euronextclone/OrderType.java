@@ -1,100 +1,37 @@
 package com.euronextclone;
 
-import com.euronextclone.OrderPrice;
-
 public enum OrderType {
 
     Limit {
         @Override
-        public String format(double price, double limit) {
-            return Double.toString(price).replace('.', ',');
-        }
-
-        @Override
-        public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit) {
-            return false;
-        }
-
-        @Override
-        public boolean canBeTopOfBook() {
-            return true;
+        public String format(double limit) {
+            return Double.toString(limit).replace('.', ',');
         }
     },
 
     MarketOrder {
         @Override
-        public String format(double price, double limit) {
+        public String format(double limit) {
             return "MO";
-        }
-
-        @Override
-        public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit) {
-            return false;
-        }
-
-        @Override
-        public boolean canBeTopOfBook() {
-            return true;
         }
     },
 
     MarketToLimit {
         @Override
-        public String format(double price, double limit) {
+        public String format(double limit) {
             return "MTL";
-        }
-
-        @Override
-        public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit) {
-            return false;
-        }
-
-        @Override
-        public boolean canBeTopOfBook() {
-            return true;
         }
     },
 
     Peg {
         @Override
-        public String format(double price, double limit) {
-            return String.format("PEG (%s)", Double.toString(price).replace('.', ','));
-        }
-
-        @Override
-        public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit) {
-            orderPrice.update(bestLimit.value());
-            return true;
-        }
-
-        @Override
-        public boolean canBeTopOfBook() {
-            return false;
-        }
-    },
-
-    PegWithLimit {
-        @Override
-        public String format(double price, double limit) {
-            return String.format("PEG (%s)[%s]", Double.toString(price).replace('.', ','), Double.toString(limit).replace('.', ','));
-        }
-
-        @Override
-        public boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit) {
-            double newVal = bestLimit.value() <= orderPrice.getLimit() ? bestLimit.value() : orderPrice.getLimit();
-            orderPrice.update(newVal);
-            return true;
-        }
-
-        @Override
-        public boolean canBeTopOfBook() {
-            return false;
+        public String format(double limit) {
+            if (limit != Double.MAX_VALUE)
+                return String.format("PEG [%s]", Double.toString(limit).replace('.', ','));
+            else
+                return "PEG";
         }
     };
 
-    public abstract String format(double price, double limit);
-
-    public abstract boolean markToBestLimit(OrderPrice orderPrice, OrderPrice bestLimit);
-
-    public abstract boolean canBeTopOfBook();
+    public abstract String format(double limit);
 }

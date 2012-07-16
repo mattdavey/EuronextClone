@@ -124,14 +124,14 @@ public class MatchingUnitStepDefinitions {
         public static Function<? super Order, OrderRow> FROM_Order = new Function<Order, OrderRow>() {
             @Override
             public OrderRow apply(@Nullable Order order) {
-                final OrderPrice orderPrice = order.getPrice();
+                final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
                 final OrderRow orderRow = new OrderRow();
 
                 orderRow.broker = order.getBroker();
                 orderRow.side = order.getSide();
-                orderRow.price = orderPrice.hasPrice()? orderPrice.value() : null;
-                orderRow.limit = orderPrice.hasLimit()? orderPrice.getLimit() : null;
-                orderRow.orderType = orderPrice.getOrderType();
+//                orderRow.price = orderTypeLimit.hasPrice()? orderTypeLimit.value() : null;
+                orderRow.limit = orderTypeLimit.hasLimit()? orderTypeLimit.getLimit() : null;
+                orderRow.orderType = orderTypeLimit.getOrderType();
                 orderRow.quantity = order.getQuantity();
                 return orderRow;
             }

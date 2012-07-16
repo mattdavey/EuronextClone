@@ -13,15 +13,12 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class PegOrderLimitFillTradeTest extends BaseReactiveTest {
-    private void buyOrders(MatchingUnit matchingUnit) {
-        matchingUnit.newOrder(Order.OrderSide.Buy, "A", 200, new OrderPrice(OrderType.Limit, 11.5D));
-        matchingUnit.newOrder(Order.OrderSide.Buy, "B", 150, new OrderPrice(OrderType.PegWithLimit, 11.5D, 11.6D));
-    }
 
     @Test
     public void newPEGLimitOrderTest() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        buyOrders(matchingUnit);
+        matchingUnit.newOrder(Order.OrderSide.Buy, "A", 200, new OrderTypeLimit(OrderType.Limit, 11.5D));
+        matchingUnit.newOrder(Order.OrderSide.Buy, "B", 150, new OrderTypeLimit(OrderType.Peg, 11.6D));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -34,7 +31,8 @@ public class PegOrderLimitFillTradeTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.newOrder(Order.OrderSide.Sell, "C", 200, new OrderPrice(OrderType.Limit, 11.5D));
+        matchingUnit.dump();
+        matchingUnit.newOrder(Order.OrderSide.Sell, "C", 200, new OrderTypeLimit(OrderType.Limit, 11.5D));
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(1));

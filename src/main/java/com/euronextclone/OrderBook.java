@@ -24,7 +24,7 @@ public class OrderBook implements Observable<Trade>
         bestLimit = new IndicativeMatchPrice(side);
     }
 
-    public OrderPrice getBestLimit()
+    public OrderTypeLimit getBestLimit()
     {
         return bestLimit.getOrderPrice();
     }
@@ -35,30 +35,34 @@ public class OrderBook implements Observable<Trade>
 
         for (final Order order : orders)
         {
-            if (order.getPrice().hasPrice() && newOrder.getPrice().hasPrice() &&
-                    order.getPrice().value() != newOrder.getPrice().value())
-                continue;
+            if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
+                if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
+                        newOrder.getPartlyFilled() &&
+                        order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
+                    // Rule 1 of Pure Market Order continuous trading
+                } else
+                    continue;
+            }
 
             if (order.getQuantity() == newOrder.getQuantity())
             {
                 orders.remove(order);
-                generateTrade(newOrder, order, order.getQuantity(), newOrder.getPrice().value());
+                generateTrade(newOrder, order, order.getQuantity(), newOrder.getOrderTypeLimit().getLimit());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
 
             if (order.getQuantity() > newOrder.getQuantity())
             {
-                if (!order.getPrice().hasPrice()) {
-                    order.getPrice().convertToLimit(newOrder.getPrice().value());
+                if (!order.getOrderTypeLimit().hasLimit()) {
+                    order.getOrderTypeLimit().convertToLimit(newOrder.getOrderTypeLimit().getLimit());
                 }
 
                 order.decrementQuantity(newOrder.getQuantity());
-                if (!newOrder.getPrice().hasPrice() && !order.getPrice().hasPrice()) {
-                    newOrder.getPrice().update(bestLimit.getOrderPrice().value());
-                    generateTrade(newOrder, order, newOrder.getQuantity(), newOrder.getPrice().value());
+                if (!newOrder.getOrderTypeLimit().hasLimit() && !order.getOrderTypeLimit().hasLimit()) {
+                    generateTrade(newOrder, order, newOrder.getQuantity(), newOrder.getOrderTypeLimit().getLimit());
                 } else {
-                    generateTrade(newOrder, order, newOrder.getQuantity(), order.getPrice().value());
+                    generateTrade(newOrder, order, newOrder.getQuantity(), order.getOrderTypeLimit().getLimit());
                 }
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
@@ -67,20 +71,19 @@ public class OrderBook implements Observable<Trade>
             if (order.getQuantity() < newOrder.getQuantity())
             {
                 rebalance.add(order);
-                if (!newOrder.getPrice().hasPrice() && newOrder.getPrice().getOrderType() == OrderType.MarketToLimit)
-                    newOrder.getPrice().updateToLimitOrder(bestLimit.getOrderPrice().value());
+                if (!newOrder.getOrderTypeLimit().hasLimit() && newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit)
+                    newOrder.getOrderTypeLimit().updateToLimitOrder(bestLimit.getOrderPrice().getLimit());
 
-                generateTrade(newOrder, order, order.getQuantity(), order.getPrice().value());
-
-
+                generateTrade(newOrder, order, order.getQuantity(), order.getOrderTypeLimit().getLimit());
                 newOrder.decrementQuantity(order.getQuantity());
+                order.decrementQuantity(order.getQuantity());
             }
         }
 
         if(rebalance.size() > 0)
             orders.removeAll(rebalance);
 
-        updatePegOrders();
+        validatePegOrderPositions();
         return newOrder.getQuantity() != 0;
     }
 
@@ -94,22 +97,13 @@ public class OrderBook implements Observable<Trade>
 
     public void remove(Order order) {
         orders.remove(order);
-        updatePegOrders();
+        validatePegOrderPositions();
     }
 
     public void add(final Order order)
     {
         placeOrderInBook(order);
-
-        // First order in book
-//        if (order.getPrice().getOrderType() instanceof MarketToLimit) {
-//            if (!bestLimit.getOrderPrice().hasPrice() && order.getPrice().hasPrice()) {
-//                bestLimit.getOrderPrice().update(order.getPrice().value());
-//                return;
-//            }
-//        }
-
-        updatePegOrders();
+        validatePegOrderPositions();
     }
 
     private void placeOrderInBook(final Order newOrder)
@@ -117,69 +111,73 @@ public class OrderBook implements Observable<Trade>
         int count = 0;
         for (final Order order : orders)
         {
-            int comparePrice = order.getPrice().compareTo(newOrder.getPrice());
-            if(bookSide == Order.OrderSide.Buy && comparePrice < 0 || bookSide == Order.OrderSide.Sell && comparePrice > 0)
+            if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.Peg && 0 == count) {
+                count++;
+                continue;
+            }
+
+            final int compare = order.compareTo(newOrder, bestLimit);
+            if (bookSide == Order.OrderSide.Buy && compare < 0 || bookSide == Order.OrderSide.Sell && compare < 0) {
                 break;
+            }
+
             count++;
         }
 
         orders.add(count, newOrder);
     }
 
-    private void updatePegOrders()
+    private void validatePegOrderPositions()
     {
         if(orders.size() == 0)
             return;
 
-        validateBook();
+        calculateBestLimit();
 
-        final ArrayList<Order> rebalance = new ArrayList<Order>();
+        boolean rerun = true;
+        while (!rerun) {
+            rerun = false;
+            Order last = null;
+            for (Order order : orders)
+            {
+                if (last == null)
+                {
+                    last = order;
+                    continue;
+                }
 
-        for (Order order : orders)
-        {
-            if(order.getPrice().updateBestLimit(bestLimit.getOrderPrice()))
-                rebalance.add(order);
+                if (last.compareTo(order, this.getIMP()) < 0) {
+                    orders.remove(order);
+                    add(order);
+                    rerun = true;
+                    break;
+                }
+
+                last = order;
+            }
         }
 
-        if(rebalance.size() > 0)
-        {
-            orders.removeAll(rebalance);
-            add(rebalance);
-        }
+        // Cheat if the order book only has a PEG left
+        if (orders.size() == 1 && orders.get(0).getOrderTypeLimit().getOrderType() == OrderType.Peg)
+            orders.clear();
+
     }
 
-    private void validateBook()
+    private void calculateBestLimit()
     {
         if (orders.size() == 0)
             return;
 
         bestLimit.reset();
 
-        if (!(orders.get(0)).getPrice().getOrderType().canBeTopOfBook())
+        // Order book should be good, just reset best
+        for (final Order order : orders)
         {
-            for (final Order order : orders)
+            if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0)
             {
+                bestLimit.getOrderPrice().updateToLimitOrder(order.getOrderTypeLimit().getLimit());
                 bestLimit.addQuantity(order.getQuantity());
-                if(order.getPrice().getOrderType().canBeTopOfBook())
-                {
-                    bestLimit.getOrderPrice().update(order.getPrice().value());
-                    orders.remove(order);
-                    orders.add(0, order);
-                    break;
-                }
-            }
-
-            orders.clear();
-        } else {
-            // Order book should be good, just reset best
-            for (final Order order : orders)
-            {
-                if (order.getPrice().hasPrice())
-                {
-                    bestLimit.getOrderPrice().update(order.getPrice().value());
-                    bestLimit.addQuantity(order.getQuantity());
-                    break;
-                }
+                break;
             }
         }
     }

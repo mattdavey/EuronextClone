@@ -16,8 +16,8 @@ public class PureMarketOrderTest extends BaseReactiveTest {
     @Test
     public void tradingSessionExample1() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        matchingUnit.newOrder(Order.OrderSide.Sell, "A", 100, new OrderPrice(OrderType.Limit, 10.2));
-        matchingUnit.newOrder(Order.OrderSide.Sell, "B", 60, new OrderPrice(OrderType.Limit, 10.3));
+        matchingUnit.newOrder(Order.OrderSide.Sell, "A", 100, new OrderTypeLimit(OrderType.Limit, 10.2));
+        matchingUnit.newOrder(Order.OrderSide.Sell, "B", 60, new OrderTypeLimit(OrderType.Limit, 10.3));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -42,7 +42,7 @@ public class PureMarketOrderTest extends BaseReactiveTest {
         }));
 
         matchingUnit.dump();
-        matchingUnit.newOrder(Order.OrderSide.Buy, "C", 110, new OrderPrice(OrderType.MarketOrder));
+        matchingUnit.newOrder(Order.OrderSide.Buy, "C", 110, new OrderTypeLimit(OrderType.MarketOrder));
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));
@@ -53,8 +53,8 @@ public class PureMarketOrderTest extends BaseReactiveTest {
     @Test
     public void tradingSessionExample2() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        matchingUnit.newOrder(Order.OrderSide.Sell, "A", 100, new OrderPrice(OrderType.Limit, 10.2));
-        matchingUnit.newOrder(Order.OrderSide.Sell, "B", 60, new OrderPrice(OrderType.Limit, 10.3));
+        matchingUnit.newOrder(Order.OrderSide.Sell, "A", 100, new OrderTypeLimit(OrderType.Limit, 10.2));
+        matchingUnit.newOrder(Order.OrderSide.Sell, "B", 60, new OrderTypeLimit(OrderType.Limit, 10.3));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -78,7 +78,7 @@ public class PureMarketOrderTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.newOrder(Order.OrderSide.Buy, "C", 200, new OrderPrice(OrderType.MarketOrder));
+        matchingUnit.newOrder(Order.OrderSide.Buy, "C", 200, new OrderTypeLimit(OrderType.MarketOrder));
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));

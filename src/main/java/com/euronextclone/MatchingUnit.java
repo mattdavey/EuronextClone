@@ -52,13 +52,13 @@ public class MatchingUnit implements Observable<Trade> {
         return getBook(side).getOrders();
     }
 
-    public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
+    public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
         final OrderBook book = getBook(side);
-        book.add(new Order(broker, quantity, price, side));
+        book.add(new Order(broker, quantity, orderTypeLimit, side));
     }
 
-    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderPrice price) {
-        final Order order = new Order(broker, quantity, price, side);
+    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
+        final Order order = new Order(broker, quantity, orderTypeLimit, side);
         final OrderBook orderBook = add(side, order);
 
         if (currentContinuousTradingProcess != ContinuousTradingProcess.PreOpeningPhase) {
@@ -69,13 +69,13 @@ public class MatchingUnit implements Observable<Trade> {
         }
     }
 
-    private boolean tryMatchOrder(Order order) {
-
+    private boolean tryMatchOrder(final Order order) {
         final Order.OrderSide side = order.getSide();
         final OrderBook book = getBook(side);
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
+        dump();
         if (!counterBook.match(order, currentContinuousTradingProcess)) {
             book.remove(order);
         }
@@ -96,16 +96,16 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private void calcIndicativeMatchPrice() {
-        if (buyOrderBook.getIMP().getOrderPrice().hasPrice() && sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
+        if (buyOrderBook.getIMP().getOrderPrice().hasLimit() && sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
             if (buyOrderBook.getIMP().getQuantity() > sellOrderBook.getIMP().getQuantity()) {
-                imp = buyOrderBook.getIMP().getOrderPrice().value();
+                imp = buyOrderBook.getIMP().getOrderPrice().getLimit();
             } else {
-                imp = sellOrderBook.getIMP().getOrderPrice().value();
+                imp = sellOrderBook.getIMP().getOrderPrice().getLimit();
             }
-        } else if (!buyOrderBook.getIMP().getOrderPrice().hasPrice() && sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
-            imp = sellOrderBook.getIMP().getOrderPrice().value();
-        } else if (buyOrderBook.getIMP().getOrderPrice().hasPrice() && !sellOrderBook.getIMP().getOrderPrice().hasPrice()) {
-            imp = buyOrderBook.getIMP().getOrderPrice().value();
+        } else if (!buyOrderBook.getIMP().getOrderPrice().hasLimit() && sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
+            imp = sellOrderBook.getIMP().getOrderPrice().getLimit();
+        } else if (buyOrderBook.getIMP().getOrderPrice().hasLimit() && !sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
+            imp = buyOrderBook.getIMP().getOrderPrice().getLimit();
         }
     }
 

@@ -24,11 +24,11 @@ public class ContinuousMatchingStepDefinitions {
         for (OrderRow orderRow : orderRows) {
 
             if (orderRow.price == null && orderRow.limit == null) {
-                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType));
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType));
             } else if (orderRow.limit == null) {
-                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price));
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType));
             } else {
-                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderPrice(orderRow.orderType, orderRow.price, orderRow.limit));
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType, orderRow.limit));
             }
         }
     }
@@ -45,28 +45,28 @@ public class ContinuousMatchingStepDefinitions {
     @Given("^the MTL buy order from broker \"([^\"]*)\" for (\\d+) shares$")
     public void the_MTL_buy_order_from_broker_for_shares(String broker, int quantity) throws Throwable {
 
-        matchingUnit.newOrder(Order.OrderSide.Buy, broker, quantity, new OrderPrice(OrderType.MarketToLimit));
+        matchingUnit.newOrder(Order.OrderSide.Buy, broker, quantity, new OrderTypeLimit(OrderType.MarketToLimit));
     }
 
     @Given("^the MTL sell order from broker \"([^\"]*)\" for (\\d+) shares$")
     public void the_MTL_sell_order_from_broker_for_shares(String broker, int quantity) throws Throwable {
 
-        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderPrice(OrderType.MarketOrder));
+        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderTypeLimit(OrderType.MarketOrder));
     }
 
     @Given("^the MO buy order from broker \"([^\"]*)\" for (\\d+) shares$")
     public void the_MO_buy_order_from_broker_for_shares(String broker, int quantity) throws Throwable {
-        matchingUnit.newOrder(Order.OrderSide.Buy, broker, quantity, new OrderPrice(OrderType.MarketOrder));
+        matchingUnit.newOrder(Order.OrderSide.Buy, broker, quantity, new OrderTypeLimit(OrderType.MarketOrder));
     }
 
     @Given("^the Limit sell order from broker \"([^\"]*)\" for (\\d+) shares at ([0-9]*\\.?[0-9]+) price$")
     public void the_Limit_sell_order_from_broker_for_shares(String broker, int quantity, double price) throws Throwable {
-        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderPrice(OrderType.Limit, price));
+        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderTypeLimit(OrderType.Limit, price));
     }
 
     @Given("^the Limit buy order from broker \"([^\"]*)\" for (\\d+) shares at ([0-9]*\\.?[0-9]+) price$")
     public void the_Limit_buy_order_from_broker_for_shares(String broker, int quantity, double price) throws Throwable {
-        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderPrice(OrderType.Limit, price));
+        matchingUnit.newOrder(Order.OrderSide.Sell, broker, quantity, new OrderTypeLimit(OrderType.Limit, price));
     }
 
     @Then("^remaining buy order book depth is (\\d+)$")

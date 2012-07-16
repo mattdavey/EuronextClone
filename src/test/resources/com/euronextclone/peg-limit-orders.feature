@@ -4,7 +4,7 @@ Feature: Pegged orders with limit
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type   | Price | Limit |
       | A      | Buy  | 200      | Limit        | 11.5  |       |
-      | B      | Buy  | 150      | PegWithLimit | 11.5  | 11.6  |
+      | B      | Buy  | 150      | Peg          | 11.5  | 11.6  |
       | C      | Sell | 200      | Limit        | 11.5  |       |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
