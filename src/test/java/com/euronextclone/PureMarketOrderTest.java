@@ -41,6 +41,7 @@ public class PureMarketOrderTest extends BaseReactiveTest {
             }
         }));
 
+        matchingUnit.dump();
         matchingUnit.newOrder(Order.OrderSide.Buy, "C", 110, new OrderPrice(OrderType.MarketOrder));
         close.close();
 

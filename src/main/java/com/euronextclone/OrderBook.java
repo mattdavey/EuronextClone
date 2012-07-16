@@ -42,7 +42,7 @@ public class OrderBook implements Observable<Trade>
             if (order.getQuantity() == newOrder.getQuantity())
             {
                 orders.remove(order);
-                generateTrade(newOrder, order, order.getQuantity());
+                generateTrade(newOrder, order, order.getQuantity(), newOrder.getPrice().value());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
@@ -54,10 +54,12 @@ public class OrderBook implements Observable<Trade>
                 }
 
                 order.decrementQuantity(newOrder.getQuantity());
-                if (!newOrder.getPrice().hasPrice())
+                if (!newOrder.getPrice().hasPrice() && !order.getPrice().hasPrice()) {
                     newOrder.getPrice().update(bestLimit.getOrderPrice().value());
-
-                generateTrade(newOrder, order, newOrder.getQuantity());
+                    generateTrade(newOrder, order, newOrder.getQuantity(), newOrder.getPrice().value());
+                } else {
+                    generateTrade(newOrder, order, newOrder.getQuantity(), order.getPrice().value());
+                }
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
@@ -68,7 +70,7 @@ public class OrderBook implements Observable<Trade>
                 if (!newOrder.getPrice().hasPrice() && newOrder.getPrice().getOrderType() == OrderType.MarketToLimit)
                     newOrder.getPrice().updateToLimitOrder(bestLimit.getOrderPrice().value());
 
-                generateTrade(newOrder, order, order.getQuantity());
+                generateTrade(newOrder, order, order.getQuantity(), order.getPrice().value());
 
 
                 newOrder.decrementQuantity(order.getQuantity());
@@ -82,12 +84,11 @@ public class OrderBook implements Observable<Trade>
         return newOrder.getQuantity() != 0;
     }
 
-    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity)
+    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price)
     {
         notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
                 newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
-                tradeQuantity,
-                newOrder.getPrice().value()));
+                tradeQuantity, price));
     }
 
 
