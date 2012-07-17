@@ -6,6 +6,7 @@ import cucumber.annotation.en.Then;
 import cucumber.table.DataTable;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -33,6 +34,13 @@ public class MatchingUnitStepDefinitions {
         final List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
         final List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
         assertEquals(expectedTrades, actualTrades);
+    }
+
+    @Then("^no trades are generated$")
+    public void no_trades_are_generated() throws Throwable {
+        List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
+        List<TradeRow> empty = new ArrayList<TradeRow>();
+        assertEquals(empty, actualTrades);
     }
 
     private static class TradeRow {
