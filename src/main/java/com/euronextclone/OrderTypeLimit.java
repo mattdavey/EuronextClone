@@ -15,13 +15,12 @@ public class OrderTypeLimit {
         this.limit = limit;
     }
 
-    public void updateToLimitOrder(final double limit) {
-        this.limit = limit;
-        this.orderType = OrderType.Limit;
-    }
-
     public OrderType getOrderType() {
         return orderType;
+    }
+
+    public void setLimit(final double limit) {
+        this.limit = limit;
     }
 
     public double getLimit() {
@@ -55,7 +54,7 @@ public class OrderTypeLimit {
     private double limit = Double.MAX_VALUE;
     private OrderType orderType;
 
-    public double value(final IndicativeMatchPrice bestLimit) {
+    public double value(final BestLimit bestLimit) {
         if (getOrderType() == OrderType.Peg) {
             if (hasLimit()) {
                 if (limit < bestLimit.getOrderPrice().limit)
@@ -70,7 +69,7 @@ public class OrderTypeLimit {
         return bestLimit.getOrderPrice().limit;
     }
 
-    public boolean canTrade(Double price, Order.OrderSide side) {
+    public boolean canTrade(final Double price, final Order.OrderSide side) {
 
         if (!hasLimit()) {
             return true;

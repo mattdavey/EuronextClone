@@ -214,7 +214,7 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        if (!counterBook.match(order, null)) {
+        if (!counterBook.match(order, currentContinuousTradingProcess, 10.1)) {
             book.remove(order);
         }
 
