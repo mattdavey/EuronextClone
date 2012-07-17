@@ -69,4 +69,8 @@ public class OrderTypeLimit {
 
         return bestLimit.getOrderPrice().limit;
     }
+
+    public boolean canTrade(Double price, Order.OrderSide side) {
+        return true;
+    }
 }

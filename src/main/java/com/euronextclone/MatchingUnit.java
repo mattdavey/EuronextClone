@@ -10,10 +10,7 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import java.io.Closeable;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class MatchingUnit implements Observable<Trade> {
 
@@ -53,20 +50,43 @@ public class MatchingUnit implements Observable<Trade> {
     public Double getIndicativeMatchingPrice() {
 
         SortedSet<Double> eligiblePrices = getListOfEligiblePrices();
-        List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook);
-        List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook);
+        List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
+        List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
         List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
 
         return referencePrice;
     }
 
+    private List<Integer> getCumulativeQuantity(
+            SortedSet<Double> eligiblePrices,
+            OrderBook book,
+            Order.OrderSide side) {
+
+        List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
+
+        ListIterator<Order> current = book.getOrders().listIterator();
+        int cumulative = 0;
+
+        for (Double price : eligiblePrices) {
+            while (current.hasNext()) {
+                Order order = current.next();
+                OrderTypeLimit limit = order.getOrderTypeLimit();
+
+                if (limit.canTrade(price, side)) {
+                    cumulative += order.getQuantity();
+                }
+                else {
+                    current.previous();
+                }
+            }
+            quantities.add(cumulative);
+        }
+        return quantities;
+    }
+
     private List<Integer> getTotalTradeableVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
 
         return null;
-    }
-
-    private List<Integer> getCumulativeQuantity(SortedSet<Double> eligiblePrices, OrderBook book) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     private SortedSet<Double> getListOfEligiblePrices() {
