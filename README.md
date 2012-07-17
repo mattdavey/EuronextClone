@@ -17,3 +17,4 @@ Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) base
 
 [Stop Order](http://www.euronext.com/fic/000/010/550/105509.pdf)
 
+[IMP/TOP calculation](http://www.asx.com.au/products/calculate-open-close-prices.htm)

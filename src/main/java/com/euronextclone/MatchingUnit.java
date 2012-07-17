@@ -10,7 +10,7 @@ import java.io.Closeable;
 import java.util.List;
 
 public class MatchingUnit implements Observable<Trade> {
-    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
+    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreClosingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
