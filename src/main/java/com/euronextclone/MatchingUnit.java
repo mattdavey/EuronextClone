@@ -144,6 +144,7 @@ public class MatchingUnit implements Observable<Trade> {
                     cumulative += order.getQuantity();
                 } else {
                     current.previous();
+                    break;
                 }
             }
             quantities.add(cumulative);
