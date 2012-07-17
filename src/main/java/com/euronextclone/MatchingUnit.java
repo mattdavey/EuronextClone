@@ -23,11 +23,14 @@ import java.util.TreeSet;
 
 public class MatchingUnit implements Observable<Trade> {
 
+    public void startAuction() {
+        currentContinuousTradingProcess = ContinuousTradingProcess.OpeningAuction;
+    }
+
     public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
-    private double imp = Double.MIN_VALUE;
     private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
     private double referencePrice;
 
@@ -58,12 +61,12 @@ public class MatchingUnit implements Observable<Trade> {
 
     public Double getIndicativeMatchingPrice() {
 
-        List<Double> eligiblePrices = getListOfEligiblePrices();
-        List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
-        List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
-        List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
+        final List<Double> eligiblePrices = getListOfEligiblePrices();
+        final List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
+        final List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
+        final List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
 
-        Optional<VolumeAtPrice> max = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
+        final Optional<VolumeAtPrice> max = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
         if (max.isPresent()) {
             return max.get().price;
         }
@@ -76,9 +79,7 @@ public class MatchingUnit implements Observable<Trade> {
         private int buyVolume;
         private int sellVolume;
 
-
         public VolumeAtPrice(double price, int buyVolume, int sellVolume) {
-
             this.price = price;
             this.buyVolume = buyVolume;
             this.sellVolume = sellVolume;
@@ -115,19 +116,19 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private List<Integer> getCumulativeQuantity(
-            List<Double> eligiblePrices,
-            OrderBook book,
-            Order.OrderSide side) {
+            final List<Double> eligiblePrices,
+            final OrderBook book,
+            final Order.OrderSide side) {
 
-        List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
+        final List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
 
-        ListIterator<Order> current = book.getOrders().listIterator();
+        final ListIterator<Order> current = book.getOrders().listIterator();
         int cumulative = 0;
 
-        for (Double price : eligiblePrices) {
+        for (final Double price : eligiblePrices) {
             while (current.hasNext()) {
-                Order order = current.next();
-                OrderTypeLimit limit = order.getOrderTypeLimit();
+                final Order order = current.next();
+                final OrderTypeLimit limit = order.getOrderTypeLimit();
 
                 if (limit.canTrade(price, side)) {
                     cumulative += order.getQuantity();
@@ -141,19 +142,19 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private List<VolumeAtPrice> getTotalTradeableVolume(
-            List<Double> eligiblePrices,
-            List<Integer> cumulativeBuy,
-            List<Integer> cumulativeSell) {
+            final List<Double> eligiblePrices,
+            final List<Integer> cumulativeBuy,
+            final List<Integer> cumulativeSell) {
 
-        List<VolumeAtPrice> tradeableVolume = new ArrayList<VolumeAtPrice>();
-        Iterator<Double> priceIterator = eligiblePrices.iterator();
-        Iterator<Integer> buy = cumulativeBuy.iterator();
-        Iterator<Integer> sell = cumulativeSell.iterator();
+        final List<VolumeAtPrice> tradeableVolume = new ArrayList<VolumeAtPrice>();
+        final Iterator<Double> priceIterator = eligiblePrices.iterator();
+        final Iterator<Integer> buy = cumulativeBuy.iterator();
+        final Iterator<Integer> sell = cumulativeSell.iterator();
 
         while (priceIterator.hasNext()) {
-            double price = priceIterator.next();
-            int buyVolume = buy.next();
-            int sellVolume = sell.next();
+            final double price = priceIterator.next();
+            final int buyVolume = buy.next();
+            final int sellVolume = sell.next();
             tradeableVolume.add(new VolumeAtPrice(price, buyVolume, sellVolume));
         }
 
@@ -162,7 +163,7 @@ public class MatchingUnit implements Observable<Trade> {
 
     private List<Double> getListOfEligiblePrices() {
 
-        TreeSet<Double> prices = new TreeSet<Double>();
+        final TreeSet<Double> prices = new TreeSet<Double>();
         prices.add(referencePrice);
         prices.addAll(getLimitPrices(buyOrderBook));
         prices.addAll(getLimitPrices(sellOrderBook));
@@ -170,7 +171,7 @@ public class MatchingUnit implements Observable<Trade> {
         return new ArrayList<Double>(prices);
     }
 
-    private Collection<? extends Double> getLimitPrices(OrderBook book) {
+    private Collection<? extends Double> getLimitPrices(final OrderBook book) {
 
         return FluentIterable.from(book.getOrders()).filter(new Predicate<Order>() {
             @Override
@@ -197,20 +198,13 @@ public class MatchingUnit implements Observable<Trade> {
         return getBook(side).getOrders();
     }
 
+    // Auction add
     public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
-        final OrderBook book = getBook(side);
-        book.add(new Order(broker, quantity, orderTypeLimit, side));
-    }
-
-    public void newOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
         final Order order = new Order(broker, quantity, orderTypeLimit, side);
-        final OrderBook orderBook = add(side, order);
+        getBook(side).add(order);
 
-        if (currentContinuousTradingProcess != ContinuousTradingProcess.PreOpeningPhase) {
-            final OrderBook matchOrderBook = side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
-            if (!matchOrderBook.match(order, currentContinuousTradingProcess)) {
-                orderBook.remove(order);
-            }
+        if (currentContinuousTradingProcess == ContinuousTradingProcess.MainTradingSession) {
+            tryMatchOrder(order);
         }
     }
 
@@ -220,37 +214,11 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        if (!counterBook.match(order, currentContinuousTradingProcess)) {
+        if (!counterBook.match(order, null)) {
             book.remove(order);
         }
+
         return startQuantity != order.getQuantity();
-    }
-
-    private OrderBook add(final Order.OrderSide side, final Order order) {
-        final OrderBook orderBook = side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
-        orderBook.add(order);
-
-        // Think IMP only used in Auctions - Need to confirm
-        if (currentContinuousTradingProcess == ContinuousTradingProcess.OpeningAuction ||
-            currentContinuousTradingProcess == ContinuousTradingProcess.ClosingAuction) {
-            calcIndicativeMatchPrice();
-        }
-
-        return orderBook;
-    }
-
-    private void calcIndicativeMatchPrice() {
-        if (buyOrderBook.getIMP().getOrderPrice().hasLimit() && sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
-            if (buyOrderBook.getIMP().getQuantity() > sellOrderBook.getIMP().getQuantity()) {
-                imp = buyOrderBook.getIMP().getOrderPrice().getLimit();
-            } else {
-                imp = sellOrderBook.getIMP().getOrderPrice().getLimit();
-            }
-        } else if (!buyOrderBook.getIMP().getOrderPrice().hasLimit() && sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
-            imp = sellOrderBook.getIMP().getOrderPrice().getLimit();
-        } else if (buyOrderBook.getIMP().getOrderPrice().hasLimit() && !sellOrderBook.getIMP().getOrderPrice().hasLimit()) {
-            imp = buyOrderBook.getIMP().getOrderPrice().getLimit();
-        }
     }
 
     public int orderBookDepth(final Order.OrderSide side) {

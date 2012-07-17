@@ -29,7 +29,7 @@ public class OrderBook implements Observable<Trade>
         return bestLimit.getOrderPrice();
     }
 
-    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess mode)
+    public boolean match(final Order newOrder, final Double imp)
     {
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
@@ -37,9 +37,11 @@ public class OrderBook implements Observable<Trade>
         {
             if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
                 if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
-                        newOrder.getPartlyFilled() &&
-                        order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
+                    newOrder.getPartlyFilled() &&
+                    order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
+
                     // Rule 1 of Pure Market Order continuous trading
+
                 } else
                     continue;
             }
@@ -64,6 +66,7 @@ public class OrderBook implements Observable<Trade>
                 } else {
                     generateTrade(newOrder, order, newOrder.getQuantity(), order.getOrderTypeLimit().getLimit());
                 }
+
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
@@ -90,6 +93,10 @@ public class OrderBook implements Observable<Trade>
     private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price)
     {
         notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
+                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
+                tradeQuantity, price));
+
+        System.out.println(String.format("%s %s %d %s", newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
                 newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
                 tradeQuantity, price));
     }

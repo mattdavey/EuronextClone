@@ -22,6 +22,7 @@ public class AuctionMatchingStepDefinitions {
     @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
     public void that_reference_price_is_(double price) throws Throwable {
         matchingUnit.setReferencePrice(price);
+        matchingUnit.startAuction();
     }
 
     @Given("^the following orders submitted to the book:$")
@@ -32,7 +33,6 @@ public class AuctionMatchingStepDefinitions {
         final Iterable<Order> bids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_BID);
         for (final Order bid : bids) {
             matchingUnit.addOrder(bid.getSide(), bid.getBroker(), bid.getQuantity(), bid.getOrderTypeLimit());
-            matchingUnit.dump();
         }
 
         final Iterable<Order> asks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_ASK);
@@ -45,6 +45,7 @@ public class AuctionMatchingStepDefinitions {
     public void class_auction_completes() throws Throwable {
         matchingUnit.dump();
         matchingUnit.auction();
+        matchingUnit.dump();
     }
 
     @Then("^the book looks like:$")
@@ -69,12 +70,12 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super Order, OrderRow> FROM_ORDER = new Function<Order, OrderRow>() {
             @Override
             public OrderRow apply(final Order input) {
-                final OrderRow orderRow = new OrderRow();
-                orderRow.setBroker(input.getBroker());
-                orderRow.setOrderId(input.getId());
-                orderRow.setPrice(input.getOrderTypeLimit().toString());
-                orderRow.setQuantity(input.getQuantity());
-                return orderRow;
+            final OrderRow orderRow = new OrderRow();
+            orderRow.setBroker(input.getBroker());
+            orderRow.setOrderId(input.getId());
+            orderRow.setPrice(input.getOrderTypeLimit().toString());
+            orderRow.setQuantity(input.getQuantity());
+            return orderRow;
             }
         };
 
@@ -136,7 +137,6 @@ public class AuctionMatchingStepDefinitions {
     }
 
     private static class MontageRow {
-
         private String bidBroker;
         private Integer bidOrderId;
         private Integer bidQuantity;
@@ -156,7 +156,7 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super MontageRow, OrderRow> TO_TEST_BID = new Function<MontageRow, OrderRow>() {
             @Override
             public OrderRow apply(final MontageRow input) {
-                OrderRow orderRow = new OrderRow();
+                final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.bidBroker);
                 orderRow.setOrderId(input.bidOrderId);
                 orderRow.setPrice(input.bidPrice);
@@ -168,7 +168,7 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super MontageRow, OrderRow> TO_TEST_ASK = new Function<MontageRow, OrderRow>() {
             @Override
             public OrderRow apply(final MontageRow input) {
-                OrderRow orderRow = new OrderRow();
+                final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.askBroker);
                 orderRow.setOrderId(input.askOrderId);
                 orderRow.setPrice(input.askPrice);
@@ -180,7 +180,7 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super MontageRow, Order> TO_BID = new Function<MontageRow, Order>() {
             @Override
             public Order apply(final MontageRow input) {
-                OrderTypeLimit orderTypeLimit = parseOrderPrice(input.bidPrice);
+                final OrderTypeLimit orderTypeLimit = parseOrderPrice(input.bidPrice);
                 return new Order(input.bidBroker, input.bidQuantity, orderTypeLimit, Order.OrderSide.Buy);
             }
         };
@@ -193,11 +193,10 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super MontageRow, Order> TO_ASK = new Function<MontageRow, Order>() {
             @Override
             public Order apply(final MontageRow input) {
-                OrderTypeLimit orderTypeLimit = parseOrderPrice(input.askPrice);
+                final OrderTypeLimit orderTypeLimit = parseOrderPrice(input.askPrice);
                 return new Order(input.askBroker, input.askQuantity, orderTypeLimit, Order.OrderSide.Sell);
             }
         };
-
 
         private static OrderTypeLimit parseOrderPrice(String price) {
             if ("MTL".equals(price)) {

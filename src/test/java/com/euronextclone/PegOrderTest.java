@@ -14,16 +14,16 @@ import static org.junit.Assert.assertThat;
 
 public class PegOrderTest extends BaseReactiveTest {
     private void buyOrders(MatchingUnit matchingUnit) {
-        matchingUnit.newOrder(Order.OrderSide.Buy, "A", 200, new OrderTypeLimit(OrderType.Limit, 10.5D));
-        matchingUnit.newOrder(Order.OrderSide.Buy, "B", 150, new OrderTypeLimit(OrderType.Peg));
-        matchingUnit.newOrder(Order.OrderSide.Buy, "B", 70, new OrderTypeLimit(OrderType.Peg));
-        matchingUnit.newOrder(Order.OrderSide.Buy, "B", 125, new OrderTypeLimit(OrderType.Limit, 10.5D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "A", 200, new OrderTypeLimit(OrderType.Limit, 10.5D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 150, new OrderTypeLimit(OrderType.Peg));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 70, new OrderTypeLimit(OrderType.Peg));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 125, new OrderTypeLimit(OrderType.Limit, 10.5D));
     }
 
     private void sellOrders(MatchingUnit matchingUnit) {
-        matchingUnit.newOrder(Order.OrderSide.Sell, "C", 130, new OrderTypeLimit(OrderType.Limit, 10.9D));
-        matchingUnit.newOrder(Order.OrderSide.Sell, "C", 350, new OrderTypeLimit(OrderType.Limit, 10.9D));
-        matchingUnit.newOrder(Order.OrderSide.Sell, "D", 275, new OrderTypeLimit(OrderType.Limit, 11D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 130, new OrderTypeLimit(OrderType.Limit, 10.9D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 350, new OrderTypeLimit(OrderType.Limit, 10.9D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "D", 275, new OrderTypeLimit(OrderType.Limit, 11D));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class PegOrderTest extends BaseReactiveTest {
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
         matchingUnit.dump();
-        matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
         matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
@@ -56,7 +56,7 @@ public class PegOrderTest extends BaseReactiveTest {
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
-        matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -69,7 +69,7 @@ public class PegOrderTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.newOrder(Order.OrderSide.Buy, "G", 100, new OrderTypeLimit(OrderType.Limit, 10.9D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "G", 100, new OrderTypeLimit(OrderType.Limit, 10.9D));
 
         close.close();
 
@@ -86,8 +86,8 @@ public class PegOrderTest extends BaseReactiveTest {
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
-        matchingUnit.newOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
-        matchingUnit.newOrder(Order.OrderSide.Buy, "G", 100, new OrderTypeLimit(OrderType.Limit, 10.9D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 10.8D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "G", 100, new OrderTypeLimit(OrderType.Limit, 10.9D));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -110,7 +110,7 @@ public class PegOrderTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.newOrder(Order.OrderSide.Sell, "G", 250, new OrderTypeLimit(OrderType.Limit, 10.8D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "G", 250, new OrderTypeLimit(OrderType.Limit, 10.8D));
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));
