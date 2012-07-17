@@ -1,21 +1,35 @@
 package com.euronextclone;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
+import javax.annotation.Nullable;
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.TreeSet;
 
 public class MatchingUnit implements Observable<Trade> {
-    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreClosingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
+
+    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private double imp = Double.MIN_VALUE;
     private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
+    private double referencePrice;
 
     /**
      * The observable helper.
@@ -36,6 +50,139 @@ public class MatchingUnit implements Observable<Trade> {
                 notifier.next(value);
             }
         }));
+    }
+
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
+    }
+
+    public Double getIndicativeMatchingPrice() {
+
+        List<Double> eligiblePrices = getListOfEligiblePrices();
+        List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
+        List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
+        List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
+
+        Optional<VolumeAtPrice> max = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
+        if (max.isPresent()) {
+            return max.get().price;
+        }
+
+        return null;
+    }
+
+    private static class VolumeAtPrice {
+        private double price;
+        private int buyVolume;
+        private int sellVolume;
+
+
+        public VolumeAtPrice(double price, int buyVolume, int sellVolume) {
+
+            this.price = price;
+            this.buyVolume = buyVolume;
+            this.sellVolume = sellVolume;
+        }
+
+        public double getTradeableVolume() {
+            return Math.min(buyVolume, sellVolume);
+        }
+
+        public static final Comparator<VolumeAtPrice> TRADEABLE_VOLUME_COMPARATOR = new Comparator<VolumeAtPrice>() {
+
+            @Override
+            public int compare(VolumeAtPrice volumeAtPrice, VolumeAtPrice volumeAtPrice1) {
+                Double tradeableVolume1 = volumeAtPrice.getTradeableVolume();
+                Double tradeableVolume2 = volumeAtPrice1.getTradeableVolume();
+                return tradeableVolume1.compareTo(tradeableVolume2);
+            }
+        };
+    }
+
+    private Optional<VolumeAtPrice> tryGetSingleMaxTradeableVolumeIndex(List<VolumeAtPrice> totalTradeableVolume) {
+
+        final double maxVolume = Collections.max(totalTradeableVolume, VolumeAtPrice.TRADEABLE_VOLUME_COMPARATOR).getTradeableVolume();
+
+        FluentIterable<VolumeAtPrice> maxVolumeOnly = FluentIterable.from(totalTradeableVolume).filter(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(@Nullable VolumeAtPrice input) {
+                return input.getTradeableVolume() == maxVolume;
+            }
+        });
+
+        // TODO: this is simply picking last max hit, should not succeed if multiple max price levels exist
+        return maxVolumeOnly.last();
+    }
+
+    private List<Integer> getCumulativeQuantity(
+            List<Double> eligiblePrices,
+            OrderBook book,
+            Order.OrderSide side) {
+
+        List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
+
+        ListIterator<Order> current = book.getOrders().listIterator();
+        int cumulative = 0;
+
+        for (Double price : eligiblePrices) {
+            while (current.hasNext()) {
+                Order order = current.next();
+                OrderTypeLimit limit = order.getOrderTypeLimit();
+
+                if (limit.canTrade(price, side)) {
+                    cumulative += order.getQuantity();
+                } else {
+                    current.previous();
+                }
+            }
+            quantities.add(cumulative);
+        }
+        return quantities;
+    }
+
+    private List<VolumeAtPrice> getTotalTradeableVolume(
+            List<Double> eligiblePrices,
+            List<Integer> cumulativeBuy,
+            List<Integer> cumulativeSell) {
+
+        List<VolumeAtPrice> tradeableVolume = new ArrayList<VolumeAtPrice>();
+        Iterator<Double> priceIterator = eligiblePrices.iterator();
+        Iterator<Integer> buy = cumulativeBuy.iterator();
+        Iterator<Integer> sell = cumulativeSell.iterator();
+
+        while (priceIterator.hasNext()) {
+            double price = priceIterator.next();
+            int buyVolume = buy.next();
+            int sellVolume = sell.next();
+            tradeableVolume.add(new VolumeAtPrice(price, buyVolume, sellVolume));
+        }
+
+        return tradeableVolume;
+    }
+
+    private List<Double> getListOfEligiblePrices() {
+
+        TreeSet<Double> prices = new TreeSet<Double>();
+        prices.add(referencePrice);
+        prices.addAll(getLimitPrices(buyOrderBook));
+        prices.addAll(getLimitPrices(sellOrderBook));
+
+        return new ArrayList<Double>(prices);
+    }
+
+    private Collection<? extends Double> getLimitPrices(OrderBook book) {
+
+        return FluentIterable.from(book.getOrders()).filter(new Predicate<Order>() {
+            @Override
+            public boolean apply(Order input) {
+                return input.getOrderTypeLimit().hasLimit();
+            }
+        }).transform(new Function<Order, Double>() {
+            @Override
+            public Double apply(Order input) {
+                return input.getOrderTypeLimit().getLimit();
+            }
+        }).toImmutableSet();
     }
 
     public void auction() {
@@ -85,7 +232,7 @@ public class MatchingUnit implements Observable<Trade> {
 
         // Think IMP only used in Auctions - Need to confirm
         if (currentContinuousTradingProcess == ContinuousTradingProcess.OpeningAuction ||
-                currentContinuousTradingProcess == ContinuousTradingProcess.ClosingAuction) {
+            currentContinuousTradingProcess == ContinuousTradingProcess.ClosingAuction) {
             calcIndicativeMatchPrice();
         }
 

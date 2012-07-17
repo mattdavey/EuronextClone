@@ -3,6 +3,7 @@ package com.euronextclone;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Then;
+import cucumber.runtime.PendingException;
 import cucumber.table.DataTable;
 
 import javax.annotation.Nullable;
@@ -27,6 +28,13 @@ public class MatchingUnitStepDefinitions {
         final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
 
         assertEquals(expectedOrders, actualOrders);
+    }
+
+    @Then("^the calculated IMP is:$")
+    public void the_calculated_IMP_is(DataTable arg1) throws Throwable {
+        // Express the Regexp above with the code you wish you had
+        // For automatic conversion, change DataTable to List<YourType>
+        throw new PendingException();
     }
 
     @Then("^the following trades are generated:$")
@@ -91,11 +99,11 @@ public class MatchingUnitStepDefinitions {
         @Override
         public String toString() {
             return "TradeRow{" +
-                    "buyingBroker='" + buyingBroker + '\'' +
-                    ", sellingBroker='" + sellingBroker + '\'' +
-                    ", quantity=" + quantity +
-                    ", price=" + price +
-                    '}';
+                   "buyingBroker='" + buyingBroker + '\'' +
+                   ", sellingBroker='" + sellingBroker + '\'' +
+                   ", quantity=" + quantity +
+                   ", price=" + price +
+                   '}';
         }
 
         public void setBuyingBroker(String buyingBroker) {
@@ -170,13 +178,13 @@ public class MatchingUnitStepDefinitions {
         @Override
         public String toString() {
             return "OrderRow{" +
-                    "broker='" + broker + '\'' +
-                    ", side=" + side +
-                    ", quantity=" + quantity +
-                    ", orderType=" + orderType +
-                    ", price=" + price +
-                    ", limit=" + limit +
-                    '}';
+                   "broker='" + broker + '\'' +
+                   ", side=" + side +
+                   ", quantity=" + quantity +
+                   ", orderType=" + orderType +
+                   ", price=" + price +
+                   ", limit=" + limit +
+                   '}';
         }
     }
 }

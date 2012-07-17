@@ -11,7 +11,6 @@ import cucumber.table.DataTable;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-
 public class AuctionMatchingStepDefinitions {
 
     private final MatchingUnit matchingUnit;
@@ -22,8 +21,7 @@ public class AuctionMatchingStepDefinitions {
 
     @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
     public void that_reference_price_is_(double price) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-//        throw new PendingException();
+        matchingUnit.setReferencePrice(price);
     }
 
     @Given("^the following orders submitted to the book:$")
