@@ -10,12 +10,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eprystupa
- * Date: 7/12/12
- * Time: 11:03 PM
- */
 public class MatchingUnitStepDefinitions {
 
     private final MatchingUnit matchingUnit;
@@ -28,16 +22,16 @@ public class MatchingUnitStepDefinitions {
 
     @Then("^\"([^\"]*)\" order book should look like:$")
     public void order_book_should_look_like(Order.OrderSide side, DataTable orderTable) throws Throwable {
-        List<OrderRow> expectedOrders = orderTable.asList(OrderRow.class);
-        List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
+        final List<OrderRow> expectedOrders = orderTable.asList(OrderRow.class);
+        final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
 
         assertEquals(expectedOrders, actualOrders);
     }
 
     @Then("^the following trades are generated:$")
     public void the_following_trades_are_generated(DataTable expectedTradesTable) throws Throwable {
-        List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
-        List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
+        final List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
+        final List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
         assertEquals(expectedTrades, actualTrades);
     }
 
@@ -130,7 +124,7 @@ public class MatchingUnitStepDefinitions {
                 orderRow.broker = order.getBroker();
                 orderRow.side = order.getSide();
 //                orderRow.price = orderTypeLimit.hasPrice()? orderTypeLimit.value() : null;
-                orderRow.limit = orderTypeLimit.hasLimit()? orderTypeLimit.getLimit() : null;
+                orderRow.price = orderTypeLimit.hasLimit()? orderTypeLimit.getLimit() : null;
                 orderRow.orderType = orderTypeLimit.getOrderType();
                 orderRow.quantity = order.getQuantity();
                 return orderRow;

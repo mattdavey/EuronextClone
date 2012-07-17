@@ -12,8 +12,6 @@ import java.util.List;
 public class MatchingUnit implements Observable<Trade> {
     public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
 
-    ;
-
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private double imp = Double.MIN_VALUE;
@@ -75,7 +73,6 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        dump();
         if (!counterBook.match(order, currentContinuousTradingProcess)) {
             book.remove(order);
         }

@@ -20,15 +20,13 @@ public class ContinuousMatchingStepDefinitions {
     @Given("^the following orders are submitted in this order:$")
     public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
 
-        List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
+        final List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
         for (OrderRow orderRow : orderRows) {
 
-            if (orderRow.price == null && orderRow.limit == null) {
-                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType));
-            } else if (orderRow.limit == null) {
+            if (orderRow.price == null) {
                 matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType));
             } else {
-                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType, orderRow.limit));
+                matchingUnit.newOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType, orderRow.price));
             }
         }
     }
@@ -36,7 +34,7 @@ public class ContinuousMatchingStepDefinitions {
 
     @Then("^best limits are:$")
     public void best_limits_are(DataTable limitsTable) throws Throwable {
-        List<BestLimitRow> bestLimitRows = limitsTable.asList(BestLimitRow.class);
+        final List<BestLimitRow> bestLimitRows = limitsTable.asList(BestLimitRow.class);
         for (BestLimitRow bestLimitRow : bestLimitRows) {
             assertThat(matchingUnit.getBestLimit(bestLimitRow.side), is(bestLimitRow.limit));
         }
@@ -87,7 +85,6 @@ public class ContinuousMatchingStepDefinitions {
         private int quantity;
         private OrderType orderType;
         private Double price;
-        private Double limit;
     }
 
     private static class BestLimitRow {

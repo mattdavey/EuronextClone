@@ -29,33 +29,34 @@ public class AuctionMatchingStepDefinitions {
     @Given("^the following orders submitted to the book:$")
     public void the_following_orders_submitted_to_the_book(DataTable ordersTable) throws Throwable {
 
-        List<MontageRow> rows = ordersTable.asList(MontageRow.class);
+        final List<MontageRow> rows = ordersTable.asList(MontageRow.class);
 
-        Iterable<Order> bids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_BID);
-        for (Order bid : bids) {
+        final Iterable<Order> bids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_BID);
+        for (final Order bid : bids) {
             matchingUnit.addOrder(bid.getSide(), bid.getBroker(), bid.getQuantity(), bid.getOrderTypeLimit());
+            matchingUnit.dump();
         }
 
-        Iterable<Order> asks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_ASK);
-        for (Order ask : asks) {
+        final Iterable<Order> asks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_ASK);
+        for (final Order ask : asks) {
             matchingUnit.addOrder(ask.getSide(), ask.getBroker(), ask.getQuantity(), ask.getOrderTypeLimit());
         }
     }
 
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
-
+        matchingUnit.dump();
         matchingUnit.auction();
     }
 
     @Then("^the book looks like:$")
     public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
-        List<MontageRow> rows = expectedBooks.asList(MontageRow.class);
-        List<OrderRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
-        List<OrderRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
+        final List<MontageRow> rows = expectedBooks.asList(MontageRow.class);
+        final List<OrderRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
+        final List<OrderRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
 
-        List<OrderRow> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderRow.FROM_ORDER).toImmutableList();
-        List<OrderRow> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderRow.FROM_ORDER).toImmutableList();
+        final List<OrderRow> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderRow.FROM_ORDER).toImmutableList();
+        final List<OrderRow> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderRow.FROM_ORDER).toImmutableList();
 
         assertEquals(expectedBids, actualBids);
         assertEquals(expectedAsks, actualAsks);
@@ -70,7 +71,7 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super Order, OrderRow> FROM_ORDER = new Function<Order, OrderRow>() {
             @Override
             public OrderRow apply(final Order input) {
-                OrderRow orderRow = new OrderRow();
+                final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.getBroker());
                 orderRow.setOrderId(input.getId());
                 orderRow.setPrice(input.getOrderTypeLimit().toString());
@@ -84,7 +85,7 @@ public class AuctionMatchingStepDefinitions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            OrderRow orderRow = (OrderRow) o;
+            final OrderRow orderRow = (OrderRow) o;
 
             if (orderId != orderRow.orderId) return false;
             if (quantity != orderRow.quantity) return false;

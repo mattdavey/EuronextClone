@@ -4,8 +4,8 @@ Feature: Pegged orders
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type | Price |
       | A      | Buy  | 200      | Limit      | 10.5  |
-      | B      | Buy  | 150      | Peg        | 10.5  |
-      | B      | Buy  | 70       | Peg        | 10.5  |
+      | B      | Buy  | 150      | Peg        |       |
+      | B      | Buy  | 70       | Peg        |       |
       | B      | Buy  | 125      | Limit      | 10.5  |
       | C      | Sell | 150      | Limit      | 10.9  |
       | C      | Sell | 70       | Limit      | 10.9  |
@@ -17,8 +17,8 @@ Feature: Pegged orders
 
   Scenario: Example 1 Step 2
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type | Price              |
-      | E      | Buy  | 200      | Limit      | 10.800000000000001 |
+      | Broker | Side | Quantity | Order Type | Price |
+      | E      | Buy  | 200      | Limit      | 10.8  |
     Then remaining buy order book depth is 5
     And remaining sell order book depth is 3
     And best limits are:
@@ -28,19 +28,19 @@ Feature: Pegged orders
 
   Scenario: Example 1 Step 3
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type | Price              |
-      | E      | Buy  | 200      | Limit      | 10.800000000000001 |
-      | G      | Buy  | 100      | Limit      | 10.9               |
+      | Broker | Side | Quantity | Order Type | Price |
+      | E      | Buy  | 200      | Limit      | 10.8  |
+      | G      | Buy  | 100      | Limit      | 10.9  |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | G             | C              | 100      | 10.9  |
 
   Scenario: Example 1 Step 4
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type | Price              |
-      | E      | Buy  | 200      | Limit      | 10.800000000000001 |
-      | G      | Buy  | 100      | Limit      | 10.9               |
-      | G      | Sell | 250      | Limit      | 10.800000000000001 |
+      | Broker | Side | Quantity | Order Type | Price |
+      | E      | Buy  | 200      | Limit      | 10.8  |
+      | G      | Buy  | 100      | Limit      | 10.9  |
+      | G      | Sell | 250      | Limit      | 10.8  |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | G             | C              | 100      | 10.9  |
