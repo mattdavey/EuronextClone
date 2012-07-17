@@ -42,6 +42,7 @@ Feature: Auction Phase Matching Rules
       | A             | C              | 30       | 10    |
       | B             | C              | 50       | 10    |
 
+  @focus
   Scenario: the market order is totally filled
     Given that reference price is 10.0
     And the following orders submitted to the book:
