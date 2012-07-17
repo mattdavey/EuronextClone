@@ -49,16 +49,34 @@ public class MatchingUnit implements Observable<Trade> {
 
     public Double getIndicativeMatchingPrice() {
 
-        SortedSet<Double> eligiblePrices = getListOfEligiblePrices();
+        List<Double> eligiblePrices = getListOfEligiblePrices();
         List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
         List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
         List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
 
-        return referencePrice;
+        Integer priceIndex = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
+        if (priceIndex != null) {
+            return eligiblePrices.get(priceIndex);
+        }
+
+        return null;
+    }
+
+    private Integer tryGetSingleMaxTradeableVolumeIndex(List<Integer> totalTradeableVolume) {
+
+        int max = Collections.max(totalTradeableVolume);
+
+        // TODO: this is simply picking the first max hit, should not succeed if multiple max price levels exist
+        for (int i = 0; i < totalTradeableVolume.size(); i++) {
+            if (totalTradeableVolume.get(i) == max)
+                return i;
+        }
+
+        return null;
     }
 
     private List<Integer> getCumulativeQuantity(
-            SortedSet<Double> eligiblePrices,
+            List<Double> eligiblePrices,
             OrderBook book,
             Order.OrderSide side) {
 
@@ -98,14 +116,14 @@ public class MatchingUnit implements Observable<Trade> {
         return tradeableVolume;
     }
 
-    private SortedSet<Double> getListOfEligiblePrices() {
+    private List<Double> getListOfEligiblePrices() {
 
         TreeSet<Double> prices = new TreeSet<Double>();
         prices.add(referencePrice);
         prices.addAll(getLimitPrices(buyOrderBook));
         prices.addAll(getLimitPrices(sellOrderBook));
 
-        return prices;
+        return new ArrayList<Double>(prices);
     }
 
     private Collection<? extends Double> getLimitPrices(OrderBook book) {
