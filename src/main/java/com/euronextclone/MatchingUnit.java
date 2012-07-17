@@ -53,8 +53,8 @@ public class MatchingUnit implements Observable<Trade> {
     public Double getIndicativeMatchingPrice() {
 
         SortedSet<Double> eligiblePrices = getListOfEligiblePrices();
-        List<Integer> cumulativeBuy = getCumulativeQuantity(buyOrderBook);
-        List<Integer> cumulativeSell = getCumulativeQuantity(sellOrderBook);
+        List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook);
+        List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook);
         List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
 
         return referencePrice;
@@ -65,7 +65,7 @@ public class MatchingUnit implements Observable<Trade> {
         return null;
     }
 
-    private List<Integer> getCumulativeQuantity(OrderBook book) {
+    private List<Integer> getCumulativeQuantity(SortedSet<Double> eligiblePrices, OrderBook book) {
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
@@ -74,6 +74,7 @@ public class MatchingUnit implements Observable<Trade> {
         TreeSet<Double> prices = new TreeSet<Double>();
         prices.add(referencePrice);
         prices.addAll(getLimitPrices(buyOrderBook));
+        prices.addAll(getLimitPrices(sellOrderBook));
 
         return prices;
     }
