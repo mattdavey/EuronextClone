@@ -39,17 +39,17 @@ public class OrderTypeLimit {
     @Override
     public boolean equals(Object aThat) {
         //check for self-comparison
-        if ( this == aThat ) return true;
+        if (this == aThat) return true;
 
         //use instanceof instead of getClass here for two reasons
         //1. if need be, it can match any supertype, and not just one class;
         //2. it renders an explict check for "that == null" redundant, since
         //it does the check for null already - "null instanceof [type]" always
         //returns false. (See Effective Java by Joshua Bloch.)
-        if ( !(aThat instanceof OrderTypeLimit) ) return false;
+        if (!(aThat instanceof OrderTypeLimit)) return false;
 
         return orderType == ((OrderTypeLimit) aThat).getOrderType() &&
-            Double.doubleToLongBits(limit) == Double.doubleToLongBits(((OrderTypeLimit) aThat).getLimit());
+                Double.doubleToLongBits(limit) == Double.doubleToLongBits(((OrderTypeLimit) aThat).getLimit());
     }
 
     private double limit = Double.MAX_VALUE;
@@ -71,6 +71,15 @@ public class OrderTypeLimit {
     }
 
     public boolean canTrade(Double price, Order.OrderSide side) {
-        return true;
+
+        if (!hasLimit()) {
+            return true;
+        }
+
+        if (side == Order.OrderSide.Buy) {
+            return price <= getLimit();
+        }
+
+        return price >= getLimit();
     }
 }
