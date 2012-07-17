@@ -1,5 +1,8 @@
 package com.euronextclone;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
@@ -7,8 +10,10 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import java.io.Closeable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class MatchingUnit implements Observable<Trade> {
 
@@ -47,7 +52,7 @@ public class MatchingUnit implements Observable<Trade> {
 
     public Double getIndicativeMatchingPrice() {
 
-        List<Double> eligiblePrices = getListOfEligiblePrices();
+        SortedSet<Double> eligiblePrices = getListOfEligiblePrices();
         List<Integer> cumulativeBuy = getCumulativeQuantity(buyOrderBook);
         List<Integer> cumulativeSell = getCumulativeQuantity(sellOrderBook);
         List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
@@ -56,6 +61,7 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private List<Integer> getTotalTradeableVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
+
         return null;
     }
 
@@ -63,8 +69,28 @@ public class MatchingUnit implements Observable<Trade> {
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
-    private List<Double> getListOfEligiblePrices() {
-        return new ArrayList<Double>();
+    private SortedSet<Double> getListOfEligiblePrices() {
+
+        TreeSet<Double> prices = new TreeSet<Double>();
+        prices.add(referencePrice);
+        prices.addAll(getLimitPrices(buyOrderBook));
+
+        return prices;
+    }
+
+    private Collection<? extends Double> getLimitPrices(OrderBook book) {
+
+        return FluentIterable.from(book.getOrders()).filter(new Predicate<Order>() {
+            @Override
+            public boolean apply(Order input) {
+                return input.getOrderTypeLimit().hasLimit();
+            }
+        }).transform(new Function<Order, Double>() {
+            @Override
+            public Double apply(Order input) {
+                return input.getOrderTypeLimit().getLimit();
+            }
+        }).toImmutableSet();
     }
 
     public void auction() {
