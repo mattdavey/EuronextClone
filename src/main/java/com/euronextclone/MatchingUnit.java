@@ -111,8 +111,18 @@ public class MatchingUnit implements Observable<Trade> {
             }
         });
 
-        // TODO: this is simply picking last max hit, should not succeed if multiple max price levels exist
-        return maxVolumeOnly.last();
+        if (maxVolumeOnly.size() == 1) {
+            return maxVolumeOnly.first();
+        }
+
+        return maxVolumeOnly.firstMatch(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(VolumeAtPrice input) {
+
+                return input.buyVolume == input.sellVolume && input.price == referencePrice ||
+                        input.buyVolume != input.sellVolume && input.price != referencePrice;
+            }
+        });
     }
 
     private List<Integer> getCumulativeQuantity(

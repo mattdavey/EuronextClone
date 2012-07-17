@@ -3,7 +3,6 @@ package com.euronextclone;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Then;
-import cucumber.runtime.PendingException;
 import cucumber.table.DataTable;
 
 import javax.annotation.Nullable;
@@ -11,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class MatchingUnitStepDefinitions {
 
@@ -31,10 +32,8 @@ public class MatchingUnitStepDefinitions {
     }
 
     @Then("^the calculated IMP is:$")
-    public void the_calculated_IMP_is(DataTable arg1) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        throw new PendingException();
+    public void the_calculated_IMP_is(List<Double> imp) {
+        assertThat(matchingUnit.getIndicativeMatchingPrice(), is(imp.get(0)));
     }
 
     @Then("^the following trades are generated:$")
@@ -99,11 +98,11 @@ public class MatchingUnitStepDefinitions {
         @Override
         public String toString() {
             return "TradeRow{" +
-                   "buyingBroker='" + buyingBroker + '\'' +
-                   ", sellingBroker='" + sellingBroker + '\'' +
-                   ", quantity=" + quantity +
-                   ", price=" + price +
-                   '}';
+                    "buyingBroker='" + buyingBroker + '\'' +
+                    ", sellingBroker='" + sellingBroker + '\'' +
+                    ", quantity=" + quantity +
+                    ", price=" + price +
+                    '}';
         }
 
         public void setBuyingBroker(String buyingBroker) {
@@ -140,7 +139,7 @@ public class MatchingUnitStepDefinitions {
                 orderRow.broker = order.getBroker();
                 orderRow.side = order.getSide();
 //                orderRow.price = orderTypeLimit.hasPrice()? orderTypeLimit.value() : null;
-                orderRow.price = orderTypeLimit.hasLimit()? orderTypeLimit.getLimit() : null;
+                orderRow.price = orderTypeLimit.hasLimit() ? orderTypeLimit.getLimit() : null;
                 orderRow.orderType = orderTypeLimit.getOrderType();
                 orderRow.quantity = order.getQuantity();
                 return orderRow;
@@ -178,13 +177,13 @@ public class MatchingUnitStepDefinitions {
         @Override
         public String toString() {
             return "OrderRow{" +
-                   "broker='" + broker + '\'' +
-                   ", side=" + side +
-                   ", quantity=" + quantity +
-                   ", orderType=" + orderType +
-                   ", price=" + price +
-                   ", limit=" + limit +
-                   '}';
+                    "broker='" + broker + '\'' +
+                    ", side=" + side +
+                    ", quantity=" + quantity +
+                    ", orderType=" + orderType +
+                    ", price=" + price +
+                    ", limit=" + limit +
+                    '}';
         }
     }
 }
