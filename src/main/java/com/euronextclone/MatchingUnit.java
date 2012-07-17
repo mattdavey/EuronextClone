@@ -50,12 +50,12 @@ public class MatchingUnit implements Observable<Trade> {
         List<Double> eligiblePrices = getListOfEligiblePrices();
         List<Integer> cumulativeBuy = getCumulativeQuantity(buyOrderBook);
         List<Integer> cumulativeSell = getCumulativeQuantity(sellOrderBook);
-        List<Integer> totalTradeableVolume = getTotalTradebleVolume(cumulativeBuy, cumulativeSell);
+        List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
 
         return referencePrice;
     }
 
-    private List<Integer> getTotalTradebleVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
+    private List<Integer> getTotalTradeableVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
         return null;
     }
 
