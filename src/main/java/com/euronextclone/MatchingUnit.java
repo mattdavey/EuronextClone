@@ -7,6 +7,7 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MatchingUnit implements Observable<Trade> {
@@ -46,7 +47,24 @@ public class MatchingUnit implements Observable<Trade> {
 
     public Double getIndicativeMatchingPrice() {
 
+        List<Double> eligiblePrices = getListOfEligiblePrices();
+        List<Integer> cumulativeBuy = getCumulativeQuantity(buyOrderBook);
+        List<Integer> cumulativeSell = getCumulativeQuantity(sellOrderBook);
+        List<Integer> totalTradeableVolume = getTotalTradebleVolume(cumulativeBuy, cumulativeSell);
+
         return referencePrice;
+    }
+
+    private List<Integer> getTotalTradebleVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
+        return null;
+    }
+
+    private List<Integer> getCumulativeQuantity(OrderBook book) {
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private List<Double> getListOfEligiblePrices() {
+        return new ArrayList<Double>();
     }
 
     public void auction() {
