@@ -17,6 +17,7 @@ public class MatchingUnit implements Observable<Trade> {
     private final OrderBook sellOrderBook;
     private double imp = Double.MIN_VALUE;
     private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
+    private double referencePrice;
 
     /**
      * The observable helper.
@@ -39,9 +40,13 @@ public class MatchingUnit implements Observable<Trade> {
         }));
     }
 
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
+    }
+
     public Double getIndicativeMatchingPrice() {
 
-        return 10.0;
+        return referencePrice;
     }
 
     public void auction() {
