@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
@@ -12,14 +13,7 @@ import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import javax.annotation.Nullable;
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.TreeSet;
+import java.util.*;
 
 public class MatchingUnit implements Observable<Trade> {
 
@@ -132,10 +126,13 @@ public class MatchingUnit implements Observable<Trade> {
 
         final List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
 
+        final Iterable<Double> priceIterable = side == Order.OrderSide.Sell ?
+                eligiblePrices :
+                Lists.reverse(eligiblePrices);
         final ListIterator<Order> current = book.getOrders().listIterator();
         int cumulative = 0;
 
-        for (final Double price : eligiblePrices) {
+        for (final Double price : priceIterable) {
             while (current.hasNext()) {
                 final Order order = current.next();
                 final OrderTypeLimit limit = order.getOrderTypeLimit();
@@ -149,7 +146,8 @@ public class MatchingUnit implements Observable<Trade> {
             }
             quantities.add(cumulative);
         }
-        return quantities;
+
+        return side == Order.OrderSide.Sell ? quantities : Lists.reverse(quantities);
     }
 
     private List<VolumeAtPrice> getTotalTradeableVolume(
