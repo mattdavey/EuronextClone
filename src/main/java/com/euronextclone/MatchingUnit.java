@@ -74,8 +74,7 @@ public class MatchingUnit implements Observable<Trade> {
 
                 if (limit.canTrade(price, side)) {
                     cumulative += order.getQuantity();
-                }
-                else {
+                } else {
                     current.previous();
                 }
             }
@@ -86,7 +85,17 @@ public class MatchingUnit implements Observable<Trade> {
 
     private List<Integer> getTotalTradeableVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
 
-        return null;
+        List<Integer> tradeableVolume = new ArrayList<Integer>();
+        Iterator<Integer> buy = cumulativeBuy.iterator();
+        Iterator<Integer> sell = cumulativeSell.iterator();
+
+        while (buy.hasNext()) {
+            int buyVolume = buy.next();
+            int sellVolume = sell.next();
+            tradeableVolume.add(Math.min(buyVolume, sellVolume));
+        }
+
+        return tradeableVolume;
     }
 
     private SortedSet<Double> getListOfEligiblePrices() {
