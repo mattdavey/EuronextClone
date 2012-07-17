@@ -1,6 +1,7 @@
 package com.euronextclone;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import hu.akarnokd.reactive4java.base.Action1;
@@ -9,6 +10,7 @@ import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
+import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.util.*;
 
@@ -52,27 +54,57 @@ public class MatchingUnit implements Observable<Trade> {
         List<Double> eligiblePrices = getListOfEligiblePrices();
         List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
         List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
-        List<Integer> totalTradeableVolume = getTotalTradeableVolume(cumulativeBuy, cumulativeSell);
+        List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
 
-        Integer priceIndex = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
-        if (priceIndex != null) {
-            return eligiblePrices.get(priceIndex);
+        Optional<VolumeAtPrice> max = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
+        if (max.isPresent()) {
+            return max.get().price;
         }
 
         return null;
     }
 
-    private Integer tryGetSingleMaxTradeableVolumeIndex(List<Integer> totalTradeableVolume) {
+    private static class VolumeAtPrice {
+        private double price;
+        private int buyVolume;
+        private int sellVolume;
 
-        int max = Collections.max(totalTradeableVolume);
 
-        // TODO: this is simply picking the first max hit, should not succeed if multiple max price levels exist
-        for (int i = 0; i < totalTradeableVolume.size(); i++) {
-            if (totalTradeableVolume.get(i) == max)
-                return i;
+        public VolumeAtPrice(double price, int buyVolume, int sellVolume) {
+
+            this.price = price;
+            this.buyVolume = buyVolume;
+            this.sellVolume = sellVolume;
         }
 
-        return null;
+        public double getTradeableVolume() {
+            return Math.min(buyVolume, sellVolume);
+        }
+
+        public static final Comparator<VolumeAtPrice> TRADEABLE_VOLUME_COMPARATOR = new Comparator<VolumeAtPrice>() {
+
+            @Override
+            public int compare(VolumeAtPrice volumeAtPrice, VolumeAtPrice volumeAtPrice1) {
+                Double tradeableVolume1 = volumeAtPrice.getTradeableVolume();
+                Double tradeableVolume2 = volumeAtPrice1.getTradeableVolume();
+                return tradeableVolume1.compareTo(tradeableVolume2);
+            }
+        };
+    }
+
+    private Optional<VolumeAtPrice> tryGetSingleMaxTradeableVolumeIndex(List<VolumeAtPrice> totalTradeableVolume) {
+
+        final double maxVolume = Collections.max(totalTradeableVolume, VolumeAtPrice.TRADEABLE_VOLUME_COMPARATOR).getTradeableVolume();
+
+        FluentIterable<VolumeAtPrice> maxVolumeOnly = FluentIterable.from(totalTradeableVolume).filter(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(@Nullable VolumeAtPrice input) {
+                return input.getTradeableVolume() == maxVolume;
+            }
+        });
+
+        // TODO: this is simply picking last max hit, should not succeed if multiple max price levels exist
+        return maxVolumeOnly.last();
     }
 
     private List<Integer> getCumulativeQuantity(
@@ -101,16 +133,21 @@ public class MatchingUnit implements Observable<Trade> {
         return quantities;
     }
 
-    private List<Integer> getTotalTradeableVolume(List<Integer> cumulativeBuy, List<Integer> cumulativeSell) {
+    private List<VolumeAtPrice> getTotalTradeableVolume(
+            List<Double> eligiblePrices,
+            List<Integer> cumulativeBuy,
+            List<Integer> cumulativeSell) {
 
-        List<Integer> tradeableVolume = new ArrayList<Integer>();
+        List<VolumeAtPrice> tradeableVolume = new ArrayList<VolumeAtPrice>();
+        Iterator<Double> priceIterator = eligiblePrices.iterator();
         Iterator<Integer> buy = cumulativeBuy.iterator();
         Iterator<Integer> sell = cumulativeSell.iterator();
 
-        while (buy.hasNext()) {
+        while (priceIterator.hasNext()) {
+            double price = priceIterator.next();
             int buyVolume = buy.next();
             int sellVolume = sell.next();
-            tradeableVolume.add(Math.min(buyVolume, sellVolume));
+            tradeableVolume.add(new VolumeAtPrice(price, buyVolume, sellVolume));
         }
 
         return tradeableVolume;
