@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Order
 {
-    public int compareTo(final Order anOrder, final IndicativeMatchPrice bestLimit) {
+    public int compareTo(final Order anOrder, final BestLimit bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
@@ -25,7 +25,7 @@ public class Order
         return comparePrice;
     }
 
-    private int comparePrice(final Order anOrder, final IndicativeMatchPrice bestLimit) {
+    private int comparePrice(final Order anOrder, final BestLimit bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;

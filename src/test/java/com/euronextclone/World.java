@@ -7,12 +7,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eprystupa
- * Date: 7/12/12
- * Time: 10:53 PM
- */
 public class World {
 
     private final List<Trade> generatedTrades = new ArrayList<Trade>();

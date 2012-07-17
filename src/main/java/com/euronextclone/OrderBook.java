@@ -12,7 +12,7 @@ import java.util.List;
 public class OrderBook implements Observable<Trade>
 {
     private final LinkedList<Order> orders = new LinkedList<Order>();
-    private IndicativeMatchPrice bestLimit;
+    private BestLimit bestLimit;
     private final Order.OrderSide bookSide;
 
     /** The observable helper. */
@@ -21,7 +21,7 @@ public class OrderBook implements Observable<Trade>
     public OrderBook(final Order.OrderSide side)
     {
         bookSide = side;
-        bestLimit = new IndicativeMatchPrice(side);
+        bestLimit = new BestLimit(side);
     }
 
     public OrderTypeLimit getBestLimit()
@@ -29,8 +29,13 @@ public class OrderBook implements Observable<Trade>
         return bestLimit.getOrderPrice();
     }
 
-    public boolean match(final Order newOrder, final Double imp)
+    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess currentContinuousTradingProcess, final double imp)
     {
+        // Bit of a cheat
+        if (currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction) {
+            bestLimit.getOrderPrice().setLimit(imp);
+        }
+
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (final Order order : orders)
@@ -74,8 +79,10 @@ public class OrderBook implements Observable<Trade>
             if (order.getQuantity() < newOrder.getQuantity())
             {
                 rebalance.add(order);
-                if (!newOrder.getOrderTypeLimit().hasLimit() && newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit)
-                    newOrder.getOrderTypeLimit().updateToLimitOrder(bestLimit.getOrderPrice().getLimit());
+                if (!newOrder.getOrderTypeLimit().hasLimit() && newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
+                    newOrder.getOrderTypeLimit().convertToLimit(bestLimit.getOrderPrice().getLimit());
+                    order.getOrderTypeLimit().convertToLimit(bestLimit.getOrderPrice().getLimit());
+                }
 
                 generateTrade(newOrder, order, order.getQuantity(), order.getOrderTypeLimit().getLimit());
                 newOrder.decrementQuantity(order.getQuantity());
@@ -182,17 +189,10 @@ public class OrderBook implements Observable<Trade>
         {
             if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0)
             {
-                bestLimit.getOrderPrice().updateToLimitOrder(order.getOrderTypeLimit().getLimit());
+                bestLimit.getOrderPrice().convertToLimit(order.getOrderTypeLimit().getLimit());
                 bestLimit.addQuantity(order.getQuantity());
                 break;
             }
-        }
-    }
-
-    private void add(final ArrayList<Order> rebalance)
-    {
-        for (final Order order : rebalance) {
-            placeOrderInBook(order);
         }
     }
 
@@ -211,7 +211,7 @@ public class OrderBook implements Observable<Trade>
         return notifier.register(observer);
     }
 
-    public IndicativeMatchPrice getIMP() {
+    public BestLimit getIMP() {
         return bestLimit;
     }
 
