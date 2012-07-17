@@ -40,7 +40,15 @@ public class OrderBook implements Observable<Trade>
 
         for (final Order order : orders)
         {
-            if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
+            if (currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction) {
+                if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit) >= imp) ||
+                   (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp))
+                {
+                    order.getOrderTypeLimit().setLimit(imp);
+                } else {
+                    continue;
+                }
+            } else if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
                 if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
                     newOrder.getPartlyFilled() &&
                     order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
@@ -103,9 +111,9 @@ public class OrderBook implements Observable<Trade>
                 newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
                 tradeQuantity, price));
 
-        System.out.println(String.format("%s %s %d %s", newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
-                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
-                tradeQuantity, price));
+//        System.out.println(String.format("%s %s %d %s", newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
+//                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
+//                tradeQuantity, price));
     }
 
 

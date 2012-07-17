@@ -42,7 +42,6 @@ Feature: Auction Phase Matching Rules
       | A             | C              | 30       | 10    |
       | B             | C              | 50       | 10    |
 
-  @focus
   Scenario: the market order is totally filled
     Given that reference price is 10.0
     And the following orders submitted to the book:
@@ -60,9 +59,10 @@ Feature: Auction Phase Matching Rules
       | B             | E              | 70       | 10.1  |
     And the book looks like:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
-      | B          | 2           | 20           | 10.1      | 10,15     | 60           | 6           | F          |
-      | C          | 3           | 10           | 9.9       |           |              |             |            |
+      | B          | 2           | 20           | 10,1      | 10,15     | 60           | 6           | F          |
+      | C          | 3           | 10           | 9,9       |           |              |             |            |
 
+  @focus
   Scenario: the market order is partially filled
     Given that reference price is 10
     And the following orders submitted to the book:

@@ -43,9 +43,7 @@ public class AuctionMatchingStepDefinitions {
 
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
-        matchingUnit.dump();
         matchingUnit.auction();
-        matchingUnit.dump();
     }
 
     @Then("^the book looks like:$")
@@ -86,7 +84,7 @@ public class AuctionMatchingStepDefinitions {
 
             final OrderRow orderRow = (OrderRow) o;
 
-            if (orderId != orderRow.orderId) return false;
+//            if (orderId != orderRow.orderId) return false;
             if (quantity != orderRow.quantity) return false;
             if (!broker.equals(orderRow.broker)) return false;
             if (!price.equals(orderRow.price)) return false;
