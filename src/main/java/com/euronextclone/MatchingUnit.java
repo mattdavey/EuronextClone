@@ -10,6 +10,7 @@ import java.io.Closeable;
 import java.util.List;
 
 public class MatchingUnit implements Observable<Trade> {
+
     public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
 
     private final OrderBook buyOrderBook;
@@ -36,6 +37,11 @@ public class MatchingUnit implements Observable<Trade> {
                 notifier.next(value);
             }
         }));
+    }
+
+    public Double getIndicativeMatchingPrice() {
+
+        return 10.0;
     }
 
     public void auction() {

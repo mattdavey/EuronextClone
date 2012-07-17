@@ -3,7 +3,6 @@ package com.euronextclone;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Then;
-import cucumber.runtime.PendingException;
 import cucumber.table.DataTable;
 
 import javax.annotation.Nullable;
@@ -11,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class MatchingUnitStepDefinitions {
 
@@ -31,10 +32,8 @@ public class MatchingUnitStepDefinitions {
     }
 
     @Then("^the calculated IMP is:$")
-    public void the_calculated_IMP_is(DataTable arg1) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        // For automatic conversion, change DataTable to List<YourType>
-        throw new PendingException();
+    public void the_calculated_IMP_is(List<Double> imp) throws Throwable {
+       assertThat(matchingUnit.getIndicativeMatchingPrice(), is(imp.get(0)));
     }
 
     @Then("^the following trades are generated:$")
