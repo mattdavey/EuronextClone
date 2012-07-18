@@ -11,7 +11,6 @@ import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
-import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.util.*;
 
@@ -26,7 +25,7 @@ public class MatchingUnit implements Observable<Trade> {
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
-    private double referencePrice;
+    private Double referencePrice;
 
     /**
      * The observable helper.
@@ -49,7 +48,7 @@ public class MatchingUnit implements Observable<Trade> {
         }));
     }
 
-    public void setReferencePrice(double referencePrice) {
+    public void setReferencePrice(Double referencePrice) {
         this.referencePrice = referencePrice;
     }
 
@@ -60,12 +59,79 @@ public class MatchingUnit implements Observable<Trade> {
         final List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
         final List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
 
-        final Optional<VolumeAtPrice> max = tryGetSingleMaxTradeableVolumeIndex(totalTradeableVolume);
-        if (max.isPresent()) {
-            return max.get().price;
+        final List<VolumeAtPrice> maximumExecutableVolume = determineMaximumExecutableValue(totalTradeableVolume);
+        if (maximumExecutableVolume.size() == 1) {
+            return maximumExecutableVolume.get(0).price;
         }
 
-        return null;
+        final List<VolumeAtPrice> minimumSurplus = establishMinimumSurplus(maximumExecutableVolume);
+        if (minimumSurplus.size() == 1) {
+            return minimumSurplus.get(0).price;
+        }
+
+        final Optional<Double> pressurePrice = ascertainWhereMarketPressureExists(minimumSurplus);
+        if (pressurePrice.isPresent()) {
+            return pressurePrice.get();
+        }
+
+        return consultReferencePrice(minimumSurplus);
+    }
+
+    private double consultReferencePrice(List<VolumeAtPrice> minimumSurplus) {
+        final FluentIterable<VolumeAtPrice> minimumSurplusIterable = FluentIterable.from(minimumSurplus);
+
+        double minPotentialPrice;
+        double maxPotentialPrice;
+
+        if (minimumSurplusIterable.allMatch(VolumeAtPrice.NO_PRESSURE)) {
+            minPotentialPrice = minimumSurplusIterable.first().get().price;
+            maxPotentialPrice = minimumSurplusIterable.last().get().price;
+        } else {
+            minPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.BUYING_PRESSURE).last().get().price;
+            maxPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.SELLING_PRESSURE).first().get().price;
+        }
+
+        if (referencePrice == null) {
+            return minPotentialPrice;
+        }
+
+        if (referencePrice >= maxPotentialPrice) {
+            return maxPotentialPrice;
+        }
+
+        if (referencePrice <= minPotentialPrice) {
+            return minPotentialPrice;
+        }
+
+        return referencePrice;
+    }
+
+    private List<VolumeAtPrice> establishMinimumSurplus(List<VolumeAtPrice> maximumExecutableVolume) {
+
+        final int minSurplus = Collections.min(maximumExecutableVolume, VolumeAtPrice.ABSOLUTE_SURPLUS_COMPARATOR).getAbsoluteSurplus();
+
+        FluentIterable<VolumeAtPrice> minSurplusOnly = FluentIterable.from(maximumExecutableVolume).filter(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(VolumeAtPrice input) {
+                return input.getAbsoluteSurplus() == minSurplus;
+            }
+        });
+
+        return minSurplusOnly.toImmutableList();
+    }
+
+    private List<VolumeAtPrice> determineMaximumExecutableValue(List<VolumeAtPrice> totalTradeableVolume) {
+
+        final int maxVolume = Collections.max(totalTradeableVolume, VolumeAtPrice.TRADEABLE_VOLUME_COMPARATOR).getTradeableVolume();
+
+        FluentIterable<VolumeAtPrice> maxVolumeOnly = FluentIterable.from(totalTradeableVolume).filter(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(VolumeAtPrice input) {
+                return input.getTradeableVolume() == maxVolume;
+            }
+        });
+
+        return maxVolumeOnly.toImmutableList();
     }
 
     private static class VolumeAtPrice {
@@ -79,53 +145,75 @@ public class MatchingUnit implements Observable<Trade> {
             this.sellVolume = sellVolume;
         }
 
-        public double getTradeableVolume() {
+        public int getTradeableVolume() {
             return Math.min(buyVolume, sellVolume);
+        }
+
+        public int getSurplus() {
+            return buyVolume - sellVolume;
+        }
+
+        public int getAbsoluteSurplus() {
+            return Math.abs(getSurplus());
         }
 
         public static final Comparator<VolumeAtPrice> TRADEABLE_VOLUME_COMPARATOR = new Comparator<VolumeAtPrice>() {
 
             @Override
-            public int compare(VolumeAtPrice volumeAtPrice, VolumeAtPrice volumeAtPrice1) {
-                Double tradeableVolume1 = volumeAtPrice.getTradeableVolume();
-                Double tradeableVolume2 = volumeAtPrice1.getTradeableVolume();
+            public int compare(VolumeAtPrice volumeAtPrice1, VolumeAtPrice volumeAtPrice2) {
+                Integer tradeableVolume1 = volumeAtPrice1.getTradeableVolume();
+                Integer tradeableVolume2 = volumeAtPrice2.getTradeableVolume();
                 return tradeableVolume1.compareTo(tradeableVolume2);
+            }
+        };
+
+        public static final Comparator<VolumeAtPrice> ABSOLUTE_SURPLUS_COMPARATOR = new Comparator<VolumeAtPrice>() {
+
+            @Override
+            public int compare(VolumeAtPrice volumeAtPrice1, VolumeAtPrice volumeAtPrice2) {
+                Integer surplus1 = volumeAtPrice1.getAbsoluteSurplus();
+                Integer surplus2 = volumeAtPrice2.getAbsoluteSurplus();
+                return surplus1.compareTo(surplus2);
+            }
+        };
+
+        public static Predicate<? super VolumeAtPrice> BUYING_PRESSURE = new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(final VolumeAtPrice input) {
+                return input.getSurplus() > 0;
+            }
+        };
+
+        public static Predicate<? super VolumeAtPrice> SELLING_PRESSURE = new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(final VolumeAtPrice input) {
+                return input.getSurplus() < 0;
+            }
+        };
+
+        public static Predicate<? super VolumeAtPrice> NO_PRESSURE = new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(final VolumeAtPrice input) {
+                return input.getSurplus() == 0;
             }
         };
     }
 
-    private Optional<VolumeAtPrice> tryGetSingleMaxTradeableVolumeIndex(List<VolumeAtPrice> totalTradeableVolume) {
+    private Optional<Double> ascertainWhereMarketPressureExists(List<VolumeAtPrice> minimumSurplus) {
 
-        final double maxVolume = Collections.max(totalTradeableVolume, VolumeAtPrice.TRADEABLE_VOLUME_COMPARATOR).getTradeableVolume();
+        final FluentIterable<VolumeAtPrice> minimumSurplusIterable = FluentIterable.from(minimumSurplus);
 
-        FluentIterable<VolumeAtPrice> maxVolumeOnly = FluentIterable.from(totalTradeableVolume).filter(new Predicate<VolumeAtPrice>() {
-            @Override
-            public boolean apply(@Nullable VolumeAtPrice input) {
-                return input.getTradeableVolume() == maxVolume;
-            }
-        });
-
-        if (maxVolumeOnly.size() == 1) {
-            return maxVolumeOnly.first();
+        boolean buyingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.BUYING_PRESSURE);
+        if (buyingPressure) {
+            return Optional.of(minimumSurplusIterable.last().get().price);
         }
 
-        final Optional<VolumeAtPrice> atReferencePrice = maxVolumeOnly.firstMatch(new Predicate<VolumeAtPrice>() {
-            @Override
-            public boolean apply(VolumeAtPrice input) {
-                return input.buyVolume == input.sellVolume && input.price == referencePrice;
-            }
-        });
-
-        if (atReferencePrice.isPresent()) {
-            return atReferencePrice;
+        boolean sellingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.SELLING_PRESSURE);
+        if (sellingPressure) {
+            return Optional.of(minimumSurplusIterable.first().get().price);
         }
 
-        return maxVolumeOnly.firstMatch(new Predicate<VolumeAtPrice>() {
-            @Override
-            public boolean apply(VolumeAtPrice input) {
-                return input.price != referencePrice;
-            }
-        });
+        return Optional.absent();
     }
 
     private List<Integer> getCumulativeQuantity(
