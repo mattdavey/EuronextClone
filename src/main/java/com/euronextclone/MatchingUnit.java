@@ -109,12 +109,21 @@ public class MatchingUnit implements Observable<Trade> {
             return maxVolumeOnly.first();
         }
 
+        final Optional<VolumeAtPrice> atReferencePrice = maxVolumeOnly.firstMatch(new Predicate<VolumeAtPrice>() {
+            @Override
+            public boolean apply(VolumeAtPrice input) {
+                return input.buyVolume == input.sellVolume && input.price == referencePrice;
+            }
+        });
+
+        if (atReferencePrice.isPresent()) {
+            return atReferencePrice;
+        }
+
         return maxVolumeOnly.firstMatch(new Predicate<VolumeAtPrice>() {
             @Override
             public boolean apply(VolumeAtPrice input) {
-
-                return input.buyVolume == input.sellVolume && input.price == referencePrice ||
-                        input.buyVolume != input.sellVolume && input.price != referencePrice;
+                return input.price != referencePrice;
             }
         });
     }

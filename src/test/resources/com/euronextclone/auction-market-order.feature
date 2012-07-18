@@ -43,7 +43,7 @@ Feature: Auction Phase Matching Rules
       | B             | C              | 50       | 10    |
 
   Scenario: the market order is totally filled
-    Given that reference price is 10.0
+    Given that reference price is 10
     And the following orders submitted to the book:
       | Bid Broker | Bid OrderId | Bid Quantity | Bid Price | Ask Price | Ask Quantity | Ask OrderId | Ask Broker |
       | A          | 1           | 50           | MTL       | MTL       | 40           | 4           | D          |
