@@ -80,33 +80,39 @@ public class MatchingUnit implements Observable<Trade> {
     private double consultReferencePrice(List<VolumeAtPrice> minimumSurplus) {
         final FluentIterable<VolumeAtPrice> minimumSurplusIterable = FluentIterable.from(minimumSurplus);
 
-        double minPotentialPrice;
-        double maxPotentialPrice;
+        if (!minimumSurplus.isEmpty()) {
+            double minPotentialPrice;
+            double maxPotentialPrice;
 
-        if (minimumSurplusIterable.allMatch(VolumeAtPrice.NO_PRESSURE)) {
-            minPotentialPrice = minimumSurplusIterable.first().get().price;
-            maxPotentialPrice = minimumSurplusIterable.last().get().price;
-        } else {
-            minPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.BUYING_PRESSURE).last().get().price;
-            maxPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.SELLING_PRESSURE).first().get().price;
-        }
+            if (minimumSurplusIterable.allMatch(VolumeAtPrice.NO_PRESSURE)) {
+                minPotentialPrice = minimumSurplusIterable.first().get().price;
+                maxPotentialPrice = minimumSurplusIterable.last().get().price;
+            } else {
+                minPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.BUYING_PRESSURE).last().get().price;
+                maxPotentialPrice = minimumSurplusIterable.filter(VolumeAtPrice.SELLING_PRESSURE).first().get().price;
+            }
 
-        if (referencePrice == null) {
-            return minPotentialPrice;
-        }
+            if (referencePrice == null) {
+                return minPotentialPrice;
+            }
 
-        if (referencePrice >= maxPotentialPrice) {
-            return maxPotentialPrice;
-        }
+            if (referencePrice >= maxPotentialPrice) {
+                return maxPotentialPrice;
+            }
 
-        if (referencePrice <= minPotentialPrice) {
-            return minPotentialPrice;
+            if (referencePrice <= minPotentialPrice) {
+                return minPotentialPrice;
+            }
         }
 
         return referencePrice;
     }
 
     private List<VolumeAtPrice> establishMinimumSurplus(List<VolumeAtPrice> maximumExecutableVolume) {
+
+        if (maximumExecutableVolume.isEmpty()) {
+            return maximumExecutableVolume;
+        }
 
         final int minSurplus = Collections.min(maximumExecutableVolume, VolumeAtPrice.ABSOLUTE_SURPLUS_COMPARATOR).getAbsoluteSurplus();
 
@@ -121,6 +127,10 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private List<VolumeAtPrice> determineMaximumExecutableValue(List<VolumeAtPrice> totalTradeableVolume) {
+
+        if (totalTradeableVolume.isEmpty()) {
+            return totalTradeableVolume;
+        }
 
         final int maxVolume = Collections.max(totalTradeableVolume, VolumeAtPrice.TRADEABLE_VOLUME_COMPARATOR).getTradeableVolume();
 
@@ -201,16 +211,18 @@ public class MatchingUnit implements Observable<Trade> {
 
     private Optional<Double> ascertainWhereMarketPressureExists(List<VolumeAtPrice> minimumSurplus) {
 
-        final FluentIterable<VolumeAtPrice> minimumSurplusIterable = FluentIterable.from(minimumSurplus);
+        if (!minimumSurplus.isEmpty()) {
+            final FluentIterable<VolumeAtPrice> minimumSurplusIterable = FluentIterable.from(minimumSurplus);
 
-        boolean buyingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.BUYING_PRESSURE);
-        if (buyingPressure) {
-            return Optional.of(minimumSurplusIterable.last().get().price);
-        }
+            final boolean buyingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.BUYING_PRESSURE);
+            if (buyingPressure) {
+                return Optional.of(minimumSurplusIterable.last().get().price);
+            }
 
-        boolean sellingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.SELLING_PRESSURE);
-        if (sellingPressure) {
-            return Optional.of(minimumSurplusIterable.first().get().price);
+            final boolean sellingPressure = minimumSurplusIterable.allMatch(VolumeAtPrice.SELLING_PRESSURE);
+            if (sellingPressure) {
+                return Optional.of(minimumSurplusIterable.first().get().price);
+            }
         }
 
         return Optional.absent();
@@ -270,7 +282,9 @@ public class MatchingUnit implements Observable<Trade> {
     private List<Double> getListOfEligiblePrices() {
 
         final TreeSet<Double> prices = new TreeSet<Double>();
-        prices.add(referencePrice);
+        if (referencePrice != null) {
+            prices.add(referencePrice);
+        }
         prices.addAll(getLimitPrices(buyOrderBook));
         prices.addAll(getLimitPrices(sellOrderBook));
 
