@@ -11,6 +11,7 @@ import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 
+import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.util.*;
 
@@ -20,7 +21,11 @@ public class MatchingUnit implements Observable<Trade> {
         currentContinuousTradingProcess = ContinuousTradingProcess.OpeningAuction;
     }
 
-    public enum ContinuousTradingProcess {PreOpeningPhase, OpeningAuction, MainTradingSession, PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading}
+    public enum ContinuousTradingProcess {
+//        PreOpeningPhase,
+        OpeningAuction, MainTradingSession,
+//        PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading
+    }
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
@@ -334,7 +339,7 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        final Double imp = currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction?
+        final Double imp = currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction ?
                 getIndicativeMatchingPrice() : null;
         if (!counterBook.match(order, currentContinuousTradingProcess, imp)) {
             book.remove(order);
@@ -361,7 +366,8 @@ public class MatchingUnit implements Observable<Trade> {
         System.out.println();
     }
 
-    public Closeable register(Observer<? super Trade> observer) {
+    @Nonnull
+    public Closeable register(@Nonnull Observer<? super Trade> observer) {
         return notifier.register(observer);
     }
 
