@@ -323,7 +323,6 @@ public class MatchingUnit implements Observable<Trade> {
         return getBook(side).getOrders();
     }
 
-    // Auction add
     public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
         final Order order = new Order(broker, quantity, orderTypeLimit, side);
         getBook(side).add(order);

@@ -4,33 +4,32 @@ import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
 
+import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderBook implements Observable<Trade>
-{
+public class OrderBook implements Observable<Trade> {
     private final LinkedList<Order> orders = new LinkedList<Order>();
     private BestLimit bestLimit;
     private final Order.OrderSide bookSide;
 
-    /** The observable helper. */
+    /**
+     * The observable helper.
+     */
     final private DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
-    public OrderBook(final Order.OrderSide side)
-    {
+    public OrderBook(final Order.OrderSide side) {
         bookSide = side;
         bestLimit = new BestLimit(side);
     }
 
-    public OrderTypeLimit getBestLimit()
-    {
+    public OrderTypeLimit getBestLimit() {
         return bestLimit.getOrderPrice();
     }
 
-    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess currentContinuousTradingProcess, final Double imp)
-    {
+    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess currentContinuousTradingProcess, final Double imp) {
         // Bit of a cheat
         if (currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction) {
             bestLimit.getOrderPrice().setLimit(imp);
@@ -38,20 +37,18 @@ public class OrderBook implements Observable<Trade>
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
-        for (final Order order : orders)
-        {
+        for (final Order order : orders) {
             if (currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction) {
                 if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit) >= imp) ||
-                   (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp))
-                {
+                        (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp)) {
                     order.getOrderTypeLimit().setLimit(imp);
                 } else {
                     continue;
                 }
             } else if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
                 if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
-                    newOrder.getPartlyFilled() &&
-                    order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
+                        newOrder.getPartlyFilled() &&
+                        order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
 
                     // Rule 1 of Pure Market Order continuous trading
 
@@ -59,16 +56,14 @@ public class OrderBook implements Observable<Trade>
                     continue;
             }
 
-            if (order.getQuantity() == newOrder.getQuantity())
-            {
+            if (order.getQuantity() == newOrder.getQuantity()) {
                 orders.remove(order);
                 generateTrade(newOrder, order, order.getQuantity(), newOrder.getOrderTypeLimit().getLimit());
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }
 
-            if (order.getQuantity() > newOrder.getQuantity())
-            {
+            if (order.getQuantity() > newOrder.getQuantity()) {
                 if (!order.getOrderTypeLimit().hasLimit()) {
                     order.getOrderTypeLimit().convertToLimit(newOrder.getOrderTypeLimit().getLimit());
                 }
@@ -84,8 +79,7 @@ public class OrderBook implements Observable<Trade>
                 break;
             }
 
-            if (order.getQuantity() < newOrder.getQuantity())
-            {
+            if (order.getQuantity() < newOrder.getQuantity()) {
                 rebalance.add(order);
                 if (!newOrder.getOrderTypeLimit().hasLimit() && newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
                     newOrder.getOrderTypeLimit().convertToLimit(bestLimit.getOrderPrice().getLimit());
@@ -98,15 +92,14 @@ public class OrderBook implements Observable<Trade>
             }
         }
 
-        if(rebalance.size() > 0)
+        if (rebalance.size() > 0)
             orders.removeAll(rebalance);
 
         validatePegOrderPositions();
         return newOrder.getQuantity() != 0;
     }
 
-    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price)
-    {
+    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price) {
         notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
                 newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
                 tradeQuantity, price));
@@ -122,17 +115,14 @@ public class OrderBook implements Observable<Trade>
         validatePegOrderPositions();
     }
 
-    public void add(final Order order)
-    {
+    public void add(final Order order) {
         placeOrderInBook(order);
         validatePegOrderPositions();
     }
 
-    private void placeOrderInBook(final Order newOrder)
-    {
+    private void placeOrderInBook(final Order newOrder) {
         int count = 0;
-        for (final Order order : orders)
-        {
+        for (final Order order : orders) {
             if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.Peg && 0 == count) {
                 count++;
                 continue;
@@ -149,9 +139,8 @@ public class OrderBook implements Observable<Trade>
         orders.add(count, newOrder);
     }
 
-    private void validatePegOrderPositions()
-    {
-        if(orders.size() == 0)
+    private void validatePegOrderPositions() {
+        if (orders.size() == 0)
             return;
 
         calculateBestLimit();
@@ -160,10 +149,8 @@ public class OrderBook implements Observable<Trade>
         while (!rerun) {
             rerun = false;
             Order last = null;
-            for (Order order : orders)
-            {
-                if (last == null)
-                {
+            for (Order order : orders) {
+                if (last == null) {
                     last = order;
                     continue;
                 }
@@ -185,18 +172,15 @@ public class OrderBook implements Observable<Trade>
 
     }
 
-    private void calculateBestLimit()
-    {
+    private void calculateBestLimit() {
         if (orders.size() == 0)
             return;
 
         bestLimit.reset();
 
         // Order book should be good, just reset best
-        for (final Order order : orders)
-        {
-            if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0)
-            {
+        for (final Order order : orders) {
+            if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0) {
                 bestLimit.getOrderPrice().convertToLimit(order.getOrderTypeLimit().getLimit());
                 bestLimit.addQuantity(order.getQuantity());
                 break;
@@ -204,18 +188,17 @@ public class OrderBook implements Observable<Trade>
         }
     }
 
-    public int orderBookDepth()
-    {
+    public int orderBookDepth() {
         return orders.size();
     }
 
-    public void dump()
-    {
+    public void dump() {
         for (final Order order : orders)
             order.dump();
     }
 
-    public Closeable register(Observer<? super Trade> observer) {
+    @Nonnull
+    public Closeable register(@Nonnull Observer<? super Trade> observer) {
         return notifier.register(observer);
     }
 
