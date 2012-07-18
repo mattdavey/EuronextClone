@@ -334,8 +334,9 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        // Hacked in IMP to test 2 tests - 10.1 or 10
-        if (!counterBook.match(order, currentContinuousTradingProcess, getIndicativeMatchingPrice())) {
+        final Double imp = currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction?
+                getIndicativeMatchingPrice() : null;
+        if (!counterBook.match(order, currentContinuousTradingProcess, imp)) {
             book.remove(order);
         }
 

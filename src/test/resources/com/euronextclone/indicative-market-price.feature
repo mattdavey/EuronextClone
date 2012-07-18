@@ -49,7 +49,6 @@ Feature: Calculating Indicative Market Price Used in Auction Phase
     Then the calculated IMP is:
       | 9.96 |
 
-  @focus
   Scenario: The Indicative Matching Price example 1 from Euronext's Pure Market Order cases
     Given that reference price is 10
     And the following orders are submitted in this order:

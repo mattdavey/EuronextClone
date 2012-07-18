@@ -29,7 +29,7 @@ public class OrderBook implements Observable<Trade>
         return bestLimit.getOrderPrice();
     }
 
-    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess currentContinuousTradingProcess, final double imp)
+    public boolean match(final Order newOrder, final MatchingUnit.ContinuousTradingProcess currentContinuousTradingProcess, final Double imp)
     {
         // Bit of a cheat
         if (currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction) {
