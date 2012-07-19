@@ -58,7 +58,8 @@ public class OrderBook implements Observable<Trade> {
 
             if (order.getQuantity() == newOrder.getQuantity()) {
                 orders.remove(order);
-                generateTrade(newOrder, order, order.getQuantity(), newOrder.getOrderTypeLimit().getLimit());
+                double price = imp != null ? imp : newOrder.getOrderTypeLimit().getLimit();
+                generateTrade(newOrder, order, order.getQuantity(), price);
                 newOrder.decrementQuantity(newOrder.getQuantity());
                 break;
             }

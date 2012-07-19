@@ -22,7 +22,7 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     public enum ContinuousTradingProcess {
-//        PreOpeningPhase,
+        //        PreOpeningPhase,
         OpeningAuction, MainTradingSession,
 //        PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading
     }
@@ -340,8 +340,15 @@ public class MatchingUnit implements Observable<Trade> {
 
         final Double imp = currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction ?
                 getIndicativeMatchingPrice() : null;
+        final OrderType initialOrderType = order.getOrderTypeLimit().getOrderType();
         if (!counterBook.match(order, currentContinuousTradingProcess, imp)) {
             book.remove(order);
+        } else {
+            final OrderType currentOrderType = order.getOrderTypeLimit().getOrderType();
+            if (initialOrderType != currentOrderType) {
+                book.remove(order);
+                book.add(order);
+            }
         }
 
         return startQuantity != order.getQuantity();

@@ -62,7 +62,7 @@ Feature: Calculating Indicative Market Price Used in Auction Phase
     Then the calculated IMP is:
       | 10.08 |
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | G      | Buy  | 20       | MarketOrder   |       |
+      | Broker | Side | Quantity | Order Type  | Price |
+      | G      | Buy  | 20       | MarketOrder |       |
     Then the calculated IMP is:
       | 10.1 |

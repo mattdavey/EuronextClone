@@ -11,6 +11,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 public class MatchingUnitStepDefinitions {
@@ -29,6 +30,13 @@ public class MatchingUnitStepDefinitions {
         final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
 
         assertEquals(expectedOrders, actualOrders);
+    }
+
+    @Then("^\"([^\"]*)\" order book is empty$")
+    public void order_book_is_empty(Order.OrderSide side) throws Throwable {
+        final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
+
+        assertThat(actualOrders, is(empty()));
     }
 
     @Then("^the calculated IMP is:$")
