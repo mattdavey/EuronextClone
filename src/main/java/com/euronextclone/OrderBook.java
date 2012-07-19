@@ -52,8 +52,9 @@ public class OrderBook implements Observable<Trade> {
 
                     // Rule 1 of Pure Market Order continuous trading
 
-                } else
+                } else {
                     continue;
+                }
             }
 
             if (order.getQuantity() == newOrder.getQuantity()) {
@@ -120,10 +121,6 @@ public class OrderBook implements Observable<Trade> {
     private void placeOrderInBook(final Order newOrder) {
         int count = 0;
         for (final Order order : orders) {
-            if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.Peg && 0 == count) {
-                count++;
-                continue;
-            }
 
             final int compare = order.compareTo(newOrder, bestLimit);
             if (compare < 0) {
@@ -173,13 +170,10 @@ public class OrderBook implements Observable<Trade> {
         if (orders.size() == 0)
             return;
 
-        bestLimit.reset();
-
         // Order book should be good, just reset best
         for (final Order order : orders) {
             if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0) {
                 bestLimit.getOrderPrice().convertToLimit(order.getOrderTypeLimit().getLimit());
-                bestLimit.addQuantity(order.getQuantity());
                 break;
             }
         }

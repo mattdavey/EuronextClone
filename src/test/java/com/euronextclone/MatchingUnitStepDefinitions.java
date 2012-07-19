@@ -149,7 +149,6 @@ public class MatchingUnitStepDefinitions {
         private int quantity;
         private OrderType orderType;
         private Double price;
-        private Double limit;
 
         public static Function<? super Order, OrderRow> FROM_Order = new Function<Order, OrderRow>() {
             @Override
@@ -159,7 +158,6 @@ public class MatchingUnitStepDefinitions {
 
                 orderRow.broker = order.getBroker();
                 orderRow.side = order.getSide();
-//                orderRow.price = orderTypeLimit.hasPrice()? orderTypeLimit.value() : null;
                 orderRow.price = orderTypeLimit.hasLimit() ? orderTypeLimit.getLimit() : null;
                 orderRow.orderType = orderTypeLimit.getOrderType();
                 orderRow.quantity = order.getQuantity();
@@ -176,7 +174,6 @@ public class MatchingUnitStepDefinitions {
 
             if (quantity != orderRow.quantity) return false;
             if (!broker.equals(orderRow.broker)) return false;
-            if (limit != null ? !limit.equals(orderRow.limit) : orderRow.limit != null) return false;
             if (orderType != orderRow.orderType) return false;
             if (price != null ? !price.equals(orderRow.price) : orderRow.price != null) return false;
             if (side != orderRow.side) return false;
@@ -191,7 +188,6 @@ public class MatchingUnitStepDefinitions {
             result = 31 * result + quantity;
             result = 31 * result + orderType.hashCode();
             result = 31 * result + (price != null ? price.hashCode() : 0);
-            result = 31 * result + (limit != null ? limit.hashCode() : 0);
             return result;
         }
 
@@ -203,7 +199,6 @@ public class MatchingUnitStepDefinitions {
                     ", quantity=" + quantity +
                     ", orderType=" + orderType +
                     ", price=" + price +
-                    ", limit=" + limit +
                     '}';
         }
     }
