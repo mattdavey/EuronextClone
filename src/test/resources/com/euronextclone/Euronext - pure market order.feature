@@ -84,13 +84,35 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Then the calculated IMP is:
       | 9.98 |
 
-  @focus
+
   Scenario: Call Phase - Example 5
   The Indicative Matching Price is equal to the best limit & higher to the reference price Reference price
-    Given that reference price is 10
+    Given that trading mode for security is "Continuous" and phase is "CoreCall"
+    And that reference price is 10
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type  | Price |
       | A      | Buy  | 40       | MarketOrder |       |
       | G      | Sell | 40       | Limit       | 10.02 |
     Then the calculated IMP is:
       | 10.02 |
+
+
+  Scenario: Trading session Phase - Example 1
+  The Market order is totally executed upon entry
+    Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | A      | Sell | 100      | Limit       | 10.2  |
+      | B      | Sell | 60       | Limit       | 10.3  |
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Buy  | 110      | MarketOrder |       |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | C             | A              | 100      | 10.2  |
+      | C             | B              | 10       | 10.3  |
+    And "Buy" order book is empty
+    And "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | B      | Sell | 50       | Limit      | 10.3  |
