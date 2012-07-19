@@ -118,7 +118,6 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | B      | Sell | 50       | Limit      | 10.3  |
 
 
-  @focus
   Scenario: Trading session Phase - Example 2
   The Market order is partially executed upon entry
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
@@ -138,3 +137,21 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Broker | Side | Quantity | Order Type  | Price |
       | C      | Buy  | 40       | MarketOrder |       |
     And "Sell" order book is empty
+
+
+  @focus
+  Scenario: Trading session Phase - Example 3
+  There are only Market orders in the order book, trade price is the last traded price
+    Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | A      | Buy  | 90       | MarketOrder |       |
+      | B      | Buy  | 10       | MarketOrder |       |
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Sell | 170      | MarketOrder |       |
+#    Then the following trades are generated:
+#      | Buying broker | Selling broker | Quantity | Price |
+#      | A             | C              | 90       | 10    |
+#      | B             | C              | 10       | 10    |
