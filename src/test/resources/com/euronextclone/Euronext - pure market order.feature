@@ -1,6 +1,5 @@
 Feature: Examples from the Euronext Pure Market Order PDF
 
-  @focus
   Scenario: Call Phase - Example 1
   The Market order is totally filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
@@ -34,3 +33,29 @@ Feature: Examples from the Euronext Pure Market Order PDF
     And "Sell" order book should look like:
       | Broker | Side | Quantity | Order Type | Price |
       | F      | Sell | 60       | Limit      | 10.15 |
+
+  @focus
+  Scenario: Call Phase - Example 2
+  The market order is partially filled
+    Given that trading mode for security is "Continuous" and phase is "CoreCall"
+    And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type    | Price |
+      | A      | Buy  | 40       | MarketToLimit |       |
+      | D      | Sell | 45       | MarketOrder   |       |
+    Then the calculated IMP is:
+      | 10 |
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type    | Price |
+      | G      | Buy  | 20       | MarketOrder   |       |
+    Then the calculated IMP is:
+      | 10 |
+    When class auction completes
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | D              | 40       | 10    |
+      | G             | D              | 5        | 10    |
+    And "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | G      | Buy  | 15       | MarketOrder |       |
+    And "Sell" order book is empty
