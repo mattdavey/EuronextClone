@@ -104,6 +104,7 @@ Feature: Examples from the Euronext Market-to-Limit PDF
   @focus
   Scenario: On a class of Securities traded on a continuous mode – Call phase - Example 3
   There are Market to limits, Pure Market orders and Limited orders
+    Given that trading mode for security is "Continuous"
     And that reference price is 10
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type    | Price |
@@ -113,7 +114,7 @@ Feature: Examples from the Euronext Market-to-Limit PDF
       | D      | Sell | 5        | Limit         | 10    |
     Then the calculated IMP is:
       | 10 |
-    When continuous mode call phase completes
+    When class auction completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | A             | D              | 5        | 10    |

@@ -2,6 +2,7 @@ package com.euronextclone;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
+import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
@@ -25,14 +26,14 @@ public class MatchingUnitStepDefinitions {
         generatedTrades = world.getGeneratedTrades();
     }
 
+    @Given("^that trading mode for security is \"([^\"]*)\"$")
+    public void that_trading_mode_for_security_is(TradingMode tradingMode) throws Throwable {
+        matchingUnit.setTradingMode(tradingMode);
+    }
+
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
         matchingUnit.auction();
-    }
-
-    @When("^continuous mode call phase completes$")
-    public void continuous_mode_call_phase_completes() throws Throwable {
-        matchingUnit.call();
     }
 
     @Then("^\"([^\"]*)\" order book should look like:$")

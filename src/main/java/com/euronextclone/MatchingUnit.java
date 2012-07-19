@@ -24,6 +24,7 @@ public class MatchingUnit implements Observable<Trade> {
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private TradingPhase tradingPhase = TradingPhase.MainTradingSession;
+    private TradingMode tradingMode = TradingMode.Continuous;
     private Double referencePrice;
 
     /**
@@ -141,6 +142,10 @@ public class MatchingUnit implements Observable<Trade> {
         });
 
         return maxVolumeOnly.toImmutableList();
+    }
+
+    public void setTradingMode(TradingMode tradingMode) {
+        this.tradingMode = tradingMode;
     }
 
     private static class VolumeAtPrice {
@@ -303,10 +308,6 @@ public class MatchingUnit implements Observable<Trade> {
                 return input.getOrderTypeLimit().getLimit();
             }
         }).toImmutableSet();
-    }
-
-    public void call() {
-        //To change body of created methods use File | Settings | File Templates.
     }
 
     public void auction() {

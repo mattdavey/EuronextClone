@@ -7,7 +7,6 @@ package com.euronextclone;
 * Time: 7:12 AM
 */
 public enum TradingPhase {
-    Call,
     //        PreOpeningPhase,
     OpeningAuction,
     MainTradingSession,
