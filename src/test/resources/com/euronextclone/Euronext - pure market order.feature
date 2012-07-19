@@ -102,9 +102,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | A      | Sell | 100      | Limit       | 10.2  |
-      | B      | Sell | 60       | Limit       | 10.3  |
+      | Broker | Side | Quantity | Order Type | Price |
+      | A      | Sell | 100      | Limit      | 10.2  |
+      | B      | Sell | 60       | Limit      | 10.3  |
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type  | Price |
       | C      | Buy  | 110      | MarketOrder |       |
@@ -116,3 +116,25 @@ Feature: Examples from the Euronext Pure Market Order PDF
     And "Sell" order book should look like:
       | Broker | Side | Quantity | Order Type | Price |
       | B      | Sell | 50       | Limit      | 10.3  |
+
+
+  @focus
+  Scenario: Trading session Phase - Example 2
+  The Market order is partially executed upon entry
+    Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type | Price |
+      | A      | Sell | 100      | Limit      | 10.2  |
+      | B      | Sell | 60       | Limit      | 10.3  |
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Buy  | 200      | MarketOrder |       |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | C             | A              | 100      | 10.2  |
+      | C             | B              | 60       | 10.3  |
+    And "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Buy  | 40       | MarketOrder |       |
+    And "Sell" order book is empty
