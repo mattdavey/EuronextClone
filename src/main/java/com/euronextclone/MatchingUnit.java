@@ -319,6 +319,29 @@ public class MatchingUnit implements Observable<Trade> {
                 break;
             }
         }
+
+        upgradeMarketToLimitOrders(buyOrderBook);
+        upgradeMarketToLimitOrders(sellOrderBook);
+    }
+
+    private void upgradeMarketToLimitOrders(OrderBook orderBook) {
+
+        if (tradingMode == TradingMode.Continuous) {
+
+            List<Order> orders = orderBook.getOrders();
+            List<Order> mtlOrders = FluentIterable.from(orders).filter(new Predicate<Order>() {
+                @Override
+                public boolean apply(Order input) {
+                    return input.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit;
+                }
+            }).toImmutableList();
+            orders.removeAll(mtlOrders);
+
+            for (Order mtlOrder : mtlOrders) {
+                mtlOrder.getOrderTypeLimit().convertToLimit(indicativeMatchingPrice);
+                orderBook.add(mtlOrder);
+            }
+        }
     }
 
     public List<Order> getOrders(final Order.OrderSide side) {
