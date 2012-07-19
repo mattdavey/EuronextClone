@@ -6,6 +6,8 @@ import quickfix.field.*;
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Observable;
+import java.util.Observer;
 
 public class FixClientApplication implements quickfix.Application {
     private ObservableLogon observableLogon = new ObservableLogon();
