@@ -121,10 +121,6 @@ public class OrderBook implements Observable<Trade> {
     private void placeOrderInBook(final Order newOrder) {
         int count = 0;
         for (final Order order : orders) {
-            if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.Peg && 0 == count) {
-                count++;
-                continue;
-            }
 
             final int compare = order.compareTo(newOrder, bestLimit);
             if (compare < 0) {
