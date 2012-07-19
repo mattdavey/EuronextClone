@@ -25,8 +25,9 @@ public class OrderBook implements Observable<Trade> {
         bestLimit = new BestLimit(side);
     }
 
-    public OrderTypeLimit getBestLimit() {
-        return bestLimit.getOrderPrice();
+    public Double getBestLimit() {
+        final OrderTypeLimit orderPrice = bestLimit.getOrderPrice();
+        return orderPrice.hasLimit() ? orderPrice.getLimit() : null;
     }
 
     public boolean match(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {

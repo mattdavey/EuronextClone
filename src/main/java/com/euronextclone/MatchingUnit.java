@@ -383,8 +383,8 @@ public class MatchingUnit implements Observable<Trade> {
         return orders.orderBookDepth();
     }
 
-    public String getBestLimit(final Order.OrderSide side) {
-        return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit().toString() : buyOrderBook.getBestLimit().toString();
+    public Double getBestLimit(final Order.OrderSide side) {
+        return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit() : buyOrderBook.getBestLimit();
     }
 
     public void dump() {
