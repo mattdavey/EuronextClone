@@ -8,7 +8,8 @@ package com.euronextclone;
 */
 public enum TradingPhase {
     //        PreOpeningPhase,
-    OpeningAuction,
-    MainTradingSession,
+    CoreCall,
+    CoreAuction,
+    CoreContinuous,
 //        PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading
 }

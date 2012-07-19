@@ -26,9 +26,10 @@ public class MatchingUnitStepDefinitions {
         generatedTrades = world.getGeneratedTrades();
     }
 
-    @Given("^that trading mode for security is \"([^\"]*)\"$")
-    public void that_trading_mode_for_security_is(TradingMode tradingMode) throws Throwable {
+    @Given("^that trading mode for security is \"([^\"]*)\" and phase is \"([^\"]*)\"$")
+    public void that_trading_mode_for_security_is_and_phase_is(TradingMode tradingMode, TradingPhase phase) throws Throwable {
         matchingUnit.setTradingMode(tradingMode);
+        matchingUnit.setTradingPhase(phase);
     }
 
     @When("^class auction completes$")

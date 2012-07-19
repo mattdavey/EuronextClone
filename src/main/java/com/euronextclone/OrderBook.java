@@ -31,14 +31,14 @@ public class OrderBook implements Observable<Trade> {
 
     public boolean match(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {
         // Bit of a cheat
-        if (currentTradingPhase == TradingPhase.OpeningAuction) {
+        if (currentTradingPhase == TradingPhase.CoreAuction) {
             bestLimit.getOrderPrice().setLimit(imp);
         }
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (final Order order : orders) {
-            if (currentTradingPhase == TradingPhase.OpeningAuction) {
+            if (currentTradingPhase == TradingPhase.CoreAuction) {
                 if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit) >= imp) ||
                         (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp)) {
                     order.getOrderTypeLimit().setLimit(imp);

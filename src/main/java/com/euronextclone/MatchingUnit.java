@@ -18,12 +18,12 @@ import java.util.*;
 public class MatchingUnit implements Observable<Trade> {
 
     public void startAuction() {
-        tradingPhase = TradingPhase.OpeningAuction;
+        tradingPhase = TradingPhase.CoreAuction;
     }
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
-    private TradingPhase tradingPhase = TradingPhase.MainTradingSession;
+    private TradingPhase tradingPhase = TradingPhase.CoreContinuous;
     private TradingMode tradingMode = TradingMode.Continuous;
     private Double referencePrice;
     private Double indicativeMatchingPrice;
@@ -147,6 +147,10 @@ public class MatchingUnit implements Observable<Trade> {
 
     public void setTradingMode(TradingMode tradingMode) {
         this.tradingMode = tradingMode;
+    }
+
+    public void setTradingPhase(TradingPhase tradingPhase) {
+        this.tradingPhase = tradingPhase;
     }
 
     private static class VolumeAtPrice {
@@ -352,7 +356,7 @@ public class MatchingUnit implements Observable<Trade> {
         final Order order = new Order(broker, quantity, orderTypeLimit, side);
         getBook(side).add(order);
 
-        if (tradingPhase == TradingPhase.MainTradingSession) {
+        if (tradingPhase == TradingPhase.CoreContinuous) {
             tryMatchOrder(order);
         }
     }
