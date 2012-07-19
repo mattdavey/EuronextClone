@@ -18,18 +18,12 @@ import java.util.*;
 public class MatchingUnit implements Observable<Trade> {
 
     public void startAuction() {
-        currentContinuousTradingProcess = ContinuousTradingProcess.OpeningAuction;
-    }
-
-    public enum ContinuousTradingProcess {
-        //        PreOpeningPhase,
-        OpeningAuction, MainTradingSession,
-//        PreCloseingPhase, ClosingAuction, TradingAtLastPhase, AfterHoursTrading
+        tradingPhase = TradingPhase.OpeningAuction;
     }
 
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
-    private ContinuousTradingProcess currentContinuousTradingProcess = ContinuousTradingProcess.MainTradingSession;
+    private TradingPhase tradingPhase = TradingPhase.MainTradingSession;
     private Double referencePrice;
 
     /**
@@ -311,6 +305,10 @@ public class MatchingUnit implements Observable<Trade> {
         }).toImmutableSet();
     }
 
+    public void call() {
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
     public void auction() {
         while (!buyOrderBook.getOrders().isEmpty()) {
             if (!tryMatchOrder(buyOrderBook.getOrders().get(0))) {
@@ -327,7 +325,7 @@ public class MatchingUnit implements Observable<Trade> {
         final Order order = new Order(broker, quantity, orderTypeLimit, side);
         getBook(side).add(order);
 
-        if (currentContinuousTradingProcess == ContinuousTradingProcess.MainTradingSession) {
+        if (tradingPhase == TradingPhase.MainTradingSession) {
             tryMatchOrder(order);
         }
     }
@@ -338,10 +336,10 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        final Double imp = currentContinuousTradingProcess == MatchingUnit.ContinuousTradingProcess.OpeningAuction ?
+        final Double imp = tradingPhase == TradingPhase.OpeningAuction ?
                 getIndicativeMatchingPrice() : null;
         final OrderType initialOrderType = order.getOrderTypeLimit().getOrderType();
-        if (!counterBook.match(order, currentContinuousTradingProcess, imp)) {
+        if (!counterBook.match(order, tradingPhase, imp)) {
             book.remove(order);
         } else {
             final OrderType currentOrderType = order.getOrderTypeLimit().getOrderType();

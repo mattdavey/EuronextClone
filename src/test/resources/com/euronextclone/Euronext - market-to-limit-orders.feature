@@ -104,7 +104,7 @@ Feature: Examples from the Euronext Market-to-Limit PDF
   @focus
   Scenario: On a class of Securities traded on a continuous mode – Call phase - Example 3
   There are Market to limits, Pure Market orders and Limited orders
-    Given that reference price is 10
+    And that reference price is 10
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type    | Price |
       | A      | Buy  | 10       | MarketToLimit |       |
