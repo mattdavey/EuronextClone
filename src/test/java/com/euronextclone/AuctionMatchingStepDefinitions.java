@@ -5,7 +5,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
-import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
 
 import java.util.List;
@@ -39,11 +38,6 @@ public class AuctionMatchingStepDefinitions {
         for (final Order ask : asks) {
             matchingUnit.addOrder(ask.getSide(), ask.getBroker(), ask.getQuantity(), ask.getOrderTypeLimit());
         }
-    }
-
-    @When("^class auction completes$")
-    public void class_auction_completes() throws Throwable {
-        matchingUnit.auction();
     }
 
     @Then("^the book looks like:$")

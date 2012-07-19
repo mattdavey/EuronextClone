@@ -3,6 +3,7 @@ package com.euronextclone;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Then;
+import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
 
 import javax.annotation.Nullable;
@@ -22,6 +23,16 @@ public class MatchingUnitStepDefinitions {
     public MatchingUnitStepDefinitions(World world) {
         matchingUnit = world.getMatchingUnit();
         generatedTrades = world.getGeneratedTrades();
+    }
+
+    @When("^class auction completes$")
+    public void class_auction_completes() throws Throwable {
+        matchingUnit.auction();
+    }
+
+    @When("^continuous mode call phase completes$")
+    public void continuous_mode_call_phase_completes() throws Throwable {
+        matchingUnit.call();
     }
 
     @Then("^\"([^\"]*)\" order book should look like:$")

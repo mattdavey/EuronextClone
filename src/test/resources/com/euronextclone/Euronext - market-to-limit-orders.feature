@@ -1,7 +1,5 @@
 Feature: Examples from the Euronext Market-to-Limit PDF
 
-  Background: Given that market is in pre-opening phase
-
   Scenario: On a class of Securities traded by auction - Example 1
   Only Market to Limit orders in the order book
     Given that reference price is 10
@@ -115,7 +113,7 @@ Feature: Examples from the Euronext Market-to-Limit PDF
       | D      | Sell | 5        | Limit         | 10    |
     Then the calculated IMP is:
       | 10 |
-    When class auction completes
+    When continuous mode call phase completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | A             | D              | 5        | 10    |
