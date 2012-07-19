@@ -27,3 +27,10 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | A             | E              | 10       | 10.1  |
       | G             | E              | 20       | 10.1  |
       | B             | E              | 70       | 10.1  |
+    And "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | B      | Buy  | 20       | Limit      | 10.1  |
+      | C      | Buy  | 10       | Limit      | 9.9   |
+    And "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | F      | Sell | 60       | Limit      | 10.15 |
