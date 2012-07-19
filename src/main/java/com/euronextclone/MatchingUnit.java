@@ -17,10 +17,6 @@ import java.util.*;
 
 public class MatchingUnit implements Observable<Trade> {
 
-    public void startAuction() {
-        tradingPhase = TradingPhase.CoreAuction;
-    }
-
     private final OrderBook buyOrderBook;
     private final OrderBook sellOrderBook;
     private TradingPhase tradingPhase = TradingPhase.CoreContinuous;
@@ -316,6 +312,7 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     public void auction() {
+        tradingPhase = TradingPhase.CoreAuction;
         indicativeMatchingPrice = getIndicativeMatchingPrice();
 
         while (!buyOrderBook.getOrders().isEmpty()) {

@@ -21,7 +21,6 @@ public class AuctionMatchingStepDefinitions {
     @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
     public void that_reference_price_is_(double price) throws Throwable {
         matchingUnit.setReferencePrice(price);
-        matchingUnit.startAuction();
     }
 
     @Given("^the following orders submitted to the book:$")

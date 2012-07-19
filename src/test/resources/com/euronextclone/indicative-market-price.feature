@@ -40,7 +40,8 @@ Feature: Calculating Indicative Market Price Used in Auction Phase
       | 10.04 |
 
   Scenario: - The Indicative Matching Price should be the one clearing most shares in the presence of multiple buy limit prices
-    Given that reference price is 10
+    Given that trading mode for security is "ByAuction" and phase is "CoreCall"
+    And that reference price is 10
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Order Type  | Price |
       | A      | Buy  | 40       | Limit       | 9.98  |

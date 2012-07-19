@@ -128,7 +128,16 @@ Feature: Examples from the Euronext Market-to-Limit PDF
       | C      | Buy  | 10       | Limit       | 10    |
     And "Sell" order book is empty
 
-  @focus
   Scenario: On a class of Securities traded on a continuous mode – Continuous phase - Example 1
   There are limit orders in the order book
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 15
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type    | Price |
+      | A      | Buy  | 10       | Limit         | 15    |
+      | B      | Buy  | 10       | Limit         | 12    |
+      | C      | Buy  | 10       | Limit         | 10    |
+      | D      | Sell | 25       | MarketToLimit | 15    |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | D              | 10       | 15    |
