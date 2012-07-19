@@ -170,13 +170,10 @@ public class OrderBook implements Observable<Trade> {
         if (orders.size() == 0)
             return;
 
-        bestLimit.reset();
-
         // Order book should be good, just reset best
         for (final Order order : orders) {
             if (order.getOrderTypeLimit().hasLimit() && order.getQuantity() != 0) {
                 bestLimit.getOrderPrice().convertToLimit(order.getOrderTypeLimit().getLimit());
-                bestLimit.addQuantity(order.getQuantity());
                 break;
             }
         }
