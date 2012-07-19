@@ -12,8 +12,8 @@ import java.util.List;
 
 public class OrderBook implements Observable<Trade> {
     private final LinkedList<Order> orders = new LinkedList<Order>();
-    private BestLimit bestLimit;
     private final Order.OrderSide bookSide;
+    private BestLimit bestLimit;
 
     /**
      * The observable helper.
@@ -150,7 +150,7 @@ public class OrderBook implements Observable<Trade> {
                     continue;
                 }
 
-                if (last.compareTo(order, this.getIMP()) < 0) {
+                if (last.compareTo(order, bestLimit) < 0) {
                     orders.remove(order);
                     add(order);
                     rerun = true;
@@ -192,10 +192,6 @@ public class OrderBook implements Observable<Trade> {
     @Nonnull
     public Closeable register(@Nonnull Observer<? super Trade> observer) {
         return notifier.register(observer);
-    }
-
-    public BestLimit getIMP() {
-        return bestLimit;
     }
 
     public List<Order> getOrders() {
