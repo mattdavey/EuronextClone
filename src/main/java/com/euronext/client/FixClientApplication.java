@@ -6,8 +6,11 @@ import quickfix.field.*;
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Observable;
+import java.util.Observer;
 
 public class FixClientApplication implements quickfix.Application {
+    private ObservableLogon observableLogon = new ObservableLogon();
     private DefaultMessageFactory messageFactory = new DefaultMessageFactory();
     private boolean isAvailable = true;
     private boolean isMissingField;
@@ -21,9 +24,11 @@ public class FixClientApplication implements quickfix.Application {
     }
 
     public void onLogon(SessionID sessionID) {
+        observableLogon.logon(sessionID);
     }
 
     public void onLogout(SessionID sessionID) {
+        observableLogon.logoff(sessionID);
     }
 
     public void toAdmin(quickfix.Message message, SessionID sessionID) {
@@ -136,6 +141,16 @@ public class FixClientApplication implements quickfix.Application {
         }
     }
 
+    public void send42(SessionID sessionID) {
+        quickfix.fix42.NewOrderSingle newOrderSingle = new quickfix.fix42.NewOrderSingle(
+                new ClOrdID("1"), new HandlInst('1'), new Symbol("VOD"),
+                new Side(Side.BUY), new TransactTime(), new OrdType(OrdType.LIMIT));
+        newOrderSingle.set(new OrderQty(12));
+
+        send(newOrderSingle, sessionID);
+    }
+
+
     public boolean isMissingField() {
         return isMissingField;
     }
@@ -150,5 +165,31 @@ public class FixClientApplication implements quickfix.Application {
 
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    private static class ObservableLogon extends Observable {
+        private HashSet<SessionID> set = new HashSet<SessionID>();
+
+        public void logon(SessionID sessionID) {
+            set.add(sessionID);
+            setChanged();
+            notifyObservers(new LogonEvent(sessionID, true));
+            clearChanged();
+        }
+
+        public void logoff(SessionID sessionID) {
+            set.remove(sessionID);
+            setChanged();
+            notifyObservers(new LogonEvent(sessionID, false));
+            clearChanged();
+        }
+    }
+
+    public void addLogonObserver(Observer observer) {
+        observableLogon.addObserver(observer);
+    }
+
+    public void deleteLogonObserver(Observer observer) {
+        observableLogon.deleteObserver(observer);
     }
 }
