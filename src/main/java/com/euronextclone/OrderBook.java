@@ -104,10 +104,6 @@ public class OrderBook implements Observable<Trade> {
         notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
                 newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
                 tradeQuantity, price));
-
-//        System.out.println(String.format("%s %s %d %s", newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
-//                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
-//                tradeQuantity, price));
     }
 
 
