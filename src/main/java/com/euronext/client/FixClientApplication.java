@@ -4,11 +4,8 @@ import quickfix.*;
 import quickfix.field.*;
 
 import javax.swing.*;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 
 public class FixClientApplication implements quickfix.Application {
     private DefaultMessageFactory messageFactory = new DefaultMessageFactory();
