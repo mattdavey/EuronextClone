@@ -89,6 +89,6 @@ public class ContinuousMatchingStepDefinitions {
 
     private static class BestLimitRow {
         private Order.OrderSide side;
-        private String limit;
+        private Double limit;
     }
 }

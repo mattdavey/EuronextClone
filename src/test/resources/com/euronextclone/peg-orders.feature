@@ -23,8 +23,8 @@ Feature: Pegged orders
     And remaining sell order book depth is 3
     And best limits are:
       | Side | Limit |
-      | Buy  | 10,8  |
-      | Sell | 10,9  |
+      | Buy  | 10.8  |
+      | Sell | 10.9  |
 
   Scenario: Example 1 Step 3
     When the following orders are submitted in this order:
@@ -50,5 +50,5 @@ Feature: Pegged orders
     And remaining sell order book depth is 3
     And best limits are:
       | Side | Limit |
-      | Buy  | 10,5  |
-      | Sell | 10,9  |
+      | Buy  | 10.5  |
+      | Sell | 10.9  |
