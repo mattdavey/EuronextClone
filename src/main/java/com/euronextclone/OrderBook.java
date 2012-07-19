@@ -52,8 +52,9 @@ public class OrderBook implements Observable<Trade> {
 
                     // Rule 1 of Pure Market Order continuous trading
 
-                } else
+                } else {
                     continue;
+                }
             }
 
             if (order.getQuantity() == newOrder.getQuantity()) {
