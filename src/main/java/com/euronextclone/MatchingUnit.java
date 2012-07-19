@@ -26,6 +26,7 @@ public class MatchingUnit implements Observable<Trade> {
     private TradingPhase tradingPhase = TradingPhase.MainTradingSession;
     private TradingMode tradingMode = TradingMode.Continuous;
     private Double referencePrice;
+    private Double indicativeMatchingPrice;
 
     /**
      * The observable helper.
@@ -311,6 +312,8 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     public void auction() {
+        indicativeMatchingPrice = getIndicativeMatchingPrice();
+
         while (!buyOrderBook.getOrders().isEmpty()) {
             if (!tryMatchOrder(buyOrderBook.getOrders().get(0))) {
                 break;
@@ -337,10 +340,8 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = order.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        final Double imp = tradingPhase == TradingPhase.OpeningAuction ?
-                getIndicativeMatchingPrice() : null;
         final OrderType initialOrderType = order.getOrderTypeLimit().getOrderType();
-        if (!counterBook.match(order, tradingPhase, imp)) {
+        if (!counterBook.match(order, tradingPhase, indicativeMatchingPrice)) {
             book.remove(order);
         } else {
             final OrderType currentOrderType = order.getOrderTypeLimit().getOrderType();

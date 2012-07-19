@@ -1,6 +1,7 @@
 Feature: Auction Phase Matching Rules
 
-  Background: Given that market is in pre-opening phase
+  Background:
+    Given that reference price is 10
 
   Scenario: Simplest single trade full match on offsetting limit orders
     Given the following orders submitted to the book:
