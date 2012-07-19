@@ -130,7 +130,7 @@ public class OrderBook implements Observable<Trade> {
             }
 
             final int compare = order.compareTo(newOrder, bestLimit);
-            if (bookSide == Order.OrderSide.Buy && compare < 0 || bookSide == Order.OrderSide.Sell && compare < 0) {
+            if (compare < 0) {
                 break;
             }
 

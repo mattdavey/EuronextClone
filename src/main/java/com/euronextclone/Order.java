@@ -2,8 +2,7 @@ package com.euronextclone;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Order
-{
+public class Order {
     public int compareTo(final Order anOrder, final BestLimit bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
@@ -12,17 +11,44 @@ public class Order
         if (getId() == anOrder.getId())
             return EQUAL;
 
+        final int compareOrderType = compareOrderType(anOrder);
+        if (compareOrderType != EQUAL) {
+            return compareOrderType;
+        }
+
         final int comparePrice = comparePrice(anOrder, bestLimit);
         if (comparePrice == EQUAL) {
             // Time after orderTypeLimit compare
             if (getId() > anOrder.getId()) {
-               return BEFORE;
+                return BEFORE;
             } else if (getId() < anOrder.getId()) {
                 return AFTER;
             }
         }
 
         return comparePrice;
+    }
+
+    private int compareOrderType(Order other) {
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+
+        final OrderType thisOrderType = this.orderTypeLimit.getOrderType();
+        final OrderType otherOrderType = other.orderTypeLimit.getOrderType();
+
+        if (isMarket(thisOrderType) && !isMarket(otherOrderType)) {
+            return AFTER;
+        }
+        if (!isMarket(thisOrderType) && isMarket(otherOrderType)) {
+            return BEFORE;
+        }
+
+        return EQUAL;
+    }
+
+    private boolean isMarket(OrderType type) {
+        return type == OrderType.MarketOrder || type == OrderType.MarketToLimit;
     }
 
     private int comparePrice(final Order anOrder, final BestLimit bestLimit) {
@@ -57,10 +83,11 @@ public class Order
         return quantity != originalQuantity;
     }
 
-    public enum OrderSide {Buy, Sell};
+    public enum OrderSide {Buy, Sell}
 
-    public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side)
-    {
+    ;
+
+    public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side) {
         id = c.incrementAndGet();
         this.orderTypeLimit = orderTypeLimit;
         this.side = side;
@@ -69,38 +96,31 @@ public class Order
         this.originalQuantity = quantity;
     }
 
-    public int getQuantity()
-    {
+    public int getQuantity() {
         return quantity;
     }
 
-    public String getBroker()
-    {
+    public String getBroker() {
         return broker;
     }
 
-    public OrderSide getSide()
-    {
+    public OrderSide getSide() {
         return side;
     }
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
-    public void decrementQuantity(final int quantity)
-    {
+    public void decrementQuantity(final int quantity) {
         this.quantity -= quantity;
     }
 
-    public OrderTypeLimit getOrderTypeLimit()
-    {
+    public OrderTypeLimit getOrderTypeLimit() {
         return orderTypeLimit;
     }
 
-    public void dump()
-    {
+    public void dump() {
         System.out.println(String.format("%s %d %d %s", broker, id, quantity, orderTypeLimit));
     }
 
