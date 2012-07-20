@@ -19,7 +19,9 @@ Feature: Pure market orders
       | C             | A              | 100      | 10.2  |
       | C             | B              | 10       | 10.3  |
     And "Buy" order book is empty
-    And remaining sell order book depth is 1
+    And "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | B      | Sell | 50       | Limit      | 10.3  |
 
   Scenario: Trading Session Example 2
     Given the following orders are submitted in this order:
