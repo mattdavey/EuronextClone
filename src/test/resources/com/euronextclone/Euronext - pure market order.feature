@@ -139,7 +139,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
     And "Sell" order book is empty
 
 
-  @focus
+#  @focus
   Scenario: Trading session Phase - Example 3
   There are only Market orders in the order book, trade price is the last traded price
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
