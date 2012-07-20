@@ -85,8 +85,6 @@ public class Order {
 
     public enum OrderSide {Buy, Sell}
 
-    ;
-
     public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side) {
         id = c.incrementAndGet();
         this.orderTypeLimit = orderTypeLimit;
@@ -122,6 +120,10 @@ public class Order {
 
     public void dump() {
         System.out.println(String.format("%s %d %d %s", broker, id, quantity, orderTypeLimit));
+    }
+
+    public Order convertTo(OrderTypeLimit orderType) {
+        return new Order(broker, quantity, orderType, side);
     }
 
     private static AtomicInteger c = new AtomicInteger(0);

@@ -1,5 +1,6 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -339,8 +340,8 @@ public class MatchingUnit implements Observable<Trade> {
             orders.removeAll(mtlOrders);
 
             for (Order mtlOrder : mtlOrders) {
-                mtlOrder.getOrderTypeLimit().convertToLimit(indicativeMatchingPrice);
-                orderBook.add(mtlOrder);
+                Order limit = mtlOrder.convertTo(new Limit(indicativeMatchingPrice));
+                orderBook.add(limit);
             }
         }
     }
