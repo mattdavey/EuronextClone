@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import com.euronextclone.MatchingUnit;
+import com.euronextclone.Order;
+import com.euronextclone.OrderType;
+import com.euronextclone.OrderTypeLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +45,9 @@ import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
+import quickfix.fix42.NewOrderSingle;
 
-public class Application extends quickfix.MessageCracker implements quickfix.Application {
+public class FixGatewayApplication extends quickfix.MessageCracker implements quickfix.Application {
     private static final String DEFAULT_MARKET_PRICE_KEY = "DefaultMarketPrice";
     private static final String ALWAYS_FILL_LIMIT_KEY = "AlwaysFillLimitOrders";
     private static final String VALID_ORDER_TYPES_KEY = "ValidOrderTypes";
@@ -52,7 +57,7 @@ public class Application extends quickfix.MessageCracker implements quickfix.App
     private final HashSet<String> validOrderTypes = new HashSet<String>();
     private MarketDataProvider marketDataProvider;
 
-    public Application(SessionSettings settings) throws ConfigError, FieldConvertError {
+    public FixGatewayApplication(final SessionSettings settings) throws ConfigError, FieldConvertError {
         initializeValidOrderTypes(settings);
         initializeMarketDataProvider(settings);
 
@@ -116,7 +121,6 @@ public class Application extends quickfix.MessageCracker implements quickfix.App
             IncorrectTagValue, UnsupportedMessageType {
         crack(message, sessionID);
     }
-
 
     private boolean isOrderExecutable(Message order, Price price) throws FieldNotFound {
         if (order.getChar(OrdType.FIELD) == OrdType.LIMIT) {
@@ -189,17 +193,21 @@ public class Application extends quickfix.MessageCracker implements quickfix.App
         try {
             validateOrder(order);
 
-            OrderQty orderQty = order.getOrderQty();
-            Price price = getPrice(order);
+            final OrderQty orderQty = order.getOrderQty();
+            final Price price = getPrice(order);
 
-            quickfix.fix42.ExecutionReport accept = new quickfix.fix42.ExecutionReport(genOrderID(), genExecID(),
-                    new ExecTransType(ExecTransType.NEW), new ExecType(ExecType.FILL), new OrdStatus(OrdStatus.NEW), order
-                    .getSymbol(), order.getSide(), new LeavesQty(0), new CumQty(0), new AvgPx(0));
-
-            accept.set(order.getClOrdID());
-            sendMessage(sessionID, accept);
+            acceptOrder(order, sessionID);
 
             if (isOrderExecutable(order, price)) {
+                // Hack
+                final MatchingUnit matchingUnit = new MatchingUnit();
+                char side = order.getChar(Side.FIELD);
+                matchingUnit.addOrder((side == Side.BUY) ? Order.OrderSide.Buy : Order.OrderSide.Sell,
+                        sessionID.getSenderCompID(),
+                        (int)orderQty.getValue(),
+                        new OrderTypeLimit(OrderType.Limit));
+                matchingUnit.dump();
+
                 quickfix.fix42.ExecutionReport executionReport = new quickfix.fix42.ExecutionReport(genOrderID(),
                         genExecID(), new ExecTransType(ExecTransType.NEW), new ExecType(ExecType.FILL), new OrdStatus(
                         OrdStatus.FILLED), order.getSymbol(), order.getSide(), new LeavesQty(0), new CumQty(
@@ -215,6 +223,15 @@ public class Application extends quickfix.MessageCracker implements quickfix.App
         } catch (RuntimeException e) {
             LogUtil.logThrowable(sessionID, e.getMessage(), e);
         }
+    }
+
+    private void acceptOrder(NewOrderSingle order, SessionID sessionID) throws FieldNotFound {
+        quickfix.fix42.ExecutionReport accept = new quickfix.fix42.ExecutionReport(genOrderID(), genExecID(),
+                new ExecTransType(ExecTransType.NEW), new ExecType(ExecType.FILL), new OrdStatus(OrdStatus.NEW), order
+                .getSymbol(), order.getSide(), new LeavesQty(0), new CumQty(0), new AvgPx(0));
+
+        accept.set(order.getClOrdID());
+        sendMessage(sessionID, accept);
     }
 
     private void validateOrder(Message order) throws IncorrectTagValue, FieldNotFound {

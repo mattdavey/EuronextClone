@@ -45,7 +45,7 @@ public class FixGateway {
     private final ObjectName connectorObjectName;
 
     public FixGateway(SessionSettings settings) throws ConfigError, FieldConvertError, JMException {
-        Application application = new Application(settings);
+        FixGatewayApplication application = new FixGatewayApplication(settings);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();
@@ -61,7 +61,7 @@ public class FixGateway {
         log.info("Acceptor registered with JMX, name=" + connectorObjectName);
     }
 
-    private void configureDynamicSessions(SessionSettings settings, Application application,
+    private void configureDynamicSessions(SessionSettings settings, FixGatewayApplication application,
                                           MessageStoreFactory messageStoreFactory, LogFactory logFactory,
                                           MessageFactory messageFactory) throws ConfigError, FieldConvertError {
         //
@@ -113,11 +113,11 @@ public class FixGateway {
                 && settings.getBool(sessionID, SETTING_ACCEPTOR_TEMPLATE);
     }
 
-    private void start() throws RuntimeError, ConfigError {
+    public void start() throws RuntimeError, ConfigError {
         acceptor.start();
     }
 
-    private void stop() {
+    public void stop() {
         try {
             jmxExporter.getMBeanServer().unregisterMBean(connectorObjectName);
         } catch (Exception e) {
@@ -128,11 +128,11 @@ public class FixGateway {
 
     public static void main(String args[]) throws Exception {
         try {
-            InputStream inputStream = getSettingsInputStream(args);
-            SessionSettings settings = new SessionSettings(inputStream);
+            final InputStream inputStream = getSettingsInputStream(args);
+            final SessionSettings settings = new SessionSettings(inputStream);
             inputStream.close();
 
-            FixGateway executor = new FixGateway(settings);
+            final FixGateway executor = new FixGateway(settings);
             executor.start();
 
             System.out.println("press <enter> to quit");
@@ -144,10 +144,10 @@ public class FixGateway {
         }
     }
 
-    private static InputStream getSettingsInputStream(String[] args) throws FileNotFoundException {
+    public static InputStream getSettingsInputStream(String[] args) throws FileNotFoundException {
         InputStream inputStream = null;
         if (args.length == 0) {
-            inputStream = FixGateway.class.getResourceAsStream("com.euronextclone.fix.FixGateway.cfg");
+            inputStream = FixGateway.class.getResourceAsStream("FixGateway.cfg");
         } else if (args.length == 1) {
             inputStream = new FileInputStream(args[0]);
         }

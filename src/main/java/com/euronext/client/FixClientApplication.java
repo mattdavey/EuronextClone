@@ -69,19 +69,26 @@ public class FixClientApplication implements quickfix.Application {
                     else if (message.getHeader().isSetField(DeliverToCompID.FIELD)) {
                         // This is here to support OpenFIX certification
                         sendSessionReject(message, SessionRejectReason.COMPID_PROBLEM);
+                    } else if (message.getHeader().getField(msgType).valueEquals("8")) {
+                        executionReport(message, sessionID);
                     } else {
-                        sendBusinessReject(message, BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
-                                "Unsupported Message Type");
+                        sendBusinessReject(message, BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, "Unsupported Message Type");
                     }
                 } else {
                     sendBusinessReject(message, BusinessRejectReason.APPLICATION_NOT_AVAILABLE,
-                            "Application not available");
+                            "FixGatewayApplication not available");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
+    }
+
+    private void executionReport(Message message, SessionID sessionID) throws FieldNotFound {
+        ExecID execID = (ExecID) message.getField(new ExecID());
+        if (alreadyProcessed(execID, sessionID))
+            return;
     }
 
     private void sendSessionReject(Message message, int rejectReason) throws FieldNotFound,
@@ -145,26 +152,10 @@ public class FixClientApplication implements quickfix.Application {
         quickfix.fix42.NewOrderSingle newOrderSingle = new quickfix.fix42.NewOrderSingle(
                 new ClOrdID("1"), new HandlInst('1'), new Symbol("VOD"),
                 new Side(Side.BUY), new TransactTime(), new OrdType(OrdType.LIMIT));
-        newOrderSingle.set(new OrderQty(12));
+        newOrderSingle.set(new OrderQty(-12));
+        newOrderSingle.setField(new Price(22.22));
 
         send(newOrderSingle, sessionID);
-    }
-
-
-    public boolean isMissingField() {
-        return isMissingField;
-    }
-
-    public void setMissingField(boolean isMissingField) {
-        this.isMissingField = isMissingField;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
     }
 
     private static class ObservableLogon extends Observable {

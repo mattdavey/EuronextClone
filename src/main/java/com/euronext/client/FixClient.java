@@ -23,13 +23,14 @@ public class FixClient implements Observer {
     private Initiator initiator = null;
     private FixClientApplication application;
 
-    public FixClient(String[] args) throws Exception {
+    public void init(String[] args) throws Exception {
         InputStream inputStream = null;
         if (args.length == 0) {
             inputStream = FixClient.class.getResourceAsStream("FixClient.cfg");
         } else if (args.length == 1) {
             inputStream = new FileInputStream(args[0]);
         }
+
         if (inputStream == null) {
             System.out.println("usage: " + FixClient.class.getName() + " [configFile].");
             return;
@@ -37,7 +38,7 @@ public class FixClient implements Observer {
         SessionSettings settings = new SessionSettings(inputStream);
         inputStream.close();
 
-        boolean logHeartbeats = Boolean.valueOf(System.getProperty("logHeartbeats", "true")).booleanValue();
+        boolean logHeartbeats = Boolean.valueOf(System.getProperty("logHeartbeats", "true"));
 
         application = new FixClientApplication();
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
@@ -71,7 +72,7 @@ public class FixClient implements Observer {
     }
 
     public void logout() {
-        Iterator<SessionID> sessionIds = initiator.getSessions().iterator();
+        final Iterator<SessionID> sessionIds = initiator.getSessions().iterator();
         while (sessionIds.hasNext()) {
             SessionID sessionId = (SessionID) sessionIds.next();
             Session.lookupSession(sessionId).logout("user requested");
@@ -82,17 +83,17 @@ public class FixClient implements Observer {
         shutdownLatch.countDown();
     }
 
-    public static void main(String args[]) throws Exception {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            log.info(e.getMessage(), e);
-        }
-        fixClient = new FixClient(args);
+    public void run(String args[]) throws Exception {
+        fixClient = new FixClient();
+        fixClient.init(args);
         if (!System.getProperties().containsKey("openfix")) {
             fixClient.logon();
         }
         shutdownLatch.await();
+    }
+
+    public static void main(String args[]) throws Exception {
+        new FixClient().run(args);
     }
 
     @Override
