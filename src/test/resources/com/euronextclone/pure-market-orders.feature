@@ -1,3 +1,4 @@
+@focus
 Feature: Pure market orders
 
   Scenario: Market buy order fully matches with best limit order
@@ -17,7 +18,7 @@ Feature: Pure market orders
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
       | C             | B              | 10       | 10.3  |
-    Then remaining buy order book depth is 0
+    And "Buy" order book is empty
     And remaining sell order book depth is 1
 
   Scenario: Trading Session Example 2
@@ -30,5 +31,5 @@ Feature: Pure market orders
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
       | C             | B              | 60       | 10.3  |
-    Then remaining buy order book depth is 1
-    And remaining sell order book depth is 0
+    And remaining buy order book depth is 1
+    And "Sell" order book is empty
