@@ -48,22 +48,13 @@ public abstract class OrderTypeLimit {
         if (!(aThat instanceof OrderTypeLimit)) return false;
 
         return orderType == ((OrderTypeLimit) aThat).getOrderType() &&
-               Double.doubleToLongBits(limit) == Double.doubleToLongBits(((OrderTypeLimit) aThat).getLimit());
+                Double.doubleToLongBits(limit) == Double.doubleToLongBits(((OrderTypeLimit) aThat).getLimit());
     }
 
     private double limit = Double.MAX_VALUE;
     private OrderType orderType;
 
-    public double value(final double bestLimit) {
-        if (getOrderType() == OrderType.Peg) {
-            if (hasLimit()) {
-                if (limit < bestLimit)
-                    return limit;
-            }
-        }
-
-        return bestLimit;
-    }
+    public abstract double value(final double bestLimit);
 
     public boolean canTrade(final Double price, final Order.OrderSide side) {
 

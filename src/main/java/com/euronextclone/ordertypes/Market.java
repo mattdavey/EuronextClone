@@ -14,4 +14,9 @@ public class Market extends OrderTypeLimit {
     public Market() {
         super(OrderType.MarketOrder);
     }
+
+    @Override
+    public double value(double bestLimit) {
+        return bestLimit;
+    }
 }

@@ -14,4 +14,9 @@ public class Peg extends OrderTypeLimit {
     public Peg() {
         super(OrderType.Peg);
     }
+
+    @Override
+    public double value(double bestLimit) {
+        return bestLimit;
+    }
 }
