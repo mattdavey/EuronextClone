@@ -54,10 +54,10 @@ public abstract class OrderTypeLimit {
     private double limit = Double.MAX_VALUE;
     private OrderType orderType;
 
-    public double value(final OrderTypeLimit bestLimit) {
+    public double value(final double bestLimit) {
         if (getOrderType() == OrderType.Peg) {
             if (hasLimit()) {
-                if (limit < bestLimit.limit)
+                if (limit < bestLimit)
                     return limit;
             }
         }
@@ -66,7 +66,7 @@ public abstract class OrderTypeLimit {
             return limit;
         }
 
-        return bestLimit.limit;
+        return bestLimit;
     }
 
     public boolean canTrade(final Double price, final Order.OrderSide side) {

@@ -41,13 +41,13 @@ public class OrderBook implements Observable<Trade> {
 
         for (final Order order : orders) {
             if (currentTradingPhase == TradingPhase.CoreAuction) {
-                if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit) >= imp) ||
-                        (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp)) {
+                if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit.getLimit()) >= imp) ||
+                        (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit.getLimit()) <= imp)) {
                     order.getOrderTypeLimit().setLimit(imp);
                 } else {
                     continue;
                 }
-            } else if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
+            } else if (order.getOrderTypeLimit().value(bestLimit.getLimit()) != newOrder.getOrderTypeLimit().value(bestLimit.getLimit())) {
                 if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
                         newOrder.getPartlyFilled() &&
                         order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {

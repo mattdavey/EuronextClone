@@ -56,8 +56,8 @@ public class Order {
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        final double thisOrderLimit = getOrderTypeLimit().value(bestLimit);
-        final double anOrderLimit = anOrder.getOrderTypeLimit().value(bestLimit);
+        final double thisOrderLimit = getOrderTypeLimit().value(bestLimit.getLimit());
+        final double anOrderLimit = anOrder.getOrderTypeLimit().value(bestLimit.getLimit());
 
         switch (side) {
             case Buy:
