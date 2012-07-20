@@ -6,12 +6,6 @@ import cucumber.annotation.en.Then;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eprystupa
- * Date: 7/15/12
- * Time: 6:40 PM
- */
 public class OrderPriceStepDefinitions {
 
     private OrderTypeLimit first;

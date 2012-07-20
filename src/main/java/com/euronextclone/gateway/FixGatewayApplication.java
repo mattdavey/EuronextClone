@@ -156,12 +156,12 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
 
     private void sendMessage(SessionID sessionID, Message message) {
         try {
-            Session session = Session.lookupSession(sessionID);
+            final Session session = Session.lookupSession(sessionID);
             if (session == null) {
                 throw new SessionNotFound(sessionID.toString());
             }
 
-            DataDictionaryProvider dataDictionaryProvider = session.getDataDictionaryProvider();
+            final DataDictionaryProvider dataDictionaryProvider = session.getDataDictionaryProvider();
             if (dataDictionaryProvider != null) {
                 try {
                     dataDictionaryProvider.getApplicationDataDictionary(
@@ -180,7 +180,7 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
     }
 
     private ApplVerID getApplVerID(Session session, Message message) {
-        String beginString = session.getSessionID().getBeginString();
+        final String beginString = session.getSessionID().getBeginString();
         if (FixVersions.BEGINSTRING_FIXT11.equals(beginString)) {
             return new ApplVerID(ApplVerID.FIX50);
         } else {
@@ -199,30 +199,37 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
             acceptOrder(order, sessionID);
 
             if (isOrderExecutable(order, price)) {
-                // Hack
-                final MatchingUnit matchingUnit = new MatchingUnit();
-                char side = order.getChar(Side.FIELD);
-                matchingUnit.addOrder((side == Side.BUY) ? Order.OrderSide.Buy : Order.OrderSide.Sell,
-                        sessionID.getSenderCompID(),
-                        (int)orderQty.getValue(),
-                        new OrderTypeLimit(OrderType.Limit));
-                matchingUnit.dump();
-
-                quickfix.fix42.ExecutionReport executionReport = new quickfix.fix42.ExecutionReport(genOrderID(),
-                        genExecID(), new ExecTransType(ExecTransType.NEW), new ExecType(ExecType.FILL), new OrdStatus(
-                        OrdStatus.FILLED), order.getSymbol(), order.getSide(), new LeavesQty(0), new CumQty(
-                        orderQty.getValue()), new AvgPx(price.getValue()));
-
-                executionReport.set(order.getClOrdID());
-                executionReport.set(orderQty);
-                executionReport.set(new LastShares(orderQty.getValue()));
-                executionReport.set(new LastPx(price.getValue()));
-
-                sendMessage(sessionID, executionReport);
+                sendToMatchingEngine(order, sessionID, orderQty, price);
+                ackOrderToClient(order, sessionID, orderQty, price);
             }
         } catch (RuntimeException e) {
             LogUtil.logThrowable(sessionID, e.getMessage(), e);
         }
+    }
+
+    private void ackOrderToClient(NewOrderSingle order, SessionID sessionID, OrderQty orderQty, Price price) throws FieldNotFound {
+        quickfix.fix42.ExecutionReport executionReport = new quickfix.fix42.ExecutionReport(genOrderID(),
+                genExecID(), new ExecTransType(ExecTransType.NEW), new ExecType(ExecType.FILL), new OrdStatus(
+                OrdStatus.FILLED), order.getSymbol(), order.getSide(), new LeavesQty(0), new CumQty(
+                orderQty.getValue()), new AvgPx(price.getValue()));
+
+        executionReport.set(order.getClOrdID());
+        executionReport.set(orderQty);
+        executionReport.set(new LastShares(orderQty.getValue()));
+        executionReport.set(new LastPx(price.getValue()));
+
+        sendMessage(sessionID, executionReport);
+    }
+
+    // Hack
+    private void sendToMatchingEngine(NewOrderSingle order, SessionID sessionID, OrderQty orderQty, Price price) throws FieldNotFound {
+        final MatchingUnit matchingUnit = new MatchingUnit();
+        char side = order.getChar(Side.FIELD);
+        matchingUnit.addOrder((side == Side.BUY) ? Order.OrderSide.Buy : Order.OrderSide.Sell,
+                sessionID.getTargetCompID(),
+                (int)orderQty.getValue(),
+                new OrderTypeLimit(OrderType.Limit, price.getValue()));
+        matchingUnit.dump();
     }
 
     private void acceptOrder(NewOrderSingle order, SessionID sessionID) throws FieldNotFound {
