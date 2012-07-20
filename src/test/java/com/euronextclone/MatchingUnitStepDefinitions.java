@@ -66,6 +66,11 @@ public class MatchingUnitStepDefinitions {
         generatedTrades.clear();
     }
 
+    @Then("^no trades should have been generated$")
+    public void no_trades_should_have_been_generated() throws Throwable {
+        assertThat(generatedTrades, is(empty()));
+    }
+
     @Then("^no trades are generated$")
     public void no_trades_are_generated() throws Throwable {
         List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
