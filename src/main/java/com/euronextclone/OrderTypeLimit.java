@@ -62,10 +62,6 @@ public abstract class OrderTypeLimit {
             }
         }
 
-        if (getOrderType() == OrderType.Limit) {
-            return limit;
-        }
-
         return bestLimit;
     }
 

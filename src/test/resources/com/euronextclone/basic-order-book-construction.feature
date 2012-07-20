@@ -47,7 +47,6 @@ Feature: Basic order book construction
       | C      | Sell | 100      | Limit      | 10.3  |
       | D      | Sell | 100      | Limit      | 10.3  |
 
-  @focus
   Scenario: Market orders are sorted by their arrival
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |

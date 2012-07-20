@@ -11,7 +11,15 @@ import com.euronextclone.OrderTypeLimit;
  */
 public class Limit extends OrderTypeLimit {
 
+    private final double limit;
+
     public Limit(final double limit) {
         super(OrderType.Limit, limit);
+        this.limit = limit;
+    }
+
+    @Override
+    public double value(double bestLimit) {
+        return limit;
     }
 }

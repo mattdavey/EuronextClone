@@ -1,6 +1,5 @@
 Feature: Pegged orders with limit
 
-  @focus
   Scenario: Peg Order Limit Fill Trade
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Price     |
