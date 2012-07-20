@@ -33,5 +33,7 @@ Feature: Pure market orders
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
       | C             | B              | 60       | 10.3  |
-    And remaining buy order book depth is 1
+    And "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type  | Price |
+      | C      | Buy  | 40       | MarketOrder |       |
     And "Sell" order book is empty
