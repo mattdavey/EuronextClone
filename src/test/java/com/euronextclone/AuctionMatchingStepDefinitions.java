@@ -1,5 +1,8 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.Market;
+import com.euronextclone.ordertypes.MarketToLimit;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -10,6 +13,7 @@ import cucumber.table.DataTable;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+
 public class AuctionMatchingStepDefinitions {
 
     private final MatchingUnit matchingUnit;
@@ -61,12 +65,12 @@ public class AuctionMatchingStepDefinitions {
         public static final Function<? super Order, OrderRow> FROM_ORDER = new Function<Order, OrderRow>() {
             @Override
             public OrderRow apply(final Order input) {
-            final OrderRow orderRow = new OrderRow();
-            orderRow.setBroker(input.getBroker());
-            orderRow.setOrderId(input.getId());
-            orderRow.setPrice(input.getOrderTypeLimit().toString());
-            orderRow.setQuantity(input.getQuantity());
-            return orderRow;
+                final OrderRow orderRow = new OrderRow();
+                orderRow.setBroker(input.getBroker());
+                orderRow.setOrderId(input.getId());
+                orderRow.setPrice(input.getOrderTypeLimit().toString());
+                orderRow.setQuantity(input.getQuantity());
+                return orderRow;
             }
         };
 
@@ -191,12 +195,12 @@ public class AuctionMatchingStepDefinitions {
 
         private static OrderTypeLimit parseOrderPrice(String price) {
             if ("MTL".equals(price)) {
-                return new OrderTypeLimit(OrderType.MarketToLimit);
+                return new MarketToLimit();
             }
             if ("MO".equals(price)) {
-                return new OrderTypeLimit(OrderType.MarketOrder);
+                return new Market();
             }
-            return new OrderTypeLimit(OrderType.Limit, Double.parseDouble(price));
+            return new Limit(Double.parseDouble(price));
         }
     }
 }

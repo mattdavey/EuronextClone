@@ -1,6 +1,6 @@
 package com.euronextclone;
 
-public class OrderTypeLimit {
+public abstract class OrderTypeLimit {
     public OrderTypeLimit(final OrderType orderType) {
         this.orderType = orderType;
     }

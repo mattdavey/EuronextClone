@@ -1,5 +1,8 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.Peg;
+import com.euronextclone.ordertypes.PegWithLimit;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 import org.hamcrest.MatcherAssert;
@@ -14,16 +17,16 @@ import static org.junit.Assert.assertThat;
 
 public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
     private void buyOrders(MatchingUnit matchingUnit) {
-        matchingUnit.addOrder(Order.OrderSide.Buy, "A", 200, new OrderTypeLimit(OrderType.Limit, 11.5D));
-        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 150, new OrderTypeLimit(OrderType.Peg, 11.6D));
-        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 70, new OrderTypeLimit(OrderType.Peg));
-        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 125, new OrderTypeLimit(OrderType.Limit, 10.5D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "A", 200, new Limit(11.5D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 150, new PegWithLimit(11.6D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 70, new Peg());
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 125, new Limit(10.5D));
     }
 
     private void sellOrders(MatchingUnit matchingUnit) {
-        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 130, new OrderTypeLimit(OrderType.Limit, 11.800000000000001D));
-        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 350, new OrderTypeLimit(OrderType.Limit, 11.9D));
-        matchingUnit.addOrder(Order.OrderSide.Sell, "D", 275, new OrderTypeLimit(OrderType.Limit, 12D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 130, new Limit(11.800000000000001D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 350, new Limit(11.9D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "D", 275, new Limit(12D));
     }
 
     @Test
@@ -31,7 +34,7 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
-        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 11.7));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new Limit(11.7));
         matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
@@ -44,7 +47,7 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
 
-        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new OrderTypeLimit(OrderType.Limit, 11.699999999999999D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new Limit(11.699999999999999D));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -69,7 +72,7 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
         }));
 
         matchingUnit.dump();
-        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 270, new OrderTypeLimit(OrderType.Limit, 11.699999999999999D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 270, new Limit(11.699999999999999D));
         matchingUnit.dump();
         close.close();
 

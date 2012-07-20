@@ -1,51 +1,18 @@
 package com.euronextclone.gateway;
 
+import com.euronextclone.MatchingUnit;
+import com.euronextclone.Order;
+import com.euronextclone.ordertypes.Limit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.*;
+import quickfix.field.*;
+import quickfix.fix42.NewOrderSingle;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
-import com.euronextclone.MatchingUnit;
-import com.euronextclone.Order;
-import com.euronextclone.OrderType;
-import com.euronextclone.OrderTypeLimit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import quickfix.ConfigError;
-import quickfix.DataDictionaryProvider;
-import quickfix.DoNotSend;
-import quickfix.FieldConvertError;
-import quickfix.FieldNotFound;
-import quickfix.FixVersions;
-import quickfix.IncorrectDataFormat;
-import quickfix.IncorrectTagValue;
-import quickfix.LogUtil;
-import quickfix.Message;
-import quickfix.MessageUtils;
-import quickfix.RejectLogon;
-import quickfix.Session;
-import quickfix.SessionID;
-import quickfix.SessionNotFound;
-import quickfix.SessionSettings;
-import quickfix.UnsupportedMessageType;
-import quickfix.field.ApplVerID;
-import quickfix.field.AvgPx;
-import quickfix.field.CumQty;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.LeavesQty;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
-import quickfix.fix42.NewOrderSingle;
 
 public class FixGatewayApplication extends quickfix.MessageCracker implements quickfix.Application {
     private static final String DEFAULT_MARKET_PRICE_KEY = "DefaultMarketPrice";
@@ -228,7 +195,7 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
         matchingUnit.addOrder((side == Side.BUY) ? Order.OrderSide.Buy : Order.OrderSide.Sell,
                 sessionID.getTargetCompID(),
                 (int)orderQty.getValue(),
-                new OrderTypeLimit(OrderType.Limit, price.getValue()));
+                new Limit(price.getValue()));
         matchingUnit.dump();
     }
 

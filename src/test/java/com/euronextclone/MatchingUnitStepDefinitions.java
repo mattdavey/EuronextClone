@@ -1,5 +1,6 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.*;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Given;
@@ -173,16 +174,16 @@ public class MatchingUnitStepDefinitions {
             Matcher peg = PEG.matcher(price);
             if (peg.matches()) {
                 String limit = peg.group(1);
-                return limit != null ? new OrderTypeLimit(OrderType.Peg, Double.parseDouble(limit)) : new OrderTypeLimit(OrderType.Peg);
+                return limit != null ? new PegWithLimit(Double.parseDouble(limit)) : new Peg();
             }
             if ("MTL".compareToIgnoreCase(price) == 0) {
-                return new OrderTypeLimit(OrderType.MarketToLimit);
+                return new MarketToLimit();
             }
             if ("MO".compareToIgnoreCase(price) == 0) {
-                return new OrderTypeLimit(OrderType.MarketOrder);
+                return new Market();
             }
 
-            return new OrderTypeLimit(OrderType.Limit, Double.parseDouble(price));
+            return new Limit(Double.parseDouble(price));
         }
     }
 

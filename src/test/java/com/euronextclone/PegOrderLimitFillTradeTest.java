@@ -1,5 +1,7 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.PegWithLimit;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 import org.hamcrest.MatcherAssert;
@@ -17,8 +19,8 @@ public class PegOrderLimitFillTradeTest extends BaseReactiveTest {
     @Test
     public void newPEGLimitOrderTest() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        matchingUnit.addOrder(Order.OrderSide.Buy, "A", 200, new OrderTypeLimit(OrderType.Limit, 11.5D));
-        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 150, new OrderTypeLimit(OrderType.Peg, 11.6D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "A", 200, new Limit(11.5D));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "B", 150, new PegWithLimit(11.6D));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -32,7 +34,7 @@ public class PegOrderLimitFillTradeTest extends BaseReactiveTest {
         }));
 
         matchingUnit.dump();
-        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 200, new OrderTypeLimit(OrderType.Limit, 11.5D));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "C", 200, new Limit(11.5D));
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(1));

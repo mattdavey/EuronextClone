@@ -1,5 +1,7 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.Market;
 import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.Reactive;
 import org.hamcrest.MatcherAssert;
@@ -16,8 +18,8 @@ public class PureMarketOrderTest extends BaseReactiveTest {
     @Test
     public void tradingSessionExample1() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 100, new OrderTypeLimit(OrderType.Limit, 10.2));
-        matchingUnit.addOrder(Order.OrderSide.Sell, "B", 60, new OrderTypeLimit(OrderType.Limit, 10.3));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 100, new Limit(10.2));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "B", 60, new Limit(10.3));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -42,7 +44,7 @@ public class PureMarketOrderTest extends BaseReactiveTest {
         }));
 
         matchingUnit.dump();
-        matchingUnit.addOrder(Order.OrderSide.Buy, "C", 110, new OrderTypeLimit(OrderType.MarketOrder));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "C", 110, new Market());
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));
@@ -53,8 +55,8 @@ public class PureMarketOrderTest extends BaseReactiveTest {
     @Test
     public void tradingSessionExample2() throws IOException {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 100, new OrderTypeLimit(OrderType.Limit, 10.2));
-        matchingUnit.addOrder(Order.OrderSide.Sell, "B", 60, new OrderTypeLimit(OrderType.Limit, 10.3));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "A", 100, new Limit(10.2));
+        matchingUnit.addOrder(Order.OrderSide.Sell, "B", 60, new Limit(10.3));
 
         final Closeable close = matchingUnit.register(Reactive.toObserver(new Action1<Trade>() {
             @Override
@@ -78,7 +80,7 @@ public class PureMarketOrderTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.addOrder(Order.OrderSide.Buy, "C", 200, new OrderTypeLimit(OrderType.MarketOrder));
+        matchingUnit.addOrder(Order.OrderSide.Buy, "C", 200, new Market());
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));

@@ -1,5 +1,6 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -22,7 +23,7 @@ public class OrderBook implements Observable<Trade> {
 
     public OrderBook(final Order.OrderSide side) {
         bookSide = side;
-        bestLimit = new OrderTypeLimit(OrderType.Limit, side == Order.OrderSide.Buy? Double.MAX_VALUE : 0);
+        bestLimit = new Limit(side == Order.OrderSide.Buy? Double.MAX_VALUE : 0);
     }
 
     public Double getBestLimit() {
