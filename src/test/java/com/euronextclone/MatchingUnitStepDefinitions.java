@@ -10,6 +10,8 @@ import cucumber.table.DataTable;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,6 +34,15 @@ public class MatchingUnitStepDefinitions {
         matchingUnit.setTradingPhase(phase);
     }
 
+    @Given("^the following orders are submitted in this order:$")
+    public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
+
+        final List<OrderEntryRow> orderRows = orderTable.asList(OrderEntryRow.class);
+        for (OrderEntryRow orderRow : orderRows) {
+            matchingUnit.addOrder(orderRow.side, orderRow.broker, orderRow.quantity, orderRow.getOrderTypeLimit());
+        }
+    }
+
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
         matchingUnit.auction();
@@ -39,15 +50,15 @@ public class MatchingUnitStepDefinitions {
 
     @Then("^\"([^\"]*)\" order book should look like:$")
     public void order_book_should_look_like(Order.OrderSide side, DataTable orderTable) throws Throwable {
-        final List<OrderRow> expectedOrders = orderTable.asList(OrderRow.class);
-        final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
+        final List<OrderBookRow> expectedOrders = orderTable.asList(OrderBookRow.class);
+        final List<OrderBookRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderBookRow.FROM_Order).toImmutableList();
 
         assertEquals(expectedOrders, actualOrders);
     }
 
     @Then("^\"([^\"]*)\" order book is empty$")
     public void order_book_is_empty(Order.OrderSide side) throws Throwable {
-        final List<OrderRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderRow.FROM_Order).toImmutableList();
+        final List<OrderBookRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderBookRow.FROM_Order).toImmutableList();
 
         assertThat(actualOrders, is(empty()));
     }
@@ -150,18 +161,43 @@ public class MatchingUnitStepDefinitions {
         }
     }
 
-    private static class OrderRow {
+    private static class OrderEntryRow {
+        private static final Pattern PEG = Pattern.compile("Peg(?:\\[(.+)\\])?", Pattern.CASE_INSENSITIVE);
+        private String broker;
+        private Order.OrderSide side;
+        private int quantity;
+        private String price;
+
+        public OrderTypeLimit getOrderTypeLimit() {
+
+            Matcher peg = PEG.matcher(price);
+            if (peg.matches()) {
+                String limit = peg.group(1);
+                return limit != null ? new OrderTypeLimit(OrderType.Peg, Double.parseDouble(limit)) : new OrderTypeLimit(OrderType.Peg);
+            }
+            if ("MTL".compareToIgnoreCase(price) == 0) {
+                return new OrderTypeLimit(OrderType.MarketToLimit);
+            }
+            if ("MO".compareToIgnoreCase(price) == 0) {
+                return new OrderTypeLimit(OrderType.MarketOrder);
+            }
+
+            return new OrderTypeLimit(OrderType.Limit, Double.parseDouble(price));
+        }
+    }
+
+    private static class OrderBookRow {
         private String broker;
         private Order.OrderSide side;
         private int quantity;
         private OrderType orderType;
         private Double price;
 
-        public static Function<? super Order, OrderRow> FROM_Order = new Function<Order, OrderRow>() {
+        public static Function<? super Order, OrderBookRow> FROM_Order = new Function<Order, OrderBookRow>() {
             @Override
-            public OrderRow apply(@Nullable Order order) {
+            public OrderBookRow apply(@Nullable Order order) {
                 final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
-                final OrderRow orderRow = new OrderRow();
+                final OrderBookRow orderRow = new OrderBookRow();
 
                 orderRow.broker = order.getBroker();
                 orderRow.side = order.getSide();
@@ -177,7 +213,7 @@ public class MatchingUnitStepDefinitions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            OrderRow orderRow = (OrderRow) o;
+            OrderBookRow orderRow = (OrderBookRow) o;
 
             if (quantity != orderRow.quantity) return false;
             if (!broker.equals(orderRow.broker)) return false;
@@ -200,7 +236,7 @@ public class MatchingUnitStepDefinitions {
 
         @Override
         public String toString() {
-            return "OrderRow{" +
+            return "OrderBookRow{" +
                     "broker='" + broker + '\'' +
                     ", side=" + side +
                     ", quantity=" + quantity +
