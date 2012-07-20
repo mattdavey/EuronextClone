@@ -62,6 +62,8 @@ public class MatchingUnitStepDefinitions {
         final List<TradeRow> expectedTrades = expectedTradesTable.asList(TradeRow.class);
         final List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
         assertEquals(expectedTrades, actualTrades);
+
+        generatedTrades.clear();
     }
 
     @Then("^no trades are generated$")

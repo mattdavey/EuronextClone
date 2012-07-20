@@ -49,7 +49,25 @@ Feature: Examples from the Euronext the Peg Orders PDF
 #      | B      | Buy  | 70       | Peg        | 10.8  |
 #      | A      | Buy  | 200      | Limit      | 10.5  |
 #      | B      | Buy  | 125      | Limit      | 10.5  |
-    Then "Sell" order book should look like:
+    And "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | C      | Sell | 30       | Limit      | 10.9  |
+      | C      | Sell | 350      | Limit      | 10.9  |
+      | D      | Sell | 275      | Limit      | 11    |
+    Given the following orders are submitted in this order:
+      | Broker | Side | Quantity | Order Type | Price |
+      | G      | Sell | 250      | Limit      | 10.8  |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | E             | G              | 200      | 10.8  |
+      | B             | G              | 50       | 10.8  |
+#    And "Buy" order book should look like:
+#      | Broker | Side | Quantity | Order Type | Price |
+#      | A      | Buy  | 200      | Limit      | 10.5  |
+#      | B      | Buy  | 125      | Limit      | 10.5  |
+#      | B      | Buy  | 100      | Peg        | 10.5  |
+#      | B      | Buy  | 70       | Peg        | 10.5  |
+    And "Sell" order book should look like:
       | Broker | Side | Quantity | Order Type | Price |
       | C      | Sell | 30       | Limit      | 10.9  |
       | C      | Sell | 350      | Limit      | 10.9  |
