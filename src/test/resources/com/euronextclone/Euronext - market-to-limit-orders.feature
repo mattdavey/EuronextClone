@@ -5,9 +5,9 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "ByAuction" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 50       | MarketToLimit |       |
-      | B      | Sell | 40       | MarketToLimit |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 50       | MTL   |
+      | B      | Sell | 40       | MTL   |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -24,11 +24,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "ByAuction" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | MarketToLimit |       |
-      | B      | Buy  | 10       | MarketOrder   |       |
-      | C      | Buy  | 10       | MarketToLimit |       |
-      | D      | Sell | 10       | Limit         | 10    |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | MTL   |
+      | B      | Buy  | 10       | MO    |
+      | C      | Buy  | 10       | MTL   |
+      | D      | Sell | 10       | 10    |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -46,11 +46,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "ByAuction" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | MarketToLimit |       |
-      | B      | Buy  | 10       | MarketOrder   |       |
-      | C      | Buy  | 10       | MarketToLimit |       |
-      | D      | Sell | 5        | Limit         | 10    |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | MTL   |
+      | B      | Buy  | 10       | MO    |
+      | C      | Buy  | 10       | MTL   |
+      | D      | Sell | 5        | 10    |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -69,9 +69,9 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 50       | MarketToLimit |       |
-      | B      | Sell | 40       | MarketToLimit |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 50       | MTL   |
+      | B      | Sell | 40       | MTL   |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -88,11 +88,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | MarketToLimit |       |
-      | B      | Buy  | 10       | MarketOrder   |       |
-      | C      | Buy  | 10       | MarketToLimit |       |
-      | D      | Sell | 10       | Limit         | 10    |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | MTL   |
+      | B      | Buy  | 10       | MO    |
+      | C      | Buy  | 10       | MTL   |
+      | D      | Sell | 10       | 10    |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -110,11 +110,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | MarketToLimit |       |
-      | B      | Buy  | 10       | MarketOrder   |       |
-      | C      | Buy  | 10       | MarketToLimit |       |
-      | D      | Sell | 5        | Limit         | 10    |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | MTL   |
+      | B      | Buy  | 10       | MO    |
+      | C      | Buy  | 10       | MTL   |
+      | D      | Sell | 5        | 10    |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -133,11 +133,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 15
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | Limit         | 15    |
-      | B      | Buy  | 10       | Limit         | 12    |
-      | C      | Buy  | 10       | Limit         | 10    |
-      | D      | Sell | 25       | MarketToLimit |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | 15    |
+      | B      | Buy  | 10       | 12    |
+      | C      | Buy  | 10       | 10    |
+      | D      | Sell | 25       | MTL   |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | A             | D              | 10       | 15    |
@@ -154,11 +154,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 12
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 10       | MarketOrder   |       |
-      | B      | Buy  | 10       | Limit         | 12    |
-      | C      | Buy  | 10       | Limit         | 9     |
-      | D      | Sell | 25       | MarketToLimit |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 10       | MO    |
+      | B      | Buy  | 10       | 12    |
+      | C      | Buy  | 10       | 9     |
+      | D      | Sell | 25       | MTL   |
     And "Buy" order book should look like:
       | Broker | Side | Quantity | Order Type | Price |
       | C      | Buy  | 10       | Limit      | 9     |

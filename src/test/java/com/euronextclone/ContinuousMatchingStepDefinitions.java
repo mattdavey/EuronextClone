@@ -5,6 +5,8 @@ import cucumber.annotation.en.Then;
 import cucumber.table.DataTable;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -22,12 +24,7 @@ public class ContinuousMatchingStepDefinitions {
 
         final List<OrderRow> orderRows = orderTable.asList(OrderRow.class);
         for (OrderRow orderRow : orderRows) {
-
-            if (orderRow.price == null) {
-                matchingUnit.addOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType));
-            } else {
-                matchingUnit.addOrder(orderRow.side, orderRow.broker, orderRow.quantity, new OrderTypeLimit(orderRow.orderType, orderRow.price));
-            }
+            matchingUnit.addOrder(orderRow.side, orderRow.broker, orderRow.quantity, orderRow.getOrderTypeLimit());
         }
     }
 
@@ -80,11 +77,28 @@ public class ContinuousMatchingStepDefinitions {
     }
 
     private static class OrderRow {
+        private static final Pattern PEG = Pattern.compile("Peg(?:\\[(.+)\\])?", Pattern.CASE_INSENSITIVE);
         private String broker;
         private Order.OrderSide side;
         private int quantity;
-        private OrderType orderType;
-        private Double price;
+        private String price;
+
+        public OrderTypeLimit getOrderTypeLimit() {
+
+            Matcher peg = PEG.matcher(price);
+            if (peg.matches()) {
+                String limit = peg.group(1);
+                return limit != null ? new OrderTypeLimit(OrderType.Peg, Double.parseDouble(limit)) : new OrderTypeLimit(OrderType.Peg);
+            }
+            if ("MTL".compareToIgnoreCase(price) == 0) {
+                return new OrderTypeLimit(OrderType.MarketToLimit);
+            }
+            if ("MO".compareToIgnoreCase(price) == 0) {
+                return new OrderTypeLimit(OrderType.MarketOrder);
+            }
+
+            return new OrderTypeLimit(OrderType.Limit, Double.parseDouble(price));
+        }
     }
 
     private static class BestLimitRow {

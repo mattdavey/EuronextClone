@@ -5,18 +5,18 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 50       | MarketToLimit |       |
-      | B      | Buy  | 90       | Limit         | 10.1  |
-      | C      | Buy  | 10       | Limit         | 9.9   |
-      | D      | Sell | 40       | MarketToLimit |       |
-      | E      | Sell | 100      | Limit         | 10.08 |
-      | F      | Sell | 60       | Limit         | 10.15 |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 50       | MTL   |
+      | B      | Buy  | 90       | 10.1  |
+      | C      | Buy  | 10       | 9.9   |
+      | D      | Sell | 40       | MTL   |
+      | E      | Sell | 100      | 10.08 |
+      | F      | Sell | 60       | 10.15 |
     Then the calculated IMP is:
       | 10.08 |
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | G      | Buy  | 20       | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | G      | Buy  | 20       | MO    |
     Then the calculated IMP is:
       | 10.1 |
     When class auction completes
@@ -40,14 +40,14 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type    | Price |
-      | A      | Buy  | 40       | MarketToLimit |       |
-      | D      | Sell | 45       | MarketOrder   |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 40       | MTL   |
+      | D      | Sell | 45       | MO    |
     Then the calculated IMP is:
       | 10 |
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | G      | Buy  | 20       | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | G      | Buy  | 20       | MO    |
     Then the calculated IMP is:
       | 10 |
     When class auction completes
@@ -66,9 +66,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | A      | Buy  | 40       | MarketOrder |       |
-      | G      | Sell | 40       | Limit       | 9.98  |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 40       | MO    |
+      | G      | Sell | 40       | 9.98  |
     Then the calculated IMP is:
       | 10 |
 
@@ -78,9 +78,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | A      | Buy  | 40       | MarketOrder |       |
-      | G      | Sell | 41       | Limit       | 9.98  |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 40       | MO    |
+      | G      | Sell | 41       | 9.98  |
     Then the calculated IMP is:
       | 9.98 |
 
@@ -90,9 +90,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | A      | Buy  | 40       | MarketOrder |       |
-      | G      | Sell | 40       | Limit       | 10.02 |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 40       | MO    |
+      | G      | Sell | 40       | 10.02 |
     Then the calculated IMP is:
       | 10.02 |
 
@@ -102,12 +102,12 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type | Price |
-      | A      | Sell | 100      | Limit      | 10.2  |
-      | B      | Sell | 60       | Limit      | 10.3  |
+      | Broker | Side | Quantity | Price |
+      | A      | Sell | 100      | 10.2  |
+      | B      | Sell | 60       | 10.3  |
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | C      | Buy  | 110      | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | C      | Buy  | 110      | MO    |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
@@ -123,12 +123,12 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type | Price |
-      | A      | Sell | 100      | Limit      | 10.2  |
-      | B      | Sell | 60       | Limit      | 10.3  |
+      | Broker | Side | Quantity | Price |
+      | A      | Sell | 100      | 10.2  |
+      | B      | Sell | 60       | 10.3  |
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | C      | Buy  | 200      | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | C      | Buy  | 200      | MO    |
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
@@ -145,12 +145,12 @@ Feature: Examples from the Euronext Pure Market Order PDF
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | A      | Buy  | 90       | MarketOrder |       |
-      | B      | Buy  | 10       | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 90       | MO    |
+      | B      | Buy  | 10       | MO    |
     When the following orders are submitted in this order:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | C      | Sell | 170      | MarketOrder |       |
+      | Broker | Side | Quantity | Price |
+      | C      | Sell | 170      | MO    |
 #    Then the following trades are generated:
 #      | Buying broker | Selling broker | Quantity | Price |
 #      | A             | C              | 90       | 10    |
