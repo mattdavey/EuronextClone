@@ -366,7 +366,7 @@ public class MatchingUnit implements Observable<Trade> {
         final OrderBook counterBook = getCounterBook(side);
 
         final OrderType initialOrderType = order.getOrderTypeLimit().getOrderType();
-        if (!counterBook.match(order, tradingPhase, indicativeMatchingPrice)) {
+        if (!counterBook.match2(order, tradingPhase, indicativeMatchingPrice)) {
             book.remove(order);
         } else {
             final OrderType currentOrderType = order.getOrderTypeLimit().getOrderType();

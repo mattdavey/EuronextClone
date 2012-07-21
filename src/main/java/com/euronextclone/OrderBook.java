@@ -1,5 +1,6 @@
 package com.euronextclone;
 
+import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -27,6 +28,91 @@ public class OrderBook implements Observable<Trade> {
 
     public Double getBestLimit() {
         return bestLimit;
+    }
+
+    public boolean match2(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {
+
+        Double newOrderPrice = currentTradingPhase == TradingPhase.CoreAuction ?
+                imp :
+                (newOrder.getOrderTypeLimit().providesLimit() ? newOrder.getOrderTypeLimit().getLimit() : null);
+
+        List<Order> toRemove = new ArrayList<Order>();
+        List<Order> toAdd = new ArrayList<Order>();
+
+        OrderType newOrderType = newOrder.getOrderTypeLimit().getOrderType();
+
+        for (final Order order : orders) {
+
+            // Determine the price at which the trade happens
+            final Double bookOrderPrice = currentTradingPhase == TradingPhase.CoreAuction ?
+                    imp :
+                    order.getOrderTypeLimit().price(bookSide, bestLimit);
+
+            final Double tradePrice = determineTradePrice(newOrderPrice, bookOrderPrice);
+            if (tradePrice == null) {
+                return true;
+            }
+
+            // Determine the amount to trade
+            int tradeQuantity = determineTradeQuantity(newOrder, order);
+
+            // Trade
+            newOrder.decrementQuantity(tradeQuantity);
+            order.decrementQuantity(tradeQuantity);
+            generateTrade(newOrder, order, tradeQuantity, tradePrice);
+
+            if (order.getQuantity() == 0) {
+                toRemove.add(order);
+            } else {
+                if (order.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
+                    toRemove.add(order);
+                    toAdd.add(order.convertTo(new Limit(tradePrice)));
+                }
+                break;
+            }
+
+            if (newOrderType == OrderType.MarketToLimit) {
+                newOrderPrice = tradePrice;
+                newOrderType = OrderType.Limit;
+            }
+        }
+
+        orders.removeAll(toRemove);
+        for (Order order : toAdd) {
+            placeOrderInBook(order);
+        }
+
+//        return match(newOrder, currentTradingPhase, imp);
+        return newOrder.getQuantity() != 0;
+    }
+
+    private int determineTradeQuantity(Order newOrder, Order order) {
+        return Math.min(newOrder.getQuantity(), order.getQuantity());
+    }
+
+    private Double determineTradePrice(Double newOrderPrice, Double bookOrderPrice) {
+
+        if (newOrderPrice == null && bookOrderPrice == null) {
+            return bestLimit;
+        }
+
+        if (newOrderPrice == null) {
+            return bookOrderPrice;
+        }
+
+        if (bookOrderPrice == null) {
+            return newOrderPrice;
+        }
+
+        if (bookSide == Order.OrderSide.Buy && bookOrderPrice >= newOrderPrice) {
+            return bookOrderPrice;
+        }
+
+        if (bookSide == Order.OrderSide.Sell && bookOrderPrice <= newOrderPrice) {
+            return bookOrderPrice;
+        }
+
+        return null;  // Can't trade
     }
 
     public boolean match(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {
