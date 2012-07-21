@@ -8,7 +8,6 @@ import cucumber.annotation.en.Then;
 import cucumber.annotation.en.When;
 import cucumber.table.DataTable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -52,14 +51,20 @@ public class MatchingUnitStepDefinitions {
     @Then("^\"([^\"]*)\" order book should look like:$")
     public void order_book_should_look_like(Order.OrderSide side, DataTable orderTable) throws Throwable {
         final List<OrderBookRow> expectedOrders = orderTable.asList(OrderBookRow.class);
-        final List<OrderBookRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderBookRow.FROM_Order).toImmutableList();
+        final List<OrderBookRow> actualOrders = FluentIterable
+                .from(matchingUnit.getOrders(side))
+                .transform(OrderBookRow.FROM_Order(matchingUnit))
+                .toImmutableList();
 
         assertEquals(expectedOrders, actualOrders);
     }
 
     @Then("^\"([^\"]*)\" order book is empty$")
     public void order_book_is_empty(Order.OrderSide side) throws Throwable {
-        final List<OrderBookRow> actualOrders = FluentIterable.from(matchingUnit.getOrders(side)).transform(OrderBookRow.FROM_Order).toImmutableList();
+        final List<OrderBookRow> actualOrders = FluentIterable
+                .from(matchingUnit.getOrders(side))
+                .transform(OrderBookRow.FROM_Order(matchingUnit))
+                .toImmutableList();
 
         assertThat(actualOrders, is(empty()));
     }
@@ -194,20 +199,24 @@ public class MatchingUnitStepDefinitions {
         private OrderType orderType;
         private Double price;
 
-        public static Function<? super Order, OrderBookRow> FROM_Order = new Function<Order, OrderBookRow>() {
-            @Override
-            public OrderBookRow apply(@Nullable Order order) {
-                final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
-                final OrderBookRow orderRow = new OrderBookRow();
+        public static Function<? super Order, OrderBookRow> FROM_Order(final MatchingUnit matchingUnit) {
+            return new Function<Order, OrderBookRow>() {
+                @Override
+                public OrderBookRow apply(final Order order) {
+                    final Order.OrderSide side = order.getSide();
+                    final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
+                    final Double bestLimit = matchingUnit.getBestLimit(side);
+                    final OrderBookRow orderRow = new OrderBookRow();
 
-                orderRow.broker = order.getBroker();
-                orderRow.side = order.getSide();
+                    orderRow.broker = order.getBroker();
+                    orderRow.side = order.getSide();
                 orderRow.price = orderTypeLimit.hasLimit() ? orderTypeLimit.getLimit() : null;
-                orderRow.orderType = orderTypeLimit.getOrderType();
-                orderRow.quantity = order.getQuantity();
-                return orderRow;
-            }
-        };
+                    orderRow.orderType = orderTypeLimit.getOrderType();
+                    orderRow.quantity = order.getQuantity();
+                    return orderRow;
+                }
+            };
+        }
 
         @Override
         public boolean equals(Object o) {

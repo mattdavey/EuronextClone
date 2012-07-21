@@ -1,6 +1,5 @@
 Feature: Pure market orders
 
-  @focus
   Scenario: Resting market order is partially filled by incoming limit order
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |

@@ -155,7 +155,7 @@ public class OrderBook implements Observable<Trade> {
 
         // Order book should be good, just reset best
         for (final Order order : orders) {
-            if (order.getOrderTypeLimit().hasLimit()) {
+            if (order.getOrderTypeLimit().providesLimit()) {
                 bestLimit = order.getOrderTypeLimit().getLimit();
                 break;
             }

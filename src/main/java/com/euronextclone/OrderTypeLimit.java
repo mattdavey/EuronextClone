@@ -38,6 +38,10 @@ public abstract class OrderTypeLimit {
     private double limit = Double.MAX_VALUE;
     private OrderType orderType;
 
+    public abstract boolean providesLimit();
+
+    public abstract Double price(Order.OrderSide side, final double bestLimit);
+
     public abstract double value(final double bestLimit);
 
     public boolean canTrade(final Double price, final Order.OrderSide side) {

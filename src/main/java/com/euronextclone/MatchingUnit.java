@@ -302,7 +302,7 @@ public class MatchingUnit implements Observable<Trade> {
         return FluentIterable.from(book.getOrders()).filter(new Predicate<Order>() {
             @Override
             public boolean apply(Order input) {
-                return input.getOrderTypeLimit().hasLimit();
+                return input.getOrderTypeLimit().providesLimit();
             }
         }).transform(new Function<Order, Double>() {
             @Override

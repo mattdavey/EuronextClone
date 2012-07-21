@@ -1,5 +1,6 @@
 package com.euronextclone.ordertypes;
 
+import com.euronextclone.Order;
 import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
@@ -16,6 +17,16 @@ public class Limit extends OrderTypeLimit {
     public Limit(final double limit) {
         super(OrderType.Limit, limit);
         this.limit = limit;
+    }
+
+    @Override
+    public boolean providesLimit() {
+        return true;
+    }
+
+    @Override
+    public Double price(Order.OrderSide side, double bestLimit) {
+        return limit;
     }
 
     @Override
