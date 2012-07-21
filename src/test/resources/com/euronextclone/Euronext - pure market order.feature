@@ -1,6 +1,5 @@
 Feature: Examples from the Euronext Pure Market Order PDF
 
-  @focus
   Scenario: Call Phase - Example 1
   The Market order is totally filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"

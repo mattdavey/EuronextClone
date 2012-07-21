@@ -82,7 +82,6 @@ public class OrderBook implements Observable<Trade> {
             placeOrderInBook(order);
         }
 
-//        return match(newOrder, currentTradingPhase, imp);
         return newOrder.getQuantity() != 0;
     }
 
