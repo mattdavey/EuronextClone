@@ -117,12 +117,13 @@ public class OrderBook implements Observable<Trade> {
         validatePegOrderPositions();
     }
 
-    public void add(final Order order) {
-        placeOrderInBook(order);
+    public int add(final Order order) {
+        int position = placeOrderInBook(order);
         validatePegOrderPositions();
+        return position;
     }
 
-    private void placeOrderInBook(final Order newOrder) {
+    private int placeOrderInBook(final Order newOrder) {
         int count = 0;
         for (final Order order : orders) {
 
@@ -135,6 +136,7 @@ public class OrderBook implements Observable<Trade> {
         }
 
         orders.add(count, newOrder);
+        return count;
     }
 
     private void validatePegOrderPositions() {
