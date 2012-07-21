@@ -359,24 +359,102 @@ public class MatchingUnit implements Observable<Trade> {
         }
     }
 
-    private boolean tryMatchOrder(final Order order) {
-        final Order.OrderSide side = order.getSide();
+    private boolean tryMatchOrder(final Order newOrder) {
+        final Order.OrderSide side = newOrder.getSide();
         final OrderBook book = getBook(side);
-        final int startQuantity = order.getQuantity();
+        final int startQuantity = newOrder.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        final OrderType initialOrderType = order.getOrderTypeLimit().getOrderType();
-        if (!counterBook.match2(order, tradingPhase, indicativeMatchingPrice)) {
-            book.remove(order);
-        } else {
-            final OrderType currentOrderType = order.getOrderTypeLimit().getOrderType();
-            if (initialOrderType != currentOrderType) {
-                book.remove(order);
-                book.add(order);
+        Double newOrderPrice = newOrder.getOrderTypeLimit().providesLimit() ? newOrder.getOrderTypeLimit().getLimit() : null;
+
+        List<Order> toRemove = new ArrayList<Order>();
+        List<Order> toAdd = new ArrayList<Order>();
+
+        OrderType newOrderType = newOrder.getOrderTypeLimit().getOrderType();
+
+        for (final Order order : counterBook.getOrders()) {
+
+            // Determine the price at which the trade happens
+            final Double bookOrderPrice = order.getOrderTypeLimit().price(order.getSide(), counterBook.getBestLimit());
+
+            Double tradePrice = determineTradePrice(newOrderPrice, bookOrderPrice, order.getSide(), counterBook.getBestLimit());
+            if (tradePrice == null) {
+                break;
+            }
+
+            if (tradingPhase == TradingPhase.CoreAuction) {
+                tradePrice = indicativeMatchingPrice;
+            }
+
+            // Determine the amount to trade
+            int tradeQuantity = determineTradeQuantity(newOrder, order);
+
+            // Trade
+            newOrder.decrementQuantity(tradeQuantity);
+            order.decrementQuantity(tradeQuantity);
+            generateTrade(newOrder, order, tradeQuantity, tradePrice);
+
+            if (order.getQuantity() == 0) {
+                toRemove.add(order);
+            } else {
+                if (order.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
+                    toRemove.add(order);
+                    toAdd.add(order.convertTo(new Limit(tradePrice)));
+                }
+                break;
+            }
+
+            if (newOrderType == OrderType.MarketToLimit) {
+                newOrderPrice = tradePrice;
+                newOrderType = OrderType.Limit;
             }
         }
 
-        return startQuantity != order.getQuantity();
+        counterBook.getOrders().removeAll(toRemove);
+        for (Order order : toAdd) {
+            counterBook.add(order);
+        }
+
+        if(newOrder.getQuantity() == 0) {
+            book.remove(newOrder);
+        }
+
+        return startQuantity != newOrder.getQuantity();
+    }
+
+    private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price) {
+        notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
+                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
+                tradeQuantity, price));
+    }
+
+    private int determineTradeQuantity(Order newOrder, Order order) {
+        return Math.min(newOrder.getQuantity(), order.getQuantity());
+    }
+
+    private Double determineTradePrice(Double newOrderPrice, Double counterBookOrderPrice, Order.OrderSide counterBookSide, Double counterBookBestLimit) {
+
+        if (newOrderPrice == null && counterBookOrderPrice == null) {
+            return counterBookBestLimit;
+        }
+
+        if (newOrderPrice == null) {
+            return counterBookOrderPrice;
+        }
+
+        if (counterBookOrderPrice == null) {
+            return newOrderPrice;
+        }
+
+        if (counterBookSide == Order.OrderSide.Buy && counterBookOrderPrice >= newOrderPrice) {
+            return counterBookOrderPrice;
+        }
+
+        if (counterBookSide == Order.OrderSide.Sell && counterBookOrderPrice <= newOrderPrice) {
+            return counterBookOrderPrice;
+        }
+
+        return null;  // Can't trade
     }
 
     public int orderBookDepth(final Order.OrderSide side) {
