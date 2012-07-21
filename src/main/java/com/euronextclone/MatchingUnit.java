@@ -371,6 +371,7 @@ public class MatchingUnit implements Observable<Trade> {
         List<Order> toAdd = new ArrayList<Order>();
 
         OrderType newOrderType = newOrder.getOrderTypeLimit().getOrderType();
+        Order currentOrder = newOrder;
 
         for (final Order order : counterBook.getOrders()) {
 
@@ -387,12 +388,12 @@ public class MatchingUnit implements Observable<Trade> {
             }
 
             // Determine the amount to trade
-            int tradeQuantity = determineTradeQuantity(newOrder, order);
+            int tradeQuantity = determineTradeQuantity(currentOrder, order);
 
             // Trade
-            newOrder.decrementQuantity(tradeQuantity);
+            currentOrder.decrementQuantity(tradeQuantity);
             order.decrementQuantity(tradeQuantity);
-            generateTrade(newOrder, order, tradeQuantity, tradePrice);
+            generateTrade(currentOrder, order, tradeQuantity, tradePrice);
 
             if (order.getQuantity() == 0) {
                 toRemove.add(order);
@@ -405,6 +406,9 @@ public class MatchingUnit implements Observable<Trade> {
             }
 
             if (newOrderType == OrderType.MarketToLimit) {
+                book.remove(currentOrder);
+                currentOrder = currentOrder.convertTo(new Limit(tradePrice));
+                book.add(currentOrder);
                 newOrderPrice = tradePrice;
                 newOrderType = OrderType.Limit;
             }
@@ -415,11 +419,11 @@ public class MatchingUnit implements Observable<Trade> {
             counterBook.add(order);
         }
 
-        if(newOrder.getQuantity() == 0) {
-            book.remove(newOrder);
+        if (currentOrder.getQuantity() == 0) {
+            book.remove(currentOrder);
         }
 
-        return startQuantity != newOrder.getQuantity();
+        return startQuantity != currentOrder.getQuantity();
     }
 
     private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price) {
