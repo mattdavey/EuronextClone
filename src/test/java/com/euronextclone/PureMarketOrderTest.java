@@ -43,7 +43,6 @@ public class PureMarketOrderTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.dump();
         matchingUnit.addOrder(Order.OrderSide.Buy, "C", 110, new Market());
         close.close();
 

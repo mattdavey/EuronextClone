@@ -30,9 +30,4 @@ public class Peg extends OrderTypeLimit {
     public Double price(Order.OrderSide side, double bestLimit) {
         return bestLimit;
     }
-
-    @Override
-    public double value(double bestLimit) {
-        return bestLimit;
-    }
 }

@@ -29,8 +29,6 @@ public class MarketToLimitOrderTest {
         matchingUnit.addOrder(Order.OrderSide.Buy, "C", 10, new Limit(9));
         matchingUnit.addOrder(Order.OrderSide.Sell, "D", 25, new MarketToLimit());
 
-        matchingUnit.dump();
-
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(1));
         MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(1));
     }

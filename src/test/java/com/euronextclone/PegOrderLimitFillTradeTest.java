@@ -33,7 +33,6 @@ public class PegOrderLimitFillTradeTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.dump();
         matchingUnit.addOrder(Order.OrderSide.Sell, "C", 200, new Limit(11.5D));
         close.close();
 

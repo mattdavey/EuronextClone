@@ -39,13 +39,4 @@ public class PegWithLimit extends OrderTypeLimit {
             return limit;
         }
     }
-
-    @Override
-    public double value(double bestLimit) {
-
-        if (limit < bestLimit)
-            return limit;
-
-        return bestLimit;
-    }
 }

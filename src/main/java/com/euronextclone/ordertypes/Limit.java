@@ -33,9 +33,4 @@ public class Limit extends OrderTypeLimit {
     public Double price(Order.OrderSide side, double bestLimit) {
         return limit;
     }
-
-    @Override
-    public double value(double bestLimit) {
-        return limit;
-    }
 }

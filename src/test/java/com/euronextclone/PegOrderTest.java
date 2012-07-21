@@ -43,9 +43,7 @@ public class PegOrderTest extends BaseReactiveTest {
         final MatchingUnit matchingUnit = new MatchingUnit();
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
-        matchingUnit.dump();
         matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new Limit(10.8D));
-        matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
         MatcherAssert.assertThat("Best Buy Limit", matchingUnit.getBestLimit(Order.OrderSide.Buy), Matchers.is(10.8));

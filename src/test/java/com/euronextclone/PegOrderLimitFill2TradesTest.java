@@ -35,7 +35,6 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
         buyOrders(matchingUnit);
         sellOrders(matchingUnit);
         matchingUnit.addOrder(Order.OrderSide.Buy, "E", 200, new Limit(11.7));
-        matchingUnit.dump();
 
         MatcherAssert.assertThat("Buy Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Buy), Matchers.is(5));
         MatcherAssert.assertThat("Sell Order Depth", matchingUnit.orderBookDepth(Order.OrderSide.Sell), Matchers.is(3));
@@ -71,9 +70,7 @@ public class PegOrderLimitFill2TradesTest extends BaseReactiveTest {
             }
         }));
 
-        matchingUnit.dump();
         matchingUnit.addOrder(Order.OrderSide.Sell, "A", 270, new Limit(11.699999999999999D));
-        matchingUnit.dump();
         close.close();
 
         MatcherAssert.assertThat("Received Trade", getReceivedTradeCount(), is(2));

@@ -56,19 +56,23 @@ public class Order {
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        final double thisOrderLimit = getOrderTypeLimit().value(bestLimit);
-        final double anOrderLimit = anOrder.getOrderTypeLimit().value(bestLimit);
+        final Double thisOrderLimit = getOrderTypeLimit().price(side, bestLimit);
+        final Double anOrderLimit = anOrder.getOrderTypeLimit().price(side, bestLimit);
+
+        if (thisOrderLimit == null && anOrderLimit == null) {
+            return EQUAL;
+        }
 
         switch (side) {
             case Buy:
-                if (thisOrderLimit > anOrderLimit) {
+                if (thisOrderLimit == null || thisOrderLimit > anOrderLimit) {
                     return AFTER;
                 } else if (thisOrderLimit < anOrderLimit) {
                     return BEFORE;
                 }
                 break;
             case Sell:
-                if (thisOrderLimit < anOrderLimit) {
+                if (thisOrderLimit == null || thisOrderLimit < anOrderLimit) {
                     return AFTER;
                 } else if (thisOrderLimit > anOrderLimit) {
                     return BEFORE;
@@ -79,10 +83,6 @@ public class Order {
         return EQUAL;
     }
 
-    public boolean getPartlyFilled() {
-        return quantity != originalQuantity;
-    }
-
     public enum OrderSide {Buy, Sell}
 
     public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side) {
@@ -91,7 +91,6 @@ public class Order {
         this.side = side;
         this.broker = broker;
         this.quantity = quantity;
-        this.originalQuantity = quantity;
     }
 
     public int getQuantity() {
@@ -118,10 +117,6 @@ public class Order {
         return orderTypeLimit;
     }
 
-    public void dump() {
-        System.out.println(String.format("%s %d %d %s", broker, id, quantity, orderTypeLimit));
-    }
-
     public Order convertTo(OrderTypeLimit orderType) {
         return new Order(broker, quantity, orderType, side);
     }
@@ -131,6 +126,5 @@ public class Order {
     private final OrderSide side;
     private final String broker;
     private int quantity;
-    private final int originalQuantity;
     private final int id;
 }

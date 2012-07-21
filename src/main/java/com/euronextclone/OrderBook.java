@@ -106,11 +106,6 @@ public class OrderBook implements Observable<Trade> {
         return orders.size();
     }
 
-    public void dump() {
-        for (final Order order : orders)
-            order.dump();
-    }
-
     @Nonnull
     public Closeable register(@Nonnull Observer<? super Trade> observer) {
         return notifier.register(observer);

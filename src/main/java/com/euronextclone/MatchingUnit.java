@@ -472,15 +472,6 @@ public class MatchingUnit implements Observable<Trade> {
         return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit() : buyOrderBook.getBestLimit();
     }
 
-    public void dump() {
-        System.out.println();
-        System.out.println("Buy Book:");
-        buyOrderBook.dump();
-        System.out.println("Sell Book:");
-        sellOrderBook.dump();
-        System.out.println();
-    }
-
     @Nonnull
     public Closeable register(@Nonnull Observer<? super Trade> observer) {
         return notifier.register(observer);

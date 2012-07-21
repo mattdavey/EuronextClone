@@ -196,7 +196,6 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
                 sessionID.getTargetCompID(),
                 (int)orderQty.getValue(),
                 new Limit(price.getValue()));
-        matchingUnit.dump();
     }
 
     private void acceptOrder(NewOrderSingle order, SessionID sessionID) throws FieldNotFound {
