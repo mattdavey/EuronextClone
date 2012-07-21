@@ -348,7 +348,7 @@ public class MatchingUnit implements Observable<Trade> {
             List<Order> mtlOrders = FluentIterable.from(orders).filter(new Predicate<Order>() {
                 @Override
                 public boolean apply(Order input) {
-                    return input.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit;
+                    return input.getOrderTypeLimit().convertsToLimit();
                 }
             }).toImmutableList();
             orders.removeAll(mtlOrders);
@@ -411,7 +411,7 @@ public class MatchingUnit implements Observable<Trade> {
             if (order.getQuantity() == 0) {
                 toRemove.add(order);
             } else {
-                if (order.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
+                if (order.getOrderTypeLimit().convertsToLimit()) {
                     toRemove.add(order);
                     toAdd.add(order.convertTo(new Limit(tradePrice)));
                 }
@@ -422,7 +422,7 @@ public class MatchingUnit implements Observable<Trade> {
                 break;
             }
 
-            if (currentOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
+            if (currentOrder.getOrderTypeLimit().convertsToLimit()) {
                 book.remove(currentOrder);
                 currentOrder = currentOrder.convertTo(new Limit(tradePrice));
                 book.add(currentOrder);

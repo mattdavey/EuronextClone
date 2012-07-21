@@ -32,6 +32,11 @@ public class MarketToLimit extends OrderTypeLimit {
     }
 
     @Override
+    public boolean convertsToLimit() {
+        return true;
+    }
+
+    @Override
     public Double price(Order.OrderSide side, Double bestLimit) {
         return null;
     }

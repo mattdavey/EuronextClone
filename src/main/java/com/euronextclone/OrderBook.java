@@ -86,7 +86,7 @@ public class OrderBook implements Observable<Trade> {
         }
 
         // Cheat if the order book only has a PEG left
-        if (orders.size() == 1 && orders.get(0).getOrderTypeLimit().getOrderType() == OrderType.Peg)
+        if (orders.size() > 0 && orders.get(0).getOrderTypeLimit().canPegLimit())
             orders.clear();
 
     }
