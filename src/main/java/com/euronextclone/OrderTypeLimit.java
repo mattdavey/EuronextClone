@@ -1,6 +1,10 @@
 package com.euronextclone;
 
 public abstract class OrderTypeLimit {
+
+    private double limit = Double.MAX_VALUE;
+    private OrderType orderType;
+
     public OrderTypeLimit(final OrderType orderType) {
         this.orderType = orderType;
     }
@@ -10,17 +14,8 @@ public abstract class OrderTypeLimit {
         this.limit = limit;
     }
 
-    public void convertToLimit(final double limit) {
-        this.orderType = OrderType.Limit;
-        this.limit = limit;
-    }
-
     public OrderType getOrderType() {
         return orderType;
-    }
-
-    public void setLimit(final double limit) {
-        this.limit = limit;
     }
 
     public double getLimit() {
@@ -34,9 +29,6 @@ public abstract class OrderTypeLimit {
     public String toString() {
         return orderType.format(limit);
     }
-
-    private double limit = Double.MAX_VALUE;
-    private OrderType orderType;
 
     public abstract boolean providesLimit();
 
