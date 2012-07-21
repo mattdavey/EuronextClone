@@ -210,7 +210,7 @@ public class MatchingUnitStepDefinitions {
 
                     orderRow.broker = order.getBroker();
                     orderRow.side = order.getSide();
-                orderRow.price = orderTypeLimit.hasLimit() ? orderTypeLimit.getLimit() : null;
+                    orderRow.price = orderTypeLimit.price(side, matchingUnit.getBestLimit(side));
                     orderRow.orderType = orderTypeLimit.getOrderType();
                     orderRow.quantity = order.getQuantity();
                     return orderRow;
