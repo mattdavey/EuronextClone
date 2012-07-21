@@ -22,6 +22,11 @@ public class Peg extends OrderTypeLimit {
     }
 
     @Override
+    public boolean canPegLimit() {
+        return true;
+    }
+
+    @Override
     public Double price(Order.OrderSide side, double bestLimit) {
         return bestLimit;
     }

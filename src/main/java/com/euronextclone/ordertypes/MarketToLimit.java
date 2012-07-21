@@ -22,6 +22,11 @@ public class MarketToLimit extends OrderTypeLimit {
     }
 
     @Override
+    public boolean canPegLimit() {
+        return false;
+    }
+
+    @Override
     public Double price(Order.OrderSide side, double bestLimit) {
         return null;
     }

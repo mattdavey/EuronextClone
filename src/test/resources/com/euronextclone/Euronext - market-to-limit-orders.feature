@@ -1,6 +1,5 @@
 Feature: Examples from the Euronext Market-to-Limit PDF
 
-  @focus
   Scenario: On a class of Securities traded by auction - Example 1
   Only Market to Limit orders in the order book
     Given that trading mode for security is "ByAuction" and phase is "CoreCall"

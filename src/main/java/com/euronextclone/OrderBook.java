@@ -1,6 +1,8 @@
 package com.euronextclone;
 
 import com.euronextclone.ordertypes.Limit;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -226,7 +228,24 @@ public class OrderBook implements Observable<Trade> {
         if (orders.size() == 0)
             return;
 
-        calculateBestLimit();
+        Double oldBestLimit = bestLimit;
+        bestLimit = calculateBestLimit();
+        boolean changed = oldBestLimit != null ? !oldBestLimit.equals(bestLimit) : bestLimit != null;
+
+        if (changed) {
+            List<Order> pegged = FluentIterable.from(orders)
+                    .filter(new Predicate<Order>() {
+                        @Override
+                        public boolean apply(final Order input) {
+                            return input.getOrderTypeLimit().canPegLimit();
+                        }
+                    }).toImmutableList();
+
+            orders.removeAll(pegged);
+            for (Order order : pegged) {
+                placeOrderInBook(order.convertTo(order.getOrderTypeLimit()));
+            }
+        }
 
         // Cheat if the order book only has a PEG left
         if (orders.size() == 1 && orders.get(0).getOrderTypeLimit().getOrderType() == OrderType.Peg)
@@ -234,17 +253,15 @@ public class OrderBook implements Observable<Trade> {
 
     }
 
-    private void calculateBestLimit() {
-        if (orders.size() == 0)
-            return;
-
+    private Double calculateBestLimit() {
         // Order book should be good, just reset best
         for (final Order order : orders) {
             if (order.getOrderTypeLimit().providesLimit()) {
-                bestLimit = order.getOrderTypeLimit().getLimit();
-                break;
+                return order.getOrderTypeLimit().getLimit();
             }
         }
+
+        return bestLimit;
     }
 
     public int orderBookDepth() {
@@ -263,5 +280,25 @@ public class OrderBook implements Observable<Trade> {
 
     public List<Order> getOrders() {
         return orders;
+    }
+
+    class Temp {
+        private Double d;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Temp temp = (Temp) o;
+
+            return !(d != null ? !d.equals(temp.d) : temp.d != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return d != null ? d.hashCode() : 0;
+        }
     }
 }
