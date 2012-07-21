@@ -78,7 +78,7 @@ Feature: Examples from the Euronext the Peg Orders PDF
       | C      | Sell | 350      | Limit      | 10.9  |
       | D      | Sell | 275      | Limit      | 11    |
 
-
+  @focus
   Scenario: Example 2
     Given that reference price is 10
     And the following orders are submitted in this order:
@@ -90,3 +90,14 @@ Feature: Examples from the Euronext the Peg Orders PDF
       | C      | Sell | 130      | 11.8      |
       | C      | Sell | 350      | 11.9      |
       | D      | Sell | 275      | 12        |
+    Then "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | A      | Buy  | 200      | Limit      | 11.5  |
+      | B      | Buy  | 150      | Peg        | 11.5  |
+      | B      | Buy  | 70       | Peg        | 11.5  |
+      | B      | Buy  | 125      | Limit      | 10.5  |
+    And "Sell" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | C      | Sell | 130      | Limit      | 11.8  |
+      | C      | Sell | 350      | Limit      | 11.9  |
+      | D      | Sell | 275      | Limit      | 12    |
