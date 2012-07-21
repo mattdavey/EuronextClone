@@ -15,13 +15,18 @@ public class PegWithLimit extends OrderTypeLimit {
     private final double limit;
 
     public PegWithLimit(final double limit) {
-        super(OrderType.Peg, limit);
+        super(OrderType.Peg);
         this.limit = limit;
     }
 
     @Override
     public boolean providesLimit() {
         return false;
+    }
+
+    @Override
+    public double getLimit() {
+        return limit;
     }
 
     @Override

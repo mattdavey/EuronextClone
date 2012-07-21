@@ -22,6 +22,11 @@ public class MarketToLimit extends OrderTypeLimit {
     }
 
     @Override
+    public double getLimit() {
+        throw new RuntimeException("MTL orders do not provide limit");
+    }
+
+    @Override
     public boolean canPegLimit() {
         return false;
     }

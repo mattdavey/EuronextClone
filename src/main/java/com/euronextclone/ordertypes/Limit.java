@@ -15,13 +15,18 @@ public class Limit extends OrderTypeLimit {
     private final double limit;
 
     public Limit(final double limit) {
-        super(OrderType.Limit, limit);
+        super(OrderType.Limit);
         this.limit = limit;
     }
 
     @Override
     public boolean providesLimit() {
         return true;
+    }
+
+    @Override
+    public double getLimit() {
+        return limit;
     }
 
     @Override

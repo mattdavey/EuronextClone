@@ -22,6 +22,11 @@ public class Peg extends OrderTypeLimit {
     }
 
     @Override
+    public double getLimit() {
+        throw new RuntimeException("Peg orders do not provide limit");
+    }
+
+    @Override
     public boolean canPegLimit() {
         return true;
     }
