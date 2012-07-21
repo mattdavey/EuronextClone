@@ -247,12 +247,13 @@ public class MatchingUnit implements Observable<Trade> {
         final ListIterator<Order> current = book.getOrders().listIterator();
         int cumulative = 0;
 
-        for (final Double price : priceIterable) {
+        for (final double price : priceIterable) {
             while (current.hasNext()) {
                 final Order order = current.next();
-                final OrderTypeLimit limit = order.getOrderTypeLimit();
+                final OrderTypeLimit orderType = order.getOrderTypeLimit();
 
-                if (limit.canTrade(price, side)) {
+                Double orderPrice = orderType.price(side, book.getBestLimit());
+                if (canTrade(side, orderPrice, price)) {
                     cumulative += order.getQuantity();
                 } else {
                     current.previous();
@@ -263,6 +264,19 @@ public class MatchingUnit implements Observable<Trade> {
         }
 
         return side == Order.OrderSide.Sell ? quantities : Lists.reverse(quantities);
+    }
+
+    private boolean canTrade(Order.OrderSide orderSide, Double orderPrice, double testPrice) {
+
+        if (orderPrice == null) {
+            return true;
+        }
+
+        if (orderSide == Order.OrderSide.Buy) {
+            return testPrice <= orderPrice;
+        }
+
+        return testPrice >= orderPrice;
     }
 
     private List<VolumeAtPrice> getTotalTradeableVolume(
