@@ -1,6 +1,5 @@
 package com.euronextclone;
 
-import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
@@ -143,27 +142,6 @@ public class OrderBook implements Observable<Trade> {
             return;
 
         calculateBestLimit();
-
-        boolean rerun = true;
-        while (!rerun) {
-            rerun = false;
-            Order last = null;
-            for (Order order : orders) {
-                if (last == null) {
-                    last = order;
-                    continue;
-                }
-
-                if (last.compareTo(order, bestLimit) < 0) {
-                    orders.remove(order);
-                    add(order);
-                    rerun = true;
-                    break;
-                }
-
-                last = order;
-            }
-        }
 
         // Cheat if the order book only has a PEG left
         if (orders.size() == 1 && orders.get(0).getOrderTypeLimit().getOrderType() == OrderType.Peg)
