@@ -3,7 +3,7 @@ package com.euronextclone;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Order {
-    public int compareTo(final Order anOrder, final OrderTypeLimit bestLimit) {
+    public int compareTo(final Order anOrder, final Double bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
@@ -51,13 +51,13 @@ public class Order {
         return type == OrderType.MarketOrder || type == OrderType.MarketToLimit;
     }
 
-    private int comparePrice(final Order anOrder, final OrderTypeLimit bestLimit) {
+    private int comparePrice(final Order anOrder, final Double bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        final double thisOrderLimit = getOrderTypeLimit().value(bestLimit.getLimit());
-        final double anOrderLimit = anOrder.getOrderTypeLimit().value(bestLimit.getLimit());
+        final double thisOrderLimit = getOrderTypeLimit().value(bestLimit);
+        final double anOrderLimit = anOrder.getOrderTypeLimit().value(bestLimit);
 
         switch (side) {
             case Buy:

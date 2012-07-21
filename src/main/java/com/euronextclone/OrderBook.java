@@ -14,7 +14,7 @@ import java.util.List;
 public class OrderBook implements Observable<Trade> {
     private final LinkedList<Order> orders = new LinkedList<Order>();
     private final Order.OrderSide bookSide;
-    private OrderTypeLimit bestLimit;
+    private Double bestLimit;
 
     /**
      * The observable helper.
@@ -23,18 +23,17 @@ public class OrderBook implements Observable<Trade> {
 
     public OrderBook(final Order.OrderSide side) {
         bookSide = side;
-        bestLimit = new Limit(side == Order.OrderSide.Buy ? Double.MAX_VALUE : 0);
+        bestLimit = side == Order.OrderSide.Buy ? Double.MAX_VALUE : 0;
     }
 
     public Double getBestLimit() {
-        final OrderTypeLimit orderPrice = bestLimit;
-        return orderPrice.hasLimit() ? orderPrice.getLimit() : null;
+        return bestLimit;
     }
 
     public boolean match(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {
         // Bit of a cheat
         if (currentTradingPhase == TradingPhase.CoreAuction) {
-            bestLimit.setLimit(imp);
+            bestLimit = imp;
         }
 
         final ArrayList<Order> rebalance = new ArrayList<Order>();
@@ -42,13 +41,13 @@ public class OrderBook implements Observable<Trade> {
         for (final Order order : orders) {
 
             if (currentTradingPhase == TradingPhase.CoreAuction) {
-                if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit.getLimit()) >= imp) ||
-                        (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit.getLimit()) <= imp)) {
+                if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit) >= imp) ||
+                        (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit) <= imp)) {
                     order.getOrderTypeLimit().setLimit(imp);
                 } else {
                     continue;
                 }
-            } else if (order.getOrderTypeLimit().value(bestLimit.getLimit()) != newOrder.getOrderTypeLimit().value(bestLimit.getLimit())) {
+            } else if (order.getOrderTypeLimit().value(bestLimit) != newOrder.getOrderTypeLimit().value(bestLimit)) {
                 if (newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketOrder &&
                         newOrder.getPartlyFilled() &&
                         order.getOrderTypeLimit().getOrderType() == OrderType.Limit) {
@@ -88,8 +87,8 @@ public class OrderBook implements Observable<Trade> {
             if (order.getQuantity() < newOrder.getQuantity()) {
                 rebalance.add(order);
                 if (!newOrder.getOrderTypeLimit().hasLimit() && newOrder.getOrderTypeLimit().getOrderType() == OrderType.MarketToLimit) {
-                    newOrder.getOrderTypeLimit().convertToLimit(bestLimit.getLimit());
-                    order.getOrderTypeLimit().convertToLimit(bestLimit.getLimit());
+                    newOrder.getOrderTypeLimit().convertToLimit(bestLimit);
+                    order.getOrderTypeLimit().convertToLimit(bestLimit);
                 }
 
                 generateTrade(newOrder, order, order.getQuantity(), order.getOrderTypeLimit().getLimit());
@@ -179,7 +178,7 @@ public class OrderBook implements Observable<Trade> {
         // Order book should be good, just reset best
         for (final Order order : orders) {
             if (order.getOrderTypeLimit().hasLimit()) {
-                bestLimit.convertToLimit(order.getOrderTypeLimit().getLimit());
+                bestLimit = order.getOrderTypeLimit().getLimit();
                 break;
             }
         }
