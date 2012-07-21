@@ -23,7 +23,7 @@ public class OrderBook implements Observable<Trade> {
 
     public OrderBook(final Order.OrderSide side) {
         bookSide = side;
-        bestLimit = new Limit(side == Order.OrderSide.Buy? Double.MAX_VALUE : 0);
+        bestLimit = new Limit(side == Order.OrderSide.Buy ? Double.MAX_VALUE : 0);
     }
 
     public Double getBestLimit() {
@@ -40,6 +40,7 @@ public class OrderBook implements Observable<Trade> {
         final ArrayList<Order> rebalance = new ArrayList<Order>();
 
         for (final Order order : orders) {
+
             if (currentTradingPhase == TradingPhase.CoreAuction) {
                 if ((bookSide == Order.OrderSide.Buy && order.getOrderTypeLimit().value(bestLimit.getLimit()) >= imp) ||
                         (bookSide == Order.OrderSide.Sell && order.getOrderTypeLimit().value(bestLimit.getLimit()) <= imp)) {
@@ -55,7 +56,8 @@ public class OrderBook implements Observable<Trade> {
                     // Rule 1 of Pure Market Order continuous trading
 
                 } else {
-                    continue;
+                    if (order.getOrderTypeLimit().getOrderType() != OrderType.MarketOrder)
+                        continue;
                 }
             }
 

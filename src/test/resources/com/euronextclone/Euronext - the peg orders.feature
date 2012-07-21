@@ -3,7 +3,6 @@ Feature: Examples from the Euronext the Peg Orders PDF
   Background:
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
 
-  @focus
   Scenario: Example 1
     Given that reference price is 10
     And the following orders are submitted in this order:

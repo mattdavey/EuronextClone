@@ -1,6 +1,7 @@
 Feature: Calculating Indicative Market Price Used in Auction Phase
 
-  Background: Given that market is in pre-opening phase
+  Background:
+    Given that trading mode for security is "Continuous" and phase is "CoreAuction"
 
   Scenario: - The Indicative Matching Price should be the one clearing most shares in the presence of multiple sell limit prices
     Given that reference price is 10
