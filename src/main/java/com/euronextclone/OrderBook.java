@@ -32,9 +32,7 @@ public class OrderBook implements Observable<Trade> {
 
     public boolean match2(final Order newOrder, final TradingPhase currentTradingPhase, final Double imp) {
 
-        Double newOrderPrice = currentTradingPhase == TradingPhase.CoreAuction ?
-                imp :
-                (newOrder.getOrderTypeLimit().providesLimit() ? newOrder.getOrderTypeLimit().getLimit() : null);
+        Double newOrderPrice = newOrder.getOrderTypeLimit().providesLimit() ? newOrder.getOrderTypeLimit().getLimit() : null;
 
         List<Order> toRemove = new ArrayList<Order>();
         List<Order> toAdd = new ArrayList<Order>();
@@ -44,13 +42,15 @@ public class OrderBook implements Observable<Trade> {
         for (final Order order : orders) {
 
             // Determine the price at which the trade happens
-            final Double bookOrderPrice = currentTradingPhase == TradingPhase.CoreAuction ?
-                    imp :
-                    order.getOrderTypeLimit().price(bookSide, bestLimit);
+            final Double bookOrderPrice = order.getOrderTypeLimit().price(bookSide, bestLimit);
 
-            final Double tradePrice = determineTradePrice(newOrderPrice, bookOrderPrice);
+            Double tradePrice = determineTradePrice(newOrderPrice, bookOrderPrice);
             if (tradePrice == null) {
-                return true;
+                break;
+            }
+
+            if (currentTradingPhase == TradingPhase.CoreAuction) {
+                tradePrice = imp;
             }
 
             // Determine the amount to trade
