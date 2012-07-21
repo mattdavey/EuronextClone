@@ -405,6 +405,10 @@ public class MatchingUnit implements Observable<Trade> {
                 break;
             }
 
+            if (currentOrder.getQuantity() == 0) {
+                break;
+            }
+
             if (newOrderType == OrderType.MarketToLimit) {
                 book.remove(currentOrder);
                 currentOrder = currentOrder.convertTo(new Limit(tradePrice));
@@ -414,7 +418,9 @@ public class MatchingUnit implements Observable<Trade> {
             }
         }
 
-        counterBook.getOrders().removeAll(toRemove);
+        for (Order order : toRemove) {
+            counterBook.remove(order);
+        }
         for (Order order : toAdd) {
             counterBook.add(order);
         }
