@@ -34,7 +34,7 @@ public abstract class OrderTypeLimit {
 
     public abstract boolean canPegLimit();
 
-    public abstract Double price(Order.OrderSide side, final double bestLimit);
+    public abstract Double price(Order.OrderSide side, final Double bestLimit);
 
     public boolean canTrade(final Double price, final Order.OrderSide side) {
 

@@ -30,7 +30,7 @@ public class PegWithLimit extends OrderTypeLimit {
     }
 
     @Override
-    public Double price(Order.OrderSide side, double bestLimit) {
+    public Double price(Order.OrderSide side, Double bestLimit) {
         if (side == Order.OrderSide.Buy && bestLimit <= limit) {
             return bestLimit;
         } else if (side == Order.OrderSide.Sell && bestLimit >= limit) {
