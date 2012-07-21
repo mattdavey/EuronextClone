@@ -10,6 +10,7 @@ import hu.akarnokd.reactive4java.reactive.Observer;
 import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -196,6 +197,11 @@ public class OrderBook implements Observable<Trade> {
                 tradeQuantity, price));
     }
 
+
+    public void removeAll(Collection<Order> ordersToRemove) {
+        orders.removeAll(ordersToRemove);
+        validatePegOrderPositions();
+    }
 
     public void remove(Order order) {
         orders.remove(order);

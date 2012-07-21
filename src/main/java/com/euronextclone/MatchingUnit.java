@@ -418,9 +418,7 @@ public class MatchingUnit implements Observable<Trade> {
             }
         }
 
-        for (Order order : toRemove) {
-            counterBook.remove(order);
-        }
+        counterBook.removeAll(toRemove);
         for (Order order : toAdd) {
             counterBook.add(order);
         }
