@@ -36,7 +36,6 @@ public class AuctionMatchingStepDefinitions {
 
     private static class OrderRow {
         private String broker;
-        private int orderId;
         private int quantity;
         private String price;
 
@@ -45,7 +44,6 @@ public class AuctionMatchingStepDefinitions {
             public OrderRow apply(final Order input) {
                 final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.getBroker());
-                orderRow.setOrderId(input.getId());
                 orderRow.setPrice(input.getOrderTypeLimit().toString());
                 orderRow.setQuantity(input.getQuantity());
                 return orderRow;
@@ -59,7 +57,6 @@ public class AuctionMatchingStepDefinitions {
 
             final OrderRow orderRow = (OrderRow) o;
 
-//            if (orderId != orderRow.orderId) return false;
             if (quantity != orderRow.quantity) return false;
             if (!broker.equals(orderRow.broker)) return false;
             if (!price.equals(orderRow.price)) return false;
@@ -70,7 +67,6 @@ public class AuctionMatchingStepDefinitions {
         @Override
         public int hashCode() {
             int result = broker.hashCode();
-            result = 31 * result + orderId;
             result = 31 * result + quantity;
             result = 31 * result + price.hashCode();
             return result;
@@ -82,14 +78,6 @@ public class AuctionMatchingStepDefinitions {
 
         public void setBroker(String broker) {
             this.broker = broker;
-        }
-
-        public int getOrderId() {
-            return orderId;
-        }
-
-        public void setOrderId(int orderId) {
-            this.orderId = orderId;
         }
 
         public int getQuantity() {
@@ -111,11 +99,9 @@ public class AuctionMatchingStepDefinitions {
 
     private static class MontageRow {
         private String bidBroker;
-        private Integer bidOrderId;
         private Integer bidQuantity;
         private String bidPrice;
         private String askBroker;
-        private Integer askOrderId;
         private Integer askQuantity;
         private String askPrice;
 
@@ -131,7 +117,6 @@ public class AuctionMatchingStepDefinitions {
             public OrderRow apply(final MontageRow input) {
                 final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.bidBroker);
-                orderRow.setOrderId(input.bidOrderId);
                 orderRow.setPrice(input.bidPrice);
                 orderRow.setQuantity(input.bidQuantity);
                 return orderRow;
@@ -143,7 +128,6 @@ public class AuctionMatchingStepDefinitions {
             public OrderRow apply(final MontageRow input) {
                 final OrderRow orderRow = new OrderRow();
                 orderRow.setBroker(input.askBroker);
-                orderRow.setOrderId(input.askOrderId);
                 orderRow.setPrice(input.askPrice);
                 orderRow.setQuantity(input.askQuantity);
                 return orderRow;

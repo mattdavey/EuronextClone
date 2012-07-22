@@ -95,6 +95,7 @@ public class MatchingUnitStepDefinitions {
         assertEquals(empty, actualTrades);
     }
 
+
     private static class TradeRow {
         private String buyingBroker;
         private String sellingBroker;
