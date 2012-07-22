@@ -454,7 +454,7 @@ public class MatchingUnit implements Observable<Trade> {
         }
 
         if (counterBookOrderPrice == null) {
-            return newOrderPrice;
+            return tryImprovePrice(newOrderPrice, counterBookSide, counterBookBestLimit);
         }
 
         if (counterBookSide == OrderSide.Buy && counterBookOrderPrice >= newOrderPrice) {
@@ -466,6 +466,21 @@ public class MatchingUnit implements Observable<Trade> {
         }
 
         return null;  // Can't trade
+    }
+
+    private double tryImprovePrice(double price, OrderSide counterBookSide, Double counterBookBestLimit) {
+        if (counterBookBestLimit == null) {
+            return price;   // can't improve, not best limit in counter book
+        }
+
+        if (counterBookSide == OrderSide.Buy && counterBookBestLimit > price) {
+            return counterBookBestLimit;
+        }
+        if (counterBookSide == OrderSide.Sell && counterBookBestLimit < price) {
+            return counterBookBestLimit;
+        }
+
+        return price;   // can't improve
     }
 
     public Double getBestLimit(final OrderSide side) {

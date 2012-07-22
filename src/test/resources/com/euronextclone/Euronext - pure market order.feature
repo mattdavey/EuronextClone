@@ -1,7 +1,6 @@
 Feature: Examples from the Euronext Pure Market Order PDF
 
-  Scenario: Call Phase - Example 1
-  The Market order is totally filled
+  Scenario: Call Phase - Example 1 - the Market order is totally filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -32,9 +31,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | C      | 10       | 9.9   |       |          |        |
 
 
-  @focus
-  Scenario: Call Phase - Example 2
-  The market order is partially filled
+  Scenario: Call Phase - Example 2 - the market order is partially filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -58,8 +55,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | 15       | MO    |       |          |        |
 
 
-  Scenario: Call Phase - Example 3
-  The Indicative Matching Price is higher than the best limit & equal to the reference price
+  Scenario: Call Phase - Example 3 - the Indicative Matching Price is higher than the best limit & equal to the reference price
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -70,8 +66,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | 10 |
 
 
-  Scenario: Call Phase - Example 4
-  The Indicative Matching Price is equal to the best limit & lower to the reference price Reference price
+  Scenario: Call Phase - Example 4 - the Indicative Matching Price is equal to the best limit & lower to the reference price Reference price
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -82,8 +77,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | 9.98 |
 
 
-  Scenario: Call Phase - Example 5
-  The Indicative Matching Price is equal to the best limit & higher to the reference price Reference price
+  Scenario: Call Phase - Example 5 - the Indicative Matching Price is equal to the best limit & higher to the reference price Reference price
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -94,8 +88,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | 10.02 |
 
 
-  Scenario: Trading session Phase - Example 1
-  The Market order is totally executed upon entry
+  Scenario: Trading session Phase - Example 1 - the Market order is totally executed upon entry
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -114,8 +107,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       |        |          |       | 10.3  | 50       | B      |
 
 
-  Scenario: Trading session Phase - Example 2
-  The Market order is partially executed upon entry
+  Scenario: Trading session Phase - Example 2 - the Market order is partially executed upon entry
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -134,9 +126,12 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | C      | 40       | MO    |       |          |        |
 
 
-  @focus
-  Scenario: Trading session Phase - Example 3
-  There are only Market orders in the order book, trade price is the last traded price
+  Scenario: Trading session Phase - Example 3 - there are only Market orders in the order book, trade price is the last traded price
+  The order is partly executed, with 100 shares at 10€ each, representing the reference price witch
+  is the last price.
+  Priority of execution for market orders on the bid side is based on the rule of “First Come, first
+  served”. The un-executed portion of the ask market order, representing 70 shares, remains on the
+  order book.
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -150,3 +145,28 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Buying broker | Selling broker | Quantity | Price |
       | A             | C              | 90       | 10    |
       | B             | C              | 10       | 10    |
+
+  @focus
+  Scenario: Trading session Phase - Example 4 - the best limit is higher that the last traded price
+  The order is executed, with 100 shares at 10.1€ (90 representing the Market Order and 10 the
+  limit order at 10.1€) and 20 at 10.08€.
+    Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 90       | MO    |
+      | B      | Buy  | 10       | 10.1  |
+      | C      | Buy  | 20       | 10.08 |
+    Then the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 90       | MO    |       |          |        |
+      | B      | 10       | 10.1  |       |          |        |
+      | C      | 20       | 10.08 |       |          |        |
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | D      | Sell | 120      | 10    |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | D              | 90       | 10.1  |
+      | B             | D              | 10       | 10.1  |
+      | C             | D              | 20       | 10.08 |
