@@ -67,6 +67,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Call Phase - Example 4 - the Indicative Matching Price is equal to the best limit & lower to the reference price Reference price
+  Broker G enters a sell Limit order at 9,98€ for the purchase of 41 shares
+  Since the number of shares on the bid side partly covers the number on the ask side, the
+  Indicative Matching Price adopted is 9.98€.
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -75,6 +78,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | Sell | 41       | 9.98  |
     Then the calculated IMP is:
       | 9.98 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 40       | MO    | 9.98  | 41       | G      |
 
 
   Scenario: Call Phase - Example 5 - the Indicative Matching Price is equal to the best limit & higher to the reference price Reference price
