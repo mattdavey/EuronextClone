@@ -24,18 +24,6 @@ public class ContinuousMatchingStepDefinitions {
         }
     }
 
-    @Then("^remaining buy order book depth is (\\d+)$")
-    public void remaining_buy_order_book_depth_is(int expectedDepth) throws Throwable {
-
-        assertThat(matchingUnit.orderBookDepth(Order.OrderSide.Buy), is(expectedDepth));
-    }
-
-    @Then("^remaining sell order book depth is (\\d+)$")
-    public void remaining_sell_order_book_depth_is(int expectedDepth) throws Throwable {
-
-        assertThat(matchingUnit.orderBookDepth(Order.OrderSide.Sell), is(expectedDepth));
-    }
-
     private static class BestLimitRow {
         private Order.OrderSide side;
         private Double limit;
