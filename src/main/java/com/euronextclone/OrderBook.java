@@ -2,28 +2,14 @@ package com.euronextclone;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
-import hu.akarnokd.reactive4java.reactive.DefaultObservable;
-import hu.akarnokd.reactive4java.reactive.Observable;
-import hu.akarnokd.reactive4java.reactive.Observer;
 
-import javax.annotation.Nonnull;
-import java.io.Closeable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderBook implements Observable<Trade> {
+public class OrderBook {
     private final LinkedList<Order> orders = new LinkedList<Order>();
-    private Double bestLimit;
-
-    /**
-     * The observable helper.
-     */
-    final private DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
-
-    public OrderBook(final OrderSide side) {
-        bestLimit = side == OrderSide.Buy ? Double.MAX_VALUE : 0;
-    }
+    private Double bestLimit = null;
 
     public Double getBestLimit() {
         return bestLimit;
@@ -104,11 +90,6 @@ public class OrderBook implements Observable<Trade> {
 
     public int orderBookDepth() {
         return orders.size();
-    }
-
-    @Nonnull
-    public Closeable register(@Nonnull Observer<? super Trade> observer) {
-        return notifier.register(observer);
     }
 
     public List<Order> getOrders() {

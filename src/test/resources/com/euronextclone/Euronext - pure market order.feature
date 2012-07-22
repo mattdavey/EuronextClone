@@ -32,6 +32,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | C      | 10       | 9.9   |       |          |        |
 
 
+  @focus
   Scenario: Call Phase - Example 2
   The market order is partially filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
@@ -145,7 +146,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | C      | Sell | 170      | MO    |
-#    Then the following trades are generated:
-#      | Buying broker | Selling broker | Quantity | Price |
-#      | A             | C              | 90       | 10    |
-#      | B             | C              | 10       | 10    |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | C              | 90       | 10    |
+      | B             | C              | 10       | 10    |

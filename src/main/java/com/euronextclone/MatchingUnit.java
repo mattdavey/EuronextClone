@@ -6,11 +6,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
-import hu.akarnokd.reactive4java.base.Action1;
 import hu.akarnokd.reactive4java.reactive.DefaultObservable;
 import hu.akarnokd.reactive4java.reactive.Observable;
 import hu.akarnokd.reactive4java.reactive.Observer;
-import hu.akarnokd.reactive4java.reactive.Reactive;
 
 import javax.annotation.Nonnull;
 import java.io.Closeable;
@@ -31,19 +29,8 @@ public class MatchingUnit implements Observable<Trade> {
     private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
     public MatchingUnit() {
-        buyOrderBook = new OrderBook(OrderSide.Buy);
-        sellOrderBook = new OrderBook(OrderSide.Sell);
-
-        buyOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
-            public void invoke(Trade value) {
-                notifier.next(value);
-            }
-        }));
-        sellOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
-            public void invoke(Trade value) {
-                notifier.next(value);
-            }
-        }));
+        buyOrderBook = new OrderBook();
+        sellOrderBook = new OrderBook();
     }
 
     public void setReferencePrice(Double referencePrice) {
@@ -455,7 +442,11 @@ public class MatchingUnit implements Observable<Trade> {
     private Double determineTradePrice(Double newOrderPrice, Double counterBookOrderPrice, OrderSide counterBookSide, Double counterBookBestLimit) {
 
         if (newOrderPrice == null && counterBookOrderPrice == null) {
-            return counterBookBestLimit;
+            if (counterBookBestLimit != null) {
+                return counterBookBestLimit;
+            }
+
+            return referencePrice;
         }
 
         if (newOrderPrice == null) {
@@ -475,11 +466,6 @@ public class MatchingUnit implements Observable<Trade> {
         }
 
         return null;  // Can't trade
-    }
-
-    public int orderBookDepth(final OrderSide side) {
-        final OrderBook orders = getBook(side);
-        return orders.orderBookDepth();
     }
 
     public Double getBestLimit(final OrderSide side) {
