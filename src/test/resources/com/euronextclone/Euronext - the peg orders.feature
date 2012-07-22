@@ -101,3 +101,13 @@ Feature: Examples from the Euronext the Peg Orders PDF
       | C      | Sell | 130      | Limit      | 11.8  |
       | C      | Sell | 350      | Limit      | 11.9  |
       | D      | Sell | 275      | Limit      | 12    |
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | E      | Buy  | 200      | 11.7  |
+    Then "Buy" order book should look like:
+      | Broker | Side | Quantity | Order Type | Price |
+      | E      | Buy  | 200      | Limit      | 11.7  |
+      | B      | Buy  | 70       | Peg        | 11.7  |
+      | B      | Buy  | 150      | Peg        | 11.6  |
+      | A      | Buy  | 200      | Limit      | 11.5  |
+      | B      | Buy  | 125      | Limit      | 10.5  |
