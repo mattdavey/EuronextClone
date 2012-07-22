@@ -6,7 +6,6 @@ import com.euronextclone.ordertypes.MarketToLimit;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
-import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import cucumber.table.DataTable;
 
@@ -20,22 +19,6 @@ public class AuctionMatchingStepDefinitions {
 
     public AuctionMatchingStepDefinitions(World world) {
         this.matchingUnit = world.getMatchingUnit();
-    }
-
-    @Given("^the following orders submitted to the book:$")
-    public void the_following_orders_submitted_to_the_book(DataTable ordersTable) throws Throwable {
-
-        final List<MontageRow> rows = ordersTable.asList(MontageRow.class);
-
-        final Iterable<Order> bids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_BID);
-        for (final Order bid : bids) {
-            matchingUnit.addOrder(bid.getSide(), bid.getBroker(), bid.getQuantity(), bid.getOrderTypeLimit());
-        }
-
-        final Iterable<Order> asks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_ASK);
-        for (final Order ask : asks) {
-            matchingUnit.addOrder(ask.getSide(), ask.getBroker(), ask.getQuantity(), ask.getOrderTypeLimit());
-        }
     }
 
     @Then("^the book looks like:$")
