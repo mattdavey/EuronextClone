@@ -13,6 +13,11 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | F      | Sell | 60       | 10.15 |
     Then the calculated IMP is:
       | 10.08 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 50       | MTL   | MTL   | 40       | D      |
+      | B      | 90       | 10.1  | 10.08 | 100      | E      |
+      | C      | 10       | 9.9   | 10.15 | 60       | F      |
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | G      | Buy  | 20       | MO    |
