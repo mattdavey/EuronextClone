@@ -23,6 +23,12 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | Buy  | 20       | MO    |
     Then the calculated IMP is:
       | 10.1 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 50       | MTL   | MTL   | 40       | D      |
+      | G      | 20       | MO    | 10.08 | 100      | E      |
+      | B      | 90       | 10.1  | 10.15 | 60       | F      |
+      | C      | 10       | 9.9   |       |          |        |
     When class auction completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
