@@ -116,6 +116,11 @@ Feature: Examples from the Euronext Market-to-Limit PDF
       | D      | Sell | 5        | 10    |
     Then the calculated IMP is:
       | 10 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 10       | MTL   | 10    | 5        | D      |
+      | B      | 10       | MO    |       |          |        |
+      | C      | 10       | MTL   |       |          |        |
     When class auction completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
