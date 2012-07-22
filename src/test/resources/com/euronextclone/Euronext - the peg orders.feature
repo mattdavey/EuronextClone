@@ -1,4 +1,5 @@
 Feature: Examples from the Euronext the Peg Orders PDF
+  See http://www.euronext.com/fic/000/041/609/416094.pdf
 
   Background:
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
