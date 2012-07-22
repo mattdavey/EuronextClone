@@ -21,8 +21,8 @@ public class OrderBook implements Observable<Trade> {
      */
     final private DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
-    public OrderBook(final Order.OrderSide side) {
-        bestLimit = side == Order.OrderSide.Buy ? Double.MAX_VALUE : 0;
+    public OrderBook(final OrderSide side) {
+        bestLimit = side == OrderSide.Buy ? Double.MAX_VALUE : 0;
     }
 
     public Double getBestLimit() {

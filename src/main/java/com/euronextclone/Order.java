@@ -83,8 +83,6 @@ public class Order {
         return EQUAL;
     }
 
-    public enum OrderSide {Buy, Sell}
-
     public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side) {
         id = c.incrementAndGet();
         this.orderTypeLimit = orderTypeLimit;

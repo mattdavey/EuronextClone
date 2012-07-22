@@ -1,6 +1,5 @@
 Feature: Examples from the Euronext Pure Market Order PDF
 
-  @focus
   Scenario: Call Phase - Example 1
   The Market order is totally filled
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
@@ -31,6 +30,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Broker | Quantity | Price | Price | Quantity | Broker |
       | B      | 20       | 10.1  | 10.15 | 60       | F      |
       | C      | 10       | 9.9   |       |          |        |
+
 
   Scenario: Call Phase - Example 2
   The market order is partially filled
@@ -133,6 +133,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | C      | 40       | MO    |       |          |        |
 
 
+  @focus
   Scenario: Trading session Phase - Example 3
   There are only Market orders in the order book, trade price is the last traded price
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"

@@ -1,7 +1,7 @@
 package com.euronextclone.gateway;
 
 import com.euronextclone.MatchingUnit;
-import com.euronextclone.Order;
+import com.euronextclone.OrderSide;
 import com.euronextclone.ordertypes.Limit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +192,7 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
     private void sendToMatchingEngine(NewOrderSingle order, SessionID sessionID, OrderQty orderQty, Price price) throws FieldNotFound {
         final MatchingUnit matchingUnit = new MatchingUnit();
         char side = order.getChar(Side.FIELD);
-        matchingUnit.addOrder((side == Side.BUY) ? Order.OrderSide.Buy : Order.OrderSide.Sell,
+        matchingUnit.addOrder((side == Side.BUY) ? OrderSide.Buy : OrderSide.Sell,
                 sessionID.getTargetCompID(),
                 (int)orderQty.getValue(),
                 new Limit(price.getValue()));

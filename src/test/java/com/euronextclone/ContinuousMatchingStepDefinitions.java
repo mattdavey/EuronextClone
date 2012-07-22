@@ -25,7 +25,7 @@ public class ContinuousMatchingStepDefinitions {
     }
 
     private static class BestLimitRow {
-        private Order.OrderSide side;
+        private OrderSide side;
         private Double limit;
     }
 }

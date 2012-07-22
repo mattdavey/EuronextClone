@@ -1,6 +1,6 @@
 package com.euronextclone.ordertypes;
 
-import com.euronextclone.Order;
+import com.euronextclone.OrderSide;
 import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
@@ -37,7 +37,7 @@ public class MarketToLimit extends OrderTypeLimit {
     }
 
     @Override
-    public Double price(Order.OrderSide side, Double bestLimit) {
+    public Double price(OrderSide side, Double bestLimit) {
         return null;
     }
 

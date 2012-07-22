@@ -31,8 +31,8 @@ public class MatchingUnit implements Observable<Trade> {
     private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
 
     public MatchingUnit() {
-        buyOrderBook = new OrderBook(Order.OrderSide.Buy);
-        sellOrderBook = new OrderBook(Order.OrderSide.Sell);
+        buyOrderBook = new OrderBook(OrderSide.Buy);
+        sellOrderBook = new OrderBook(OrderSide.Sell);
 
         buyOrderBook.register(Reactive.toObserver(new Action1<Trade>() {
             public void invoke(Trade value) {
@@ -53,8 +53,8 @@ public class MatchingUnit implements Observable<Trade> {
     public Double getIndicativeMatchingPrice() {
 
         final List<Double> eligiblePrices = getListOfEligiblePrices();
-        final List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, Order.OrderSide.Buy);
-        final List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, Order.OrderSide.Sell);
+        final List<Integer> cumulativeBuy = getCumulativeQuantity(eligiblePrices, buyOrderBook, OrderSide.Buy);
+        final List<Integer> cumulativeSell = getCumulativeQuantity(eligiblePrices, sellOrderBook, OrderSide.Sell);
         final List<VolumeAtPrice> totalTradeableVolume = getTotalTradeableVolume(eligiblePrices, cumulativeBuy, cumulativeSell);
 
         final List<VolumeAtPrice> maximumExecutableVolume = determineMaximumExecutableValue(totalTradeableVolume);
@@ -237,11 +237,11 @@ public class MatchingUnit implements Observable<Trade> {
     private List<Integer> getCumulativeQuantity(
             final List<Double> eligiblePrices,
             final OrderBook book,
-            final Order.OrderSide side) {
+            final OrderSide side) {
 
         final List<Integer> quantities = new ArrayList<Integer>(eligiblePrices.size());
 
-        final Iterable<Double> priceIterable = side == Order.OrderSide.Sell ?
+        final Iterable<Double> priceIterable = side == OrderSide.Sell ?
                 eligiblePrices :
                 Lists.reverse(eligiblePrices);
         final ListIterator<Order> current = book.getOrders().listIterator();
@@ -263,16 +263,16 @@ public class MatchingUnit implements Observable<Trade> {
             quantities.add(cumulative);
         }
 
-        return side == Order.OrderSide.Sell ? quantities : Lists.reverse(quantities);
+        return side == OrderSide.Sell ? quantities : Lists.reverse(quantities);
     }
 
-    private boolean canTrade(Order.OrderSide orderSide, Double orderPrice, double testPrice) {
+    private boolean canTrade(OrderSide orderSide, Double orderPrice, double testPrice) {
 
         if (orderPrice == null) {
             return true;
         }
 
-        if (orderSide == Order.OrderSide.Buy) {
+        if (orderSide == OrderSide.Buy) {
             return testPrice <= orderPrice;
         }
 
@@ -360,11 +360,11 @@ public class MatchingUnit implements Observable<Trade> {
         }
     }
 
-    public List<Order> getOrders(final Order.OrderSide side) {
+    public List<Order> getOrders(final OrderSide side) {
         return getBook(side).getOrders();
     }
 
-    public void addOrder(final Order.OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
+    public void addOrder(final OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
         final Order order = new Order(broker, quantity, orderTypeLimit, side);
         boolean topOfTheBook = getBook(side).add(order) == 0;
 
@@ -374,7 +374,7 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private boolean tryMatchOrder(final Order newOrder) {
-        final Order.OrderSide side = newOrder.getSide();
+        final OrderSide side = newOrder.getSide();
         final OrderBook book = getBook(side);
         final int startQuantity = newOrder.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
@@ -443,8 +443,8 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price) {
-        notifier.next(new Trade(newOrder.getSide() == Order.OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
-                newOrder.getSide() == Order.OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
+        notifier.next(new Trade(newOrder.getSide() == OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
+                newOrder.getSide() == OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
                 tradeQuantity, price));
     }
 
@@ -452,7 +452,7 @@ public class MatchingUnit implements Observable<Trade> {
         return Math.min(newOrder.getQuantity(), order.getQuantity());
     }
 
-    private Double determineTradePrice(Double newOrderPrice, Double counterBookOrderPrice, Order.OrderSide counterBookSide, Double counterBookBestLimit) {
+    private Double determineTradePrice(Double newOrderPrice, Double counterBookOrderPrice, OrderSide counterBookSide, Double counterBookBestLimit) {
 
         if (newOrderPrice == null && counterBookOrderPrice == null) {
             return counterBookBestLimit;
@@ -466,24 +466,24 @@ public class MatchingUnit implements Observable<Trade> {
             return newOrderPrice;
         }
 
-        if (counterBookSide == Order.OrderSide.Buy && counterBookOrderPrice >= newOrderPrice) {
+        if (counterBookSide == OrderSide.Buy && counterBookOrderPrice >= newOrderPrice) {
             return counterBookOrderPrice;
         }
 
-        if (counterBookSide == Order.OrderSide.Sell && counterBookOrderPrice <= newOrderPrice) {
+        if (counterBookSide == OrderSide.Sell && counterBookOrderPrice <= newOrderPrice) {
             return counterBookOrderPrice;
         }
 
         return null;  // Can't trade
     }
 
-    public int orderBookDepth(final Order.OrderSide side) {
+    public int orderBookDepth(final OrderSide side) {
         final OrderBook orders = getBook(side);
         return orders.orderBookDepth();
     }
 
-    public Double getBestLimit(final Order.OrderSide side) {
-        return side != Order.OrderSide.Buy ? sellOrderBook.getBestLimit() : buyOrderBook.getBestLimit();
+    public Double getBestLimit(final OrderSide side) {
+        return side != OrderSide.Buy ? sellOrderBook.getBestLimit() : buyOrderBook.getBestLimit();
     }
 
     @Nonnull
@@ -491,11 +491,11 @@ public class MatchingUnit implements Observable<Trade> {
         return notifier.register(observer);
     }
 
-    private OrderBook getBook(final Order.OrderSide side) {
-        return side != Order.OrderSide.Buy ? sellOrderBook : buyOrderBook;
+    private OrderBook getBook(final OrderSide side) {
+        return side != OrderSide.Buy ? sellOrderBook : buyOrderBook;
     }
 
-    private OrderBook getCounterBook(final Order.OrderSide side) {
-        return side != Order.OrderSide.Buy ? buyOrderBook : sellOrderBook;
+    private OrderBook getCounterBook(final OrderSide side) {
+        return side != OrderSide.Buy ? buyOrderBook : sellOrderBook;
     }
 }

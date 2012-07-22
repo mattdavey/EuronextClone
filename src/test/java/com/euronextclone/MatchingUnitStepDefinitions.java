@@ -77,8 +77,8 @@ public class MatchingUnitStepDefinitions {
     @Then("^the book is empty$")
     public void the_book_is_empty() throws Throwable {
 
-        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
-        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
 
         assertEquals(new ArrayList<OrderBookRow>(), actualBuy);
         assertEquals(new ArrayList<OrderBookRow>(), actualSell);
@@ -104,8 +104,8 @@ public class MatchingUnitStepDefinitions {
         final List<OrderBookRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
         final List<OrderBookRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
 
-        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
-        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
 
         assertEquals(expectedBids, actualBuy);
         assertEquals(expectedAsks, actualSell);
@@ -130,7 +130,7 @@ public class MatchingUnitStepDefinitions {
             @Override
             public OrderBookRow apply(final MontageRow input) {
                 final OrderBookRow orderRow = new OrderBookRow();
-                orderRow.side = Order.OrderSide.Buy;
+                orderRow.side = OrderSide.Buy;
                 orderRow.broker = input.buyBroker;
                 orderRow.price = input.buyPrice;
                 orderRow.quantity = input.buyQuantity;
@@ -142,7 +142,7 @@ public class MatchingUnitStepDefinitions {
             @Override
             public OrderBookRow apply(final MontageRow input) {
                 final OrderBookRow orderRow = new OrderBookRow();
-                orderRow.side = Order.OrderSide.Sell;
+                orderRow.side = OrderSide.Sell;
                 orderRow.broker = input.sellBroker;
                 orderRow.price = input.sellPrice;
                 orderRow.quantity = input.sellQuantity;
@@ -234,7 +234,7 @@ public class MatchingUnitStepDefinitions {
     private static class OrderEntryRow {
         private static final Pattern PEG = Pattern.compile("Peg(?:\\[(.+)\\])?", Pattern.CASE_INSENSITIVE);
         private String broker;
-        private Order.OrderSide side;
+        private OrderSide side;
         private int quantity;
         private String price;
 
@@ -258,7 +258,7 @@ public class MatchingUnitStepDefinitions {
 
     private static class OrderBookRow {
         private String broker;
-        private Order.OrderSide side;
+        private OrderSide side;
         private int quantity;
         private String price;
 
@@ -266,7 +266,7 @@ public class MatchingUnitStepDefinitions {
             return new Function<Order, OrderBookRow>() {
                 @Override
                 public OrderBookRow apply(final Order order) {
-                    final Order.OrderSide side = order.getSide();
+                    final OrderSide side = order.getSide();
                     final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
                     final Double bestLimit = matchingUnit.getBestLimit(side);
                     final OrderBookRow orderRow = new OrderBookRow();

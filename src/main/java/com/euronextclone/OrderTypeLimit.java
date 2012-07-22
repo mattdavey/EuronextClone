@@ -20,7 +20,7 @@ public abstract class OrderTypeLimit {
 
     public abstract boolean convertsToLimit();
 
-    public abstract Double price(Order.OrderSide side, final Double bestLimit);
+    public abstract Double price(OrderSide side, final Double bestLimit);
 
     public abstract String displayPrice(Double price);
 }

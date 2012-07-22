@@ -1,6 +1,6 @@
 package com.euronextclone.ordertypes;
 
-import com.euronextclone.Order;
+import com.euronextclone.OrderSide;
 import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
@@ -43,10 +43,10 @@ public class PegWithLimit extends OrderTypeLimit {
     }
 
     @Override
-    public Double price(Order.OrderSide side, Double bestLimit) {
-        if (side == Order.OrderSide.Buy && bestLimit <= limit) {
+    public Double price(OrderSide side, Double bestLimit) {
+        if (side == OrderSide.Buy && bestLimit <= limit) {
             return bestLimit;
-        } else if (side == Order.OrderSide.Sell && bestLimit >= limit) {
+        } else if (side == OrderSide.Sell && bestLimit >= limit) {
             return bestLimit;
         } else {
             return limit;
