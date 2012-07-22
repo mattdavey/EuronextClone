@@ -4,6 +4,8 @@ import com.euronextclone.Order;
 import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
+import java.text.DecimalFormat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: eprystupa
@@ -42,5 +44,10 @@ public class Limit extends OrderTypeLimit {
     @Override
     public Double price(Order.OrderSide side, Double bestLimit) {
         return limit;
+    }
+
+    @Override
+    public String displayPrice(Double price) {
+        return new DecimalFormat("#.##").format(price);
     }
 }

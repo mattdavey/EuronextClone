@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 public class MatchingUnitStepDefinitions {
@@ -52,27 +51,6 @@ public class MatchingUnitStepDefinitions {
     @When("^class auction completes$")
     public void class_auction_completes() throws Throwable {
         matchingUnit.auction();
-    }
-
-    @Then("^\"([^\"]*)\" order book should look like:$")
-    public void order_book_should_look_like(Order.OrderSide side, DataTable orderTable) throws Throwable {
-        final List<OrderBookRow> expectedOrders = orderTable.asList(OrderBookRow.class);
-        final List<OrderBookRow> actualOrders = FluentIterable
-                .from(matchingUnit.getOrders(side))
-                .transform(OrderBookRow.FROM_Order(matchingUnit))
-                .toImmutableList();
-
-        assertEquals(expectedOrders, actualOrders);
-    }
-
-    @Then("^\"([^\"]*)\" order book is empty$")
-    public void order_book_is_empty(Order.OrderSide side) throws Throwable {
-        final List<OrderBookRow> actualOrders = FluentIterable
-                .from(matchingUnit.getOrders(side))
-                .transform(OrderBookRow.FROM_Order(matchingUnit))
-                .toImmutableList();
-
-        assertThat(actualOrders, is(empty()));
     }
 
     @Then("^the calculated IMP is:$")
@@ -131,54 +109,6 @@ public class MatchingUnitStepDefinitions {
         private Integer sellQuantity;
         private String sellPrice;
 
-        public String getBuyBroker() {
-            return buyBroker;
-        }
-
-        public void setBuyBroker(String buyBroker) {
-            this.buyBroker = buyBroker;
-        }
-
-        public Integer getBuyQuantity() {
-            return buyQuantity;
-        }
-
-        public void setBuyQuantity(Integer buyQuantity) {
-            this.buyQuantity = buyQuantity;
-        }
-
-        public String getBuyPrice() {
-            return buyPrice;
-        }
-
-        public void setBuyPrice(String buyPrice) {
-            this.buyPrice = buyPrice;
-        }
-
-        public String getSellBroker() {
-            return sellBroker;
-        }
-
-        public void setSellBroker(String sellBroker) {
-            this.sellBroker = sellBroker;
-        }
-
-        public Integer getSellQuantity() {
-            return sellQuantity;
-        }
-
-        public void setSellQuantity(Integer sellQuantity) {
-            this.sellQuantity = sellQuantity;
-        }
-
-        public String getSellPrice() {
-            return sellPrice;
-        }
-
-        public void setSellPrice(String sellPrice) {
-            this.sellPrice = sellPrice;
-        }
-
         public static final Predicate<? super MontageRow> NON_EMPTY_BID = new Predicate<MontageRow>() {
             @Override
             public boolean apply(final MontageRow input) {
@@ -192,8 +122,7 @@ public class MatchingUnitStepDefinitions {
                 final OrderBookRow orderRow = new OrderBookRow();
                 orderRow.side = Order.OrderSide.Buy;
                 orderRow.broker = input.buyBroker;
-                orderRow.orderType = OrderType.Limit;
-                orderRow.price = Double.parseDouble(input.buyPrice);
+                orderRow.price = input.buyPrice;
                 orderRow.quantity = input.buyQuantity;
                 return orderRow;
             }
@@ -205,8 +134,7 @@ public class MatchingUnitStepDefinitions {
                 final OrderBookRow orderRow = new OrderBookRow();
                 orderRow.side = Order.OrderSide.Sell;
                 orderRow.broker = input.sellBroker;
-                orderRow.orderType = OrderType.Limit;
-                orderRow.price = Double.parseDouble(input.sellPrice);
+                orderRow.price = input.sellPrice;
                 orderRow.quantity = input.sellQuantity;
                 return orderRow;
             }
@@ -322,8 +250,7 @@ public class MatchingUnitStepDefinitions {
         private String broker;
         private Order.OrderSide side;
         private int quantity;
-        private OrderType orderType;
-        private Double price;
+        private String price;
 
         public static Function<? super Order, OrderBookRow> FROM_Order(final MatchingUnit matchingUnit) {
             return new Function<Order, OrderBookRow>() {
@@ -336,8 +263,8 @@ public class MatchingUnitStepDefinitions {
 
                     orderRow.broker = order.getBroker();
                     orderRow.side = order.getSide();
-                    orderRow.price = orderTypeLimit.price(side, matchingUnit.getBestLimit(side));
-                    orderRow.orderType = orderTypeLimit.getOrderType();
+                    Double price = orderTypeLimit.price(side, matchingUnit.getBestLimit(side));
+                    orderRow.price = orderTypeLimit.displayPrice(price);
                     orderRow.quantity = order.getQuantity();
                     return orderRow;
                 }
@@ -353,7 +280,6 @@ public class MatchingUnitStepDefinitions {
 
             if (quantity != orderRow.quantity) return false;
             if (!broker.equals(orderRow.broker)) return false;
-            if (orderType != orderRow.orderType) return false;
             if (price != null ? !price.equals(orderRow.price) : orderRow.price != null) return false;
             if (side != orderRow.side) return false;
 
@@ -365,7 +291,6 @@ public class MatchingUnitStepDefinitions {
             int result = broker.hashCode();
             result = 31 * result + side.hashCode();
             result = 31 * result + quantity;
-            result = 31 * result + orderType.hashCode();
             result = 31 * result + (price != null ? price.hashCode() : 0);
             return result;
         }
@@ -376,7 +301,6 @@ public class MatchingUnitStepDefinitions {
                     "broker='" + broker + '\'' +
                     ", side=" + side +
                     ", quantity=" + quantity +
-                    ", orderType=" + orderType +
                     ", price=" + price +
                     '}';
         }

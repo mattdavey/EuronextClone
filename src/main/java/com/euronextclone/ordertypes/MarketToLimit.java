@@ -40,4 +40,9 @@ public class MarketToLimit extends OrderTypeLimit {
     public Double price(Order.OrderSide side, Double bestLimit) {
         return null;
     }
+
+    @Override
+    public String displayPrice(Double price) {
+        return "MTL";
+    }
 }

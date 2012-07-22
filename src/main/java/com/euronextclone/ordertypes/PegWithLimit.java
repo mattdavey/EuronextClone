@@ -4,6 +4,8 @@ import com.euronextclone.Order;
 import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
+import java.text.DecimalFormat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: eprystupa
@@ -12,6 +14,7 @@ import com.euronextclone.OrderTypeLimit;
  */
 public class PegWithLimit extends OrderTypeLimit {
 
+    private final static DecimalFormat priceFormat = new DecimalFormat("#.##");
     private final double limit;
 
     public PegWithLimit(final double limit) {
@@ -48,5 +51,10 @@ public class PegWithLimit extends OrderTypeLimit {
         } else {
             return limit;
         }
+    }
+
+    @Override
+    public String displayPrice(Double price) {
+        return String.format("Peg(%s)[%s]", priceFormat.format(price), priceFormat.format(limit));
     }
 }

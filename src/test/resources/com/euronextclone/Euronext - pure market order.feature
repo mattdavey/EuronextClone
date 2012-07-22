@@ -52,10 +52,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Buying broker | Selling broker | Quantity | Price |
       | A             | D              | 40       | 10    |
       | G             | D              | 5        | 10    |
-    And "Buy" order book should look like:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | G      | Buy  | 15       | MarketOrder |       |
-    And "Sell" order book is empty
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | G      | 15       | MO    |       |          |        |
 
 
   Scenario: Call Phase - Example 3
@@ -109,10 +108,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
       | C             | B              | 10       | 10.3  |
-    And "Buy" order book is empty
-    And "Sell" order book should look like:
-      | Broker | Side | Quantity | Order Type | Price |
-      | B      | Sell | 50       | Limit      | 10.3  |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      |        |          |       | 10.3  | 50       | B      |
 
 
   Scenario: Trading session Phase - Example 2
@@ -130,13 +128,10 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Buying broker | Selling broker | Quantity | Price |
       | C             | A              | 100      | 10.2  |
       | C             | B              | 60       | 10.3  |
-    And "Buy" order book should look like:
-      | Broker | Side | Quantity | Order Type  | Price |
-      | C      | Buy  | 40       | MarketOrder |       |
-    And "Sell" order book is empty
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | C      | 40       | MO    |       |          |        |
 
-
-#  @focus
 
   Scenario: Trading session Phase - Example 3
   There are only Market orders in the order book, trade price is the last traded price
