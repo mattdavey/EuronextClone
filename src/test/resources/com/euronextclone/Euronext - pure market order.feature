@@ -170,3 +170,4 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | A             | D              | 90       | 10.1  |
       | B             | D              | 10       | 10.1  |
       | C             | D              | 20       | 10.08 |
+    And the book is empty
