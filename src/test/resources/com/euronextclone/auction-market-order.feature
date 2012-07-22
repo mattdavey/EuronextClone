@@ -1,7 +1,8 @@
 Feature: Auction Phase Matching Rules
 
   Background:
-    Given that reference price is 10
+    Given that trading mode for security is "ByAuction" and phase is "CoreCall"
+    And   that reference price is 10
 
   Scenario: Simplest single trade full match on offsetting limit orders
     Given the following orders are submitted in this order:
