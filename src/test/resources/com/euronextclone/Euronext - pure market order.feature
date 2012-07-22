@@ -78,6 +78,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Call Phase - Example 5 - the Indicative Matching Price is equal to the best limit & higher to the reference price Reference price
+  Broker G enters a sell Limit order at 10,02€ for the purchase of 40 shares
+  The Indicative Matching Price adopted within the range [10,02;+∞] is 10.02€, since this is the closest to the reference
+  price of 10€ and the only price allowing 80 shares to be traded.
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -86,9 +89,15 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | Sell | 40       | 10.02 |
     Then the calculated IMP is:
       | 10.02 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 40       | MO    | 10.02 | 40       | G      |
 
 
   Scenario: Trading session Phase - Example 1 - the Market order is totally executed upon entry
+  Broker C enters a Market order for the purchase of 110 shares
+  The order is executed with 100 shares at 10,2€ and 10 shares at 10.3€ (in compliance with the
+  collars).
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -108,6 +117,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Trading session Phase - Example 2 - the Market order is partially executed upon entry
+  Broker C enters a Market order for the purchase of 200 shares
+  The order is partly executed with 100 shares at 10.2€ and 60 at 10.3€ (in compliance with the
+  collars)
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -127,6 +139,7 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Trading session Phase - Example 3 - there are only Market orders in the order book, trade price is the last traded price
+  Broker C enters a Market order for the sale of 170 shares
   The order is partly executed, with 100 shares at 10€ each, representing the reference price witch
   is the last price.
   Priority of execution for market orders on the bid side is based on the rule of “First Come, first
@@ -138,6 +151,10 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | Broker | Side | Quantity | Price |
       | A      | Buy  | 90       | MO    |
       | B      | Buy  | 10       | MO    |
+    Then the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 90       | MO    |       |          |        |
+      | B      | 10       | MO    |       |          |        |
     When the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | C      | Sell | 170      | MO    |
@@ -146,12 +163,39 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | A             | C              | 90       | 10    |
       | B             | C              | 10       | 10    |
 
-  @focus
+
   Scenario: Trading session Phase - Example 4 - the best limit is higher that the last traded price
+  Broker D enters a limit order at 10€ for the sale of 120 shares
   The order is executed, with 100 shares at 10.1€ (90 representing the Market Order and 10 the
   limit order at 10.1€) and 20 at 10.08€.
     Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
     And that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | A      | Buy  | 90       | MO    |
+      | B      | Buy  | 10       | 10.1  |
+      | C      | Buy  | 20       | 10.08 |
+    Then the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 90       | MO    |       |          |        |
+      | B      | 10       | 10.1  |       |          |        |
+      | C      | 20       | 10.08 |       |          |        |
+    When the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | D      | Sell | 120      | 10    |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | D              | 90       | 10.1  |
+      | B             | D              | 10       | 10.1  |
+      | C             | D              | 20       | 10.08 |
+    And the book is empty
+
+
+  Scenario: Trading session Phase - Example 5 - the best limit is lower that the last traded price
+  Broker D enters a limit order at 10€ for the sale of 120 shares
+  The order is executed, with 90 shares at 10.3€, 10 shares at 10.1€ and 20 at 10.08€.
+    Given that trading mode for security is "Continuous" and phase is "CoreContinuous"
+    And that reference price is 10.3
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | A      | Buy  | 90       | MO    |
