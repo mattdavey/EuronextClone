@@ -34,6 +34,11 @@ public class MatchingUnitStepDefinitions {
         matchingUnit.setTradingPhase(phase);
     }
 
+    @Given("^that reference price is ([0-9]*\\.?[0-9]+)$")
+    public void that_reference_price_is_(double price) throws Throwable {
+        matchingUnit.setReferencePrice(price);
+    }
+
     @Given("^the following orders are submitted in this order:$")
     public void the_following_orders_are_submitted_in_this_order(DataTable orderTable) throws Throwable {
 
