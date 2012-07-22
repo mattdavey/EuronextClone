@@ -58,7 +58,6 @@ Feature: Examples from the Euronext the Peg Orders PDF
       | B      | 100      | Peg(10.5) | 11    | 275      | D      |
       | B      | 70       | Peg(10.5) |       |          |        |
 
-  @focus
   Scenario: Example 2
     Given that reference price is 10
     And the following orders are submitted in this order:
@@ -98,3 +97,21 @@ Feature: Examples from the Euronext the Peg Orders PDF
       | A      | 200      | 11.5            | 11.8  | 130      | C      |
       | B      | 150      | Peg(11.5)[11.6] | 11.9  | 350      | C      |
       | B      | 125      | 10.5            | 12    | 275      | D      |
+
+  Scenario: Example 3
+    Given that reference price is 10
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price     |
+      | A      | Buy  | 200      | 11.5      |
+      | B      | Buy  | 150      | Peg[11.6] |
+    Then the book looks like:
+      | Broker | Quantity | Price           | Price | Quantity | Broker |
+      | A      | 200      | 11.5            |       |          |        |
+      | B      | 150      | Peg(11.5)[11.6] |       |          |        |
+    And the following orders are submitted in this order:
+      | Broker | Side | Quantity | Price |
+      | C      | Sell | 200      | 11.5  |
+    Then the following trades are generated:
+      | Buying broker | Selling broker | Quantity | Price |
+      | A             | C              | 200      | 11.5  |
+    And the book is empty

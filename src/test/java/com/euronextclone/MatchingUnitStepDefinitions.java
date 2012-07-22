@@ -74,6 +74,16 @@ public class MatchingUnitStepDefinitions {
         assertEquals(empty, actualTrades);
     }
 
+    @Then("^the book is empty$")
+    public void the_book_is_empty() throws Throwable {
+
+        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+
+        assertEquals(new ArrayList<OrderBookRow>(), actualBuy);
+        assertEquals(new ArrayList<OrderBookRow>(), actualSell);
+    }
+
     @Then("^the book looks like:$")
     public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
 
@@ -94,11 +104,11 @@ public class MatchingUnitStepDefinitions {
         final List<OrderBookRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
         final List<OrderBookRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
 
-        final List<OrderBookRow> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
-        final List<OrderBookRow> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualBuy = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualSell = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
 
-        assertEquals(expectedBids, actualBids);
-        assertEquals(expectedAsks, actualAsks);
+        assertEquals(expectedBids, actualBuy);
+        assertEquals(expectedAsks, actualSell);
     }
 
     private static class MontageRow {
