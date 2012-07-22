@@ -28,7 +28,7 @@ Feature: Examples from the Euronext the Peg Orders PDF
     Given the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | E      | Buy  | 200      | 10.8  |
-    Then no trades should have been generated
+    Then no trades are generated
     And "Buy" order book should look like:
       | Broker | Side | Quantity | Order Type | Price |
       | E      | Buy  | 200      | Limit      | 10.8  |
