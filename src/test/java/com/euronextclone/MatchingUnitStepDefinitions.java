@@ -2,6 +2,7 @@ package com.euronextclone;
 
 import com.euronextclone.ordertypes.*;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
@@ -93,6 +94,130 @@ public class MatchingUnitStepDefinitions {
         List<TradeRow> actualTrades = FluentIterable.from(generatedTrades).transform(TradeRow.FROM_TRADE).toImmutableList();
         List<TradeRow> empty = new ArrayList<TradeRow>();
         assertEquals(empty, actualTrades);
+    }
+
+    @Then("^the book looks like:$")
+    public void the_book_looks_like(DataTable expectedBooks) throws Throwable {
+
+        final List<String> headerColumns = new ArrayList<String>(expectedBooks.raw().get(0));
+        final int columns = headerColumns.size();
+        final int sideSize = columns / 2;
+        for (int i = 0; i < columns; i++) {
+            headerColumns.set(i, (i < sideSize ? "Buy " : "Sell ") + headerColumns.get(i));
+        }
+
+        final List<List<String>> raw = new ArrayList<List<String>>();
+        raw.add(headerColumns);
+        final List<List<String>> body = expectedBooks.raw().subList(1, expectedBooks.raw().size());
+        raw.addAll(body);
+
+        final DataTable montageTable = expectedBooks.toTable(raw);
+        final List<MontageRow> rows = montageTable.asList(MontageRow.class);
+        final List<OrderBookRow> expectedBids = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_BID).transform(MontageRow.TO_TEST_BID).toImmutableList();
+        final List<OrderBookRow> expectedAsks = FluentIterable.from(rows).filter(MontageRow.NON_EMPTY_ASK).transform(MontageRow.TO_TEST_ASK).toImmutableList();
+
+        final List<OrderBookRow> actualBids = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Buy)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+        final List<OrderBookRow> actualAsks = FluentIterable.from(matchingUnit.getOrders(Order.OrderSide.Sell)).transform(OrderBookRow.FROM_Order(matchingUnit)).toImmutableList();
+
+        assertEquals(expectedBids, actualBids);
+        assertEquals(expectedAsks, actualAsks);
+    }
+
+    private static class MontageRow {
+        private String buyBroker;
+        private Integer buyQuantity;
+        private String buyPrice;
+        private String sellBroker;
+        private Integer sellQuantity;
+        private String sellPrice;
+
+        public String getBuyBroker() {
+            return buyBroker;
+        }
+
+        public void setBuyBroker(String buyBroker) {
+            this.buyBroker = buyBroker;
+        }
+
+        public Integer getBuyQuantity() {
+            return buyQuantity;
+        }
+
+        public void setBuyQuantity(Integer buyQuantity) {
+            this.buyQuantity = buyQuantity;
+        }
+
+        public String getBuyPrice() {
+            return buyPrice;
+        }
+
+        public void setBuyPrice(String buyPrice) {
+            this.buyPrice = buyPrice;
+        }
+
+        public String getSellBroker() {
+            return sellBroker;
+        }
+
+        public void setSellBroker(String sellBroker) {
+            this.sellBroker = sellBroker;
+        }
+
+        public Integer getSellQuantity() {
+            return sellQuantity;
+        }
+
+        public void setSellQuantity(Integer sellQuantity) {
+            this.sellQuantity = sellQuantity;
+        }
+
+        public String getSellPrice() {
+            return sellPrice;
+        }
+
+        public void setSellPrice(String sellPrice) {
+            this.sellPrice = sellPrice;
+        }
+
+        public static final Predicate<? super MontageRow> NON_EMPTY_BID = new Predicate<MontageRow>() {
+            @Override
+            public boolean apply(final MontageRow input) {
+                return input.buyBroker != null && !"".equals(input.buyBroker);
+            }
+        };
+
+        public static final Function<? super MontageRow, OrderBookRow> TO_TEST_BID = new Function<MontageRow, OrderBookRow>() {
+            @Override
+            public OrderBookRow apply(final MontageRow input) {
+                final OrderBookRow orderRow = new OrderBookRow();
+                orderRow.side = Order.OrderSide.Buy;
+                orderRow.broker = input.buyBroker;
+                orderRow.orderType = OrderType.Limit;
+                orderRow.price = Double.parseDouble(input.buyPrice);
+                orderRow.quantity = input.buyQuantity;
+                return orderRow;
+            }
+        };
+
+        public static final Function<? super MontageRow, OrderBookRow> TO_TEST_ASK = new Function<MontageRow, OrderBookRow>() {
+            @Override
+            public OrderBookRow apply(final MontageRow input) {
+                final OrderBookRow orderRow = new OrderBookRow();
+                orderRow.side = Order.OrderSide.Sell;
+                orderRow.broker = input.sellBroker;
+                orderRow.orderType = OrderType.Limit;
+                orderRow.price = Double.parseDouble(input.sellPrice);
+                orderRow.quantity = input.sellQuantity;
+                return orderRow;
+            }
+        };
+
+        public static final Predicate<? super MontageRow> NON_EMPTY_ASK = new Predicate<MontageRow>() {
+            @Override
+            public boolean apply(final MontageRow input) {
+                return input.sellBroker != null && !"".equals(input.sellBroker);
+            }
+        };
     }
 
 
