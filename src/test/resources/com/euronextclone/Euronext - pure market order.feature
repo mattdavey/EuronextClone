@@ -32,12 +32,16 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Call Phase - Example 2 - the market order is partially filled
+  Broker G enters a Market Order for the purchase of 20 shares
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
       | Broker | Side | Quantity | Price |
       | A      | Buy  | 40       | MTL   |
       | D      | Sell | 45       | MO    |
+    Then the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 40       | MTL   | MO    | 45       | D      |
     Then the calculated IMP is:
       | 10 |
     And the following orders are submitted in this order:
@@ -45,6 +49,10 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | Buy  | 20       | MO    |
     Then the calculated IMP is:
       | 10 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 40       | MTL   | MO    | 45       | D      |
+      | G      | 20       | MO    |       |          |        |
     When class auction completes
     Then the following trades are generated:
       | Buying broker | Selling broker | Quantity | Price |
@@ -56,6 +64,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
 
 
   Scenario: Call Phase - Example 3 - the Indicative Matching Price is higher than the best limit & equal to the reference price
+  Broker G enters a sell Limit order at 9,98€ for the sale of 40 shares
+  Since the number of shares on the bid side fully covers the number on offer, the Indicative
+  Matching Price is 10€, this being the closest to the closing price on the previous day.
     Given that trading mode for security is "Continuous" and phase is "CoreCall"
     And that reference price is 10
     And the following orders are submitted in this order:
@@ -64,6 +75,9 @@ Feature: Examples from the Euronext Pure Market Order PDF
       | G      | Sell | 40       | 9.98  |
     Then the calculated IMP is:
       | 10 |
+    And the book looks like:
+      | Broker | Quantity | Price | Price | Quantity | Broker |
+      | A      | 40       | MO    | 9.98  | 40       | G      |
 
 
   Scenario: Call Phase - Example 4 - the Indicative Matching Price is equal to the best limit & lower to the reference price Reference price
