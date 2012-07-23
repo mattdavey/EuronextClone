@@ -5,10 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.*;
 
-import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
@@ -63,18 +61,14 @@ public class FixClient implements Observer {
                 log.error("Logon failed", e);
             }
         } else {
-            Iterator<SessionID> sessionIds = initiator.getSessions().iterator();
-            while (sessionIds.hasNext()) {
-                SessionID sessionId = (SessionID) sessionIds.next();
+            for (SessionID sessionId : initiator.getSessions()) {
                 Session.lookupSession(sessionId).logon();
             }
         }
     }
 
     public void logout() {
-        final Iterator<SessionID> sessionIds = initiator.getSessions().iterator();
-        while (sessionIds.hasNext()) {
-            SessionID sessionId = (SessionID) sessionIds.next();
+        for (SessionID sessionId : initiator.getSessions()) {
             Session.lookupSession(sessionId).logout("user requested");
         }
     }
