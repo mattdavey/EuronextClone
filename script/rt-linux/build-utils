@@ -1,0 +1,77 @@
+#!/bin/bash
+
+function create-group {
+	GROUP=$1
+	DESCRIPTION=$2
+
+	ec2-create-group "${GROUP}" -d "${DESCRIPTION}"
+	ec2-authorize "${GROUP}" -P tcp -p 22 -s 0.0.0.0/0
+}
+
+function spawn-instance {
+	SECURITY_GROUPS=$1
+	for group in ${SECURITY_GROUPS}; do
+		GRP_OPTIONS="${GRP_OPTIONS} -g ${group}"
+	done
+	ROOT_DEVICE_SIZE=$2
+	INSTANCE_TYPE=${3:-t1.micro}
+
+	RESERVATION=`ec2-run-instances ami-41d00528 ${GRP_OPTIONS} -t ${INSTANCE_TYPE} -k gsmarquee -b /dev/sda1=:${ROOT_DEVICE_SIZE}:true \
+		| grep INSTANCE`
+	[ $? != 0 ] && echo 'ec2-run-instances failed' >&2 && return 1
+	INSTANCE=`echo "${RESERVATION}" | awk '{print $2}'`
+
+	while [[ -z "${EC2_HOST}" ]]; do
+		EC2_HOST=`ec2-describe-instances ${INSTANCE} --filter instance-state-name=running \
+		| grep '^INSTANCE' | awk '{print $4}'`
+		[ $? != 0 ] && echo 'ec2-describe-instances failed' >&2 && return 1
+	done
+
+	while [[ true ]]; do
+		ssh -o StrictHostKeyChecking=no -i ~/.ssh/gsmarquee.pem root@${EC2_HOST} 'echo OK >> /dev/null' >> /dev/null 2>&1
+		[ $? = 0 ] && break
+		sleep 1
+	done
+
+	echo "${EC2_HOST}"
+	return 0
+}
+
+function get-instance-field {
+	GROUP_NAME=$1
+	FIELD_POS=$2
+
+	ec2-describe-instances --show-empty-fields \
+		--filter instance-state-name=running \
+		--filter group-name=${GROUP_NAME} \
+		| grep INSTANCE | cut -f ${FIELD_POS}
+}
+
+function get-public-dns {
+	SECURITY_GROUPS=$1
+	for group in ${SECURITY_GROUPS}; do
+		get-instance-field ${group} 4
+	done | sort -u
+}
+
+function get-private-dns {
+	SECURITY_GROUPS=$1
+	for group in ${SECURITY_GROUPS}; do
+		get-instance-field ${group} 5
+	done | sort -u
+}
+
+function build-uri {
+	HOSTS=$1
+	PORT=$2
+	PROTOCOL=$3
+	URI=''
+
+	for host in ${HOSTS}; do
+		if [[ -n ${URI} ]]; then URI=${URI}", "; fi
+		URI=$URI$PROTOCOL${host}
+		if [[ -n ${PORT} ]]; then URI=${URI}:${PORT}; fi
+	done
+
+	echo ${URI}
+}

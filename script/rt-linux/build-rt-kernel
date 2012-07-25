@@ -1,0 +1,18 @@
+#!/bin/bash
+
+EC2_KEY=~/.ssh/[your_key].pem
+
+. ./build-utils
+
+echo 'Spawning new ec2 instance...'
+EC2_HOST=`spawn-instance "matching-engine" 20 m1.xlarge`
+[ $? != 0 ] && echo 'spawning ec2 instance failed' && exit 1
+
+echo "Copying installation scripts to ${EC2_HOST}..."
+scp -i ${EC2_KEY} * .config root@${EC2_HOST}:/root/ >> /dev/null 2>&1
+
+echo "Installing ${EC2_HOST}..."
+ssh -i ${EC2_KEY} root@${EC2_HOST}  './install-rt-kernel'
+[ $? != 0 ] && echo 'installing ec2 instance failed' && exit 1
+
+echo 'Build is done.'

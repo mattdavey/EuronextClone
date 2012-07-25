@@ -1,0 +1,48 @@
+#!/bin/bash
+
+LOG=/var/log/matching-engine-install-rt-kernel.log
+KERNEL_VERSION='2.6.33.9'
+KERNEL_SOURCE="linux-${KERNEL_VERSION}"
+RT_PATCH_REV='31'
+
+echo 'Resizing the root device...'
+resize2fs /dev/xvde1 >> $LOG 2>&1
+[ $? != 0 ] && echo 'resizing root device failed' && exit 1
+
+echo 'Installing gcc...'
+yum -y install gcc >> $LOG 2>&1
+[ $? != 0 ] && echo 'yum gcc failed' && exit 1
+
+echo 'Downloding kernel...'
+wget http://www.kernel.org/pub/linux/kernel/v2.6/longterm/v2.6.33/linux-${KERNEL_VERSION}.tar.bz2 >> $LOG 2>&1
+[ $? != 0 ] && echo 'downloading linux kernel sources failed' && exit 1
+
+echo 'Downloding RT kernel patch...'
+wget http://www.kernel.org/pub/linux/kernel/projects/rt/2.6.33/patch-${KERNEL_VERSION}-rt${RT_PATCH_REV}.bz2 >> $LOG 2>&1
+[ $? != 0 ] && echo 'downloading linux kernel RT patch failed' && exit 1
+
+echo 'Patching the kernel...'
+tar xfj linux-${KERNEL_VERSION}.tar.bz2 >> $LOG 2>&1
+[ $? != 0 ] && echo 'un-tar on linux kernel sources failed' && exit 1
+cd ${KERNEL_SOURCE} >> $LOG 2>&1
+[ $? != 0 ] && echo 'cd to linux kernel sources failed' && exit 1
+bzcat ../patch-${KERNEL_VERSION}-rt${RT_PATCH_REV}.bz2 | patch -p1 >> $LOG 2>&1
+[ $? != 0 ] && echo 'patching linux kernel sources with RT failed' && exit 1
+
+echo 'Deploying kernel config...'
+cp ../.config . >> $LOG 2>&1
+[ $? != 0 ] && echo 'Deploying kernel config failed' && exit 1
+
+echo 'Building and installing the kernel...'
+make >> $LOG 2>&1
+[ $? != 0 ] && echo 'Building the kernel failed' && exit 1
+make modules >> $LOG 2>&1
+[ $? != 0 ] && echo 'Building the modules failed' && exit 1
+make modules_install >> $LOG 2>&1
+[ $? != 0 ] && echo 'Installing the modules failed' && exit 1
+make install >> $LOG 2>&1
+[ $? != 0 ] && echo 'Installing the kernel failed' && exit 1
+cp .config /boot/config-${KERNEL_VERSION}-rt${RT_PATCH_REV} >> $LOG 2>&1
+[ $? != 0 ] && echo 'Installing the kernel config failed' && exit 1
+
+echo 'Done installing.'
