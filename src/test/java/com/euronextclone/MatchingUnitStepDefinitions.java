@@ -238,7 +238,7 @@ public class MatchingUnitStepDefinitions {
         private int quantity;
         private String price;
 
-        public OrderTypeLimit getOrderTypeLimit() {
+        public OrderType getOrderTypeLimit() {
 
             Matcher peg = PEG.matcher(price);
             if (peg.matches()) {
@@ -267,14 +267,14 @@ public class MatchingUnitStepDefinitions {
                 @Override
                 public OrderBookRow apply(final Order order) {
                     final OrderSide side = order.getSide();
-                    final OrderTypeLimit orderTypeLimit = order.getOrderTypeLimit();
+                    final OrderType orderType = order.getOrderType();
                     final Double bestLimit = matchingUnit.getBestLimit(side);
                     final OrderBookRow orderRow = new OrderBookRow();
 
                     orderRow.broker = order.getBroker();
                     orderRow.side = order.getSide();
-                    Double price = orderTypeLimit.price(side, matchingUnit.getBestLimit(side));
-                    orderRow.price = orderTypeLimit.displayPrice(price);
+                    Double price = orderType.price(side, matchingUnit.getBestLimit(side));
+                    orderRow.price = orderType.displayPrice(price);
                     orderRow.quantity = order.getQuantity();
                     return orderRow;
                 }

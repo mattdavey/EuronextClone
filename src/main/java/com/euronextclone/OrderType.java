@@ -1,37 +1,18 @@
 package com.euronextclone;
 
-public enum OrderType {
+public interface OrderType {
 
-    Limit {
-        @Override
-        public String format(double limit) {
-            return Double.toString(limit).replace('.', ',');
-        }
-    },
+    boolean acceptsMarketPrice();
 
-    MarketOrder {
-        @Override
-        public String format(double limit) {
-            return "MO";
-        }
-    },
+    boolean providesLimit();
 
-    MarketToLimit {
-        @Override
-        public String format(double limit) {
-            return "MTL";
-        }
-    },
+    double getLimit();
 
-    Peg {
-        @Override
-        public String format(double limit) {
-            if (limit != Double.MAX_VALUE)
-                return String.format("PEG [%s]", Double.toString(limit).replace('.', ','));
-            else
-                return "PEG";
-        }
-    };
+    boolean canPegLimit();
 
-    public abstract String format(double limit);
+    boolean convertsToLimit();
+
+    Double price(OrderSide side, final Double bestLimit);
+
+    String displayPrice(Double price);
 }

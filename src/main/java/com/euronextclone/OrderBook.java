@@ -61,18 +61,18 @@ public class OrderBook {
                     .filter(new Predicate<Order>() {
                         @Override
                         public boolean apply(final Order input) {
-                            return input.getOrderTypeLimit().canPegLimit();
+                            return input.getOrderType().canPegLimit();
                         }
                     }).toImmutableList();
 
             orders.removeAll(pegged);
             for (Order order : pegged) {
-                placeOrderInBook(order.convertTo(order.getOrderTypeLimit()));
+                placeOrderInBook(order.convertTo(order.getOrderType()));
             }
         }
 
         // Cheat if the order book only has a PEG left
-        if (orders.size() > 0 && orders.get(0).getOrderTypeLimit().canPegLimit())
+        if (orders.size() > 0 && orders.get(0).getOrderType().canPegLimit())
             orders.clear();
 
     }
@@ -80,8 +80,8 @@ public class OrderBook {
     private Double calculateBestLimit() {
         // Order book should be good, just reset best
         for (final Order order : orders) {
-            if (order.getOrderTypeLimit().providesLimit()) {
-                return order.getOrderTypeLimit().getLimit();
+            if (order.getOrderType().providesLimit()) {
+                return order.getOrderType().getLimit();
             }
         }
 

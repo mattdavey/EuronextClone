@@ -1,7 +1,7 @@
 package com.euronextclone.ordertypes;
 
 import com.euronextclone.OrderSide;
-import com.euronextclone.OrderTypeLimit;
+import com.euronextclone.OrderType;
 
 import java.text.DecimalFormat;
 
@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
  * Date: 7/20/12
  * Time: 2:32 PM
  */
-public class Limit extends OrderTypeLimit {
+public class Limit implements OrderType {
 
     private final double limit;
 

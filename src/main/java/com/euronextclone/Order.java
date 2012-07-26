@@ -18,7 +18,7 @@ public class Order {
 
         final int comparePrice = comparePrice(anOrder, bestLimit);
         if (comparePrice == EQUAL) {
-            // Time after orderTypeLimit compare
+            // Time after orderType compare
             if (getId() > anOrder.getId()) {
                 return BEFORE;
             } else if (getId() < anOrder.getId()) {
@@ -34,10 +34,10 @@ public class Order {
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        if (this.orderTypeLimit.acceptsMarketPrice() && !other.orderTypeLimit.acceptsMarketPrice()) {
+        if (this.orderType.acceptsMarketPrice() && !other.orderType.acceptsMarketPrice()) {
             return AFTER;
         }
-        if (!this.orderTypeLimit.acceptsMarketPrice() && other.orderTypeLimit.acceptsMarketPrice()) {
+        if (!this.orderType.acceptsMarketPrice() && other.orderType.acceptsMarketPrice()) {
             return BEFORE;
         }
 
@@ -49,8 +49,8 @@ public class Order {
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        final Double thisOrderLimit = getOrderTypeLimit().price(side, bestLimit);
-        final Double anOrderLimit = anOrder.getOrderTypeLimit().price(side, bestLimit);
+        final Double thisOrderLimit = getOrderType().price(side, bestLimit);
+        final Double anOrderLimit = anOrder.getOrderType().price(side, bestLimit);
 
         if (thisOrderLimit == null && anOrderLimit == null) {
             return EQUAL;
@@ -76,9 +76,9 @@ public class Order {
         return EQUAL;
     }
 
-    public Order(final String broker, final int quantity, final OrderTypeLimit orderTypeLimit, final OrderSide side) {
+    public Order(final String broker, final int quantity, final OrderType orderType, final OrderSide side) {
         id = c.incrementAndGet();
-        this.orderTypeLimit = orderTypeLimit;
+        this.orderType = orderType;
         this.side = side;
         this.broker = broker;
         this.quantity = quantity;
@@ -104,16 +104,16 @@ public class Order {
         this.quantity -= quantity;
     }
 
-    public OrderTypeLimit getOrderTypeLimit() {
-        return orderTypeLimit;
+    public OrderType getOrderType() {
+        return orderType;
     }
 
-    public Order convertTo(OrderTypeLimit orderType) {
+    public Order convertTo(OrderType orderType) {
         return new Order(broker, quantity, orderType, side);
     }
 
     private static AtomicInteger c = new AtomicInteger(0);
-    private final OrderTypeLimit orderTypeLimit;
+    private final OrderType orderType;
     private final OrderSide side;
     private final String broker;
     private int quantity;

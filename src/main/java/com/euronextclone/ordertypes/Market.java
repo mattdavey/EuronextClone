@@ -1,7 +1,7 @@
 package com.euronextclone.ordertypes;
 
 import com.euronextclone.OrderSide;
-import com.euronextclone.OrderTypeLimit;
+import com.euronextclone.OrderType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +9,7 @@ import com.euronextclone.OrderTypeLimit;
  * Date: 7/20/12
  * Time: 2:08 PM
  */
-public class Market extends OrderTypeLimit {
+public class Market implements OrderType {
 
     @Override
     public boolean acceptsMarketPrice() {

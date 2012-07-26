@@ -1,7 +1,9 @@
 package com.euronext.fix.server;
 
 import com.euronext.fix.FixAdapter;
+import com.euronextclone.MatchingUnit;
 import quickfix.*;
+import quickfix.fix42.NewOrderSingle;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +14,8 @@ import quickfix.*;
 public class FixServer extends FixAdapter {
 
     private final SocketAcceptor socketAcceptor;
+    // TODO: this is temporary. Matching units will be outside of FIX server, likely in a different process
+    private final MatchingUnit matchingUnit;
 
     public FixServer(final SessionSettings settings) throws ConfigError {
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
@@ -19,6 +23,8 @@ public class FixServer extends FixAdapter {
         MessageFactory messageFactory = new DefaultMessageFactory();
 
         socketAcceptor = new SocketAcceptor(this, messageStoreFactory, settings, logFactory, messageFactory);
+
+        matchingUnit = new MatchingUnit();
     }
 
     public void start() throws ConfigError {
@@ -27,5 +33,11 @@ public class FixServer extends FixAdapter {
 
     public void stop() {
         socketAcceptor.stop();
+    }
+
+    @Override
+    public void onMessage(NewOrderSingle message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+
+//        matchingUnit.addOrder();
     }
 }

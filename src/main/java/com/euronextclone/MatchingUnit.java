@@ -237,7 +237,7 @@ public class MatchingUnit implements Observable<Trade> {
         for (final double price : priceIterable) {
             while (current.hasNext()) {
                 final Order order = current.next();
-                final OrderTypeLimit orderType = order.getOrderTypeLimit();
+                final OrderType orderType = order.getOrderType();
 
                 Double orderPrice = orderType.price(side, book.getBestLimit());
                 if (canTrade(side, orderPrice, price)) {
@@ -303,12 +303,12 @@ public class MatchingUnit implements Observable<Trade> {
         return FluentIterable.from(book.getOrders()).filter(new Predicate<Order>() {
             @Override
             public boolean apply(Order input) {
-                return input.getOrderTypeLimit().providesLimit();
+                return input.getOrderType().providesLimit();
             }
         }).transform(new Function<Order, Double>() {
             @Override
             public Double apply(Order input) {
-                return input.getOrderTypeLimit().getLimit();
+                return input.getOrderType().getLimit();
             }
         }).toImmutableSet();
     }
@@ -335,7 +335,7 @@ public class MatchingUnit implements Observable<Trade> {
             List<Order> mtlOrders = FluentIterable.from(orders).filter(new Predicate<Order>() {
                 @Override
                 public boolean apply(Order input) {
-                    return input.getOrderTypeLimit().convertsToLimit();
+                    return input.getOrderType().convertsToLimit();
                 }
             }).toImmutableList();
             orders.removeAll(mtlOrders);
@@ -351,8 +351,8 @@ public class MatchingUnit implements Observable<Trade> {
         return getBook(side).getOrders();
     }
 
-    public void addOrder(final OrderSide side, final String broker, final int quantity, final OrderTypeLimit orderTypeLimit) {
-        final Order order = new Order(broker, quantity, orderTypeLimit, side);
+    public void addOrder(final OrderSide side, final String broker, final int quantity, final OrderType orderType) {
+        final Order order = new Order(broker, quantity, orderType, side);
         boolean topOfTheBook = getBook(side).add(order) == 0;
 
         if (tradingPhase == TradingPhase.CoreContinuous && topOfTheBook) {
@@ -366,7 +366,7 @@ public class MatchingUnit implements Observable<Trade> {
         final int startQuantity = newOrder.getQuantity();
         final OrderBook counterBook = getCounterBook(side);
 
-        Double newOrderPrice = newOrder.getOrderTypeLimit().providesLimit() ? newOrder.getOrderTypeLimit().getLimit() : null;
+        Double newOrderPrice = newOrder.getOrderType().providesLimit() ? newOrder.getOrderType().getLimit() : null;
 
         List<Order> toRemove = new ArrayList<Order>();
         List<Order> toAdd = new ArrayList<Order>();
@@ -376,7 +376,7 @@ public class MatchingUnit implements Observable<Trade> {
         for (final Order order : counterBook.getOrders()) {
 
             // Determine the price at which the trade happens
-            final Double bookOrderPrice = order.getOrderTypeLimit().price(order.getSide(), counterBook.getBestLimit());
+            final Double bookOrderPrice = order.getOrderType().price(order.getSide(), counterBook.getBestLimit());
 
             Double tradePrice = determineTradePrice(newOrderPrice, bookOrderPrice, order.getSide(), counterBook.getBestLimit());
             if (tradePrice == null) {
@@ -398,7 +398,7 @@ public class MatchingUnit implements Observable<Trade> {
             if (order.getQuantity() == 0) {
                 toRemove.add(order);
             } else {
-                if (order.getOrderTypeLimit().convertsToLimit()) {
+                if (order.getOrderType().convertsToLimit()) {
                     toRemove.add(order);
                     toAdd.add(order.convertTo(new Limit(tradePrice)));
                 }
@@ -409,7 +409,7 @@ public class MatchingUnit implements Observable<Trade> {
                 break;
             }
 
-            if (currentOrder.getOrderTypeLimit().convertsToLimit()) {
+            if (currentOrder.getOrderType().convertsToLimit()) {
                 book.remove(currentOrder);
                 currentOrder = currentOrder.convertTo(new Limit(tradePrice));
                 book.add(currentOrder);
