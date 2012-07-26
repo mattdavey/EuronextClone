@@ -3,10 +3,11 @@ package com.euronext.fix.server;
 import com.euronext.fix.FixAdapter;
 import com.euronextclone.MatchingUnit;
 import com.euronextclone.OrderEntry;
-import com.euronextclone.OrderSide;
 import com.euronextclone.Trade;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import quickfix.*;
+import quickfix.field.Side;
+import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
 import javax.annotation.Nonnull;
@@ -65,8 +66,12 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
 
     @Override
     public void next(Trade trade) {
-        sendExecutionReport(trade, OrderSide.Buy);
-        sendExecutionReport(trade, OrderSide.Sell);
+        try {
+            sendExecutionReport(trade, new Side(Side.BUY));
+            sendExecutionReport(trade, new Side(Side.SELL));
+        } catch (SessionNotFound sessionNotFound) {
+            sessionNotFound.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     @Override
@@ -83,8 +88,12 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
-    private void sendExecutionReport(Trade trade, OrderSide side) {
-        final String broker = side == OrderSide.Buy ? trade.getBuyBroker() : trade.getSellBroker();
-        sessionByBroker.get(broker);
+    private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
+        final String broker = side.getValue() == Side.BUY ? trade.getBuyBroker() : trade.getSellBroker();
+        final SessionID sessionID = sessionByBroker.get(broker);
+        if (sessionID != null) {
+            ExecutionReport executionReport = new ExecutionReport(null, null, null, null, null, null, side, null, null, null);
+            Session.sendToTarget(executionReport, sessionID);
+        }
     }
 }
