@@ -1,6 +1,8 @@
 package com.euronext.fix.client;
 
 import com.euronext.fix.FixAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.*;
 import quickfix.fix42.NewOrderSingle;
 
@@ -13,6 +15,7 @@ import quickfix.fix42.NewOrderSingle;
  */
 public class FixClient extends FixAdapter {
 
+    private static Logger logger = LoggerFactory.getLogger(FixAdapter.class);
     private final SocketInitiator socketInitiator;
 
     public FixClient(final SessionSettings settings) throws ConfigError {
@@ -21,6 +24,12 @@ public class FixClient extends FixAdapter {
         SLF4JLogFactory logFactory = new SLF4JLogFactory(settings);
         MessageFactory messageFactory = new DefaultMessageFactory();
         socketInitiator = new SocketInitiator(this, messageStoreFactory, settings, logFactory, messageFactory);
+    }
+
+    @Override
+    public void onCreate(SessionID sessionId) {
+        logger.info("Session created: {}", sessionId);
+        Session.lookupSession(sessionId).logon();
     }
 
     public void start() throws ConfigError {
@@ -32,6 +41,6 @@ public class FixClient extends FixAdapter {
     }
 
     public void submitOrder(NewOrderSingle order) throws SessionNotFound {
-        send(order);
+        Session.sendToTarget(order);
     }
 }

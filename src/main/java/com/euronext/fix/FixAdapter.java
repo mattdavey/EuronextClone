@@ -11,19 +11,9 @@ import quickfix.fix42.MessageCracker;
  * Date: 7/24/12
  * Time: 10:30 PM
  */
-public class FixAdapter extends MessageCracker implements Application {
+public abstract class FixAdapter extends MessageCracker implements Application {
 
     private static Logger logger = LoggerFactory.getLogger(FixAdapter.class);
-
-    private SessionID theOnlySessionId;
-
-    @Override
-    public void onCreate(SessionID sessionId) {
-        logger.info("Session created: {}", sessionId);
-        theOnlySessionId = sessionId;
-
-        Session.lookupSession(theOnlySessionId).logon();
-    }
 
     @Override
     public void onLogon(SessionID sessionId) {
@@ -54,9 +44,5 @@ public class FixAdapter extends MessageCracker implements Application {
     public void fromApp(Message message, SessionID sessionId) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
         logger.debug("fromApp for session: {}, message: {}", sessionId, message);
         crack(message, sessionId);
-    }
-
-    public boolean send(Message message) throws SessionNotFound {
-        return Session.sendToTarget(message, theOnlySessionId);
     }
 }
