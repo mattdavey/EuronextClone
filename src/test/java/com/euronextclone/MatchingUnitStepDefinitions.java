@@ -44,7 +44,7 @@ public class MatchingUnitStepDefinitions {
 
         final List<OrderEntryRow> orderRows = orderTable.asList(OrderEntryRow.class);
         for (OrderEntryRow orderRow : orderRows) {
-            matchingUnit.addOrder(orderRow.side, orderRow.broker, orderRow.quantity, orderRow.getOrderTypeLimit());
+            matchingUnit.addOrder(new OrderEntry(orderRow.side, orderRow.broker, orderRow.quantity, orderRow.getOrderType()));
         }
     }
 
@@ -238,7 +238,7 @@ public class MatchingUnitStepDefinitions {
         private int quantity;
         private String price;
 
-        public OrderType getOrderTypeLimit() {
+        public OrderType getOrderType() {
 
             Matcher peg = PEG.matcher(price);
             if (peg.matches()) {

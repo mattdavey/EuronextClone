@@ -351,8 +351,9 @@ public class MatchingUnit implements Observable<Trade> {
         return getBook(side).getOrders();
     }
 
-    public void addOrder(final OrderSide side, final String broker, final int quantity, final OrderType orderType) {
-        final Order order = new Order(broker, quantity, orderType, side);
+    public void addOrder(final OrderEntry orderEntry) {
+        final Order order = new Order(orderEntry.getBroker(), orderEntry.getQuantity(), orderEntry.getOrderType(), orderEntry.getSide());
+        final OrderSide side = orderEntry.getSide();
         boolean topOfTheBook = getBook(side).add(order) == 0;
 
         if (tradingPhase == TradingPhase.CoreContinuous && topOfTheBook) {

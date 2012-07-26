@@ -1,6 +1,7 @@
 package com.euronextclone.gateway;
 
 import com.euronextclone.MatchingUnit;
+import com.euronextclone.OrderEntry;
 import com.euronextclone.OrderSide;
 import com.euronextclone.ordertypes.Limit;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
         if (order.getChar(OrdType.FIELD) == OrdType.LIMIT) {
             BigDecimal limitPrice = new BigDecimal(order.getString(Price.FIELD));
             char side = order.getChar(Side.FIELD);
-            BigDecimal thePrice = new BigDecimal(""+ price.getValue());
+            BigDecimal thePrice = new BigDecimal("" + price.getValue());
 
             return (side == Side.BUY && thePrice.compareTo(limitPrice) <= 0)
                     || ((side == Side.SELL || side == Side.SELL_SHORT) && thePrice.compareTo(limitPrice) >= 0);
@@ -187,11 +188,14 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
     // Hack
     private void sendToMatchingEngine(NewOrderSingle order, SessionID sessionID, OrderQty orderQty, Price price) throws FieldNotFound {
         final MatchingUnit matchingUnit = new MatchingUnit();
-        char side = order.getChar(Side.FIELD);
-        matchingUnit.addOrder((side == Side.BUY) ? OrderSide.Buy : OrderSide.Sell,
+        final char side = order.getChar(Side.FIELD);
+        final OrderEntry orderEntry = new OrderEntry(
+                side == Side.BUY ? OrderSide.Buy : OrderSide.Sell,
                 sessionID.getTargetCompID(),
-                (int)orderQty.getValue(),
+                (int) orderQty.getValue(),
                 new Limit(price.getValue()));
+
+        matchingUnit.addOrder(orderEntry);
     }
 
     private void acceptOrder(NewOrderSingle order, SessionID sessionID) throws FieldNotFound {
