@@ -1,4 +1,4 @@
-package com.euronext.client.simulator;
+package com.euronext.fix.client;
 
 import quickfix.field.*;
 import quickfix.fix42.NewOrderSingle;
@@ -16,6 +16,7 @@ public class OrderBuilder {
     private String symbol;
     private char orderType;
     private double quantity;
+    private char side;
 
     public OrderBuilder withSymbol(String symbol) {
         this.symbol = symbol;
@@ -33,17 +34,25 @@ public class OrderBuilder {
     }
 
     public NewOrderSingle buy() {
+        this.side = Side.BUY;
+        return build();
+    }
 
+    public NewOrderSingle sell() {
+        this.side = Side.SELL;
+        return build();
+    }
+
+    private NewOrderSingle build() {
         final NewOrderSingle order = new NewOrderSingle(
                 new ClOrdID(UUID.randomUUID().toString()),
                 new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC),
                 new Symbol(symbol),
-                new Side(Side.BUY),
+                new Side(side),
                 new TransactTime(new Date()),
                 new OrdType(orderType));
 
         order.set(new OrderQty(quantity));
-
         return order;
     }
 }

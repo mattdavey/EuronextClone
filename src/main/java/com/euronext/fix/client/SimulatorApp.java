@@ -1,4 +1,4 @@
-package com.euronext.client.simulator;
+package com.euronext.fix.client;
 
 import quickfix.ConfigError;
 import quickfix.SessionNotFound;
@@ -18,15 +18,17 @@ public class SimulatorApp {
 
 
         try {
-            final InputStream config = SimulatorApp.class.getClassLoader().getResourceAsStream("com/euronext/client/FixClient.cfg");
-            final FixGateway client = new FixGateway(new SessionSettings(config));
+            final InputStream config = SimulatorApp.class.getClassLoader().getResourceAsStream("FixClient.cfg");
+            final FixClient client = new FixClient(new SessionSettings(config));
             client.start();
 
             final OrderBuilder orderBuilder = new OrderBuilder()
                     .withSymbol("MSFT")
-                    .withOrderType(OrdType.LIMIT);
+                    .withOrderType(OrdType.LIMIT)
+                    .withQuantity(1000);
 
             client.submitOrder(orderBuilder.buy());
+            client.submitOrder(orderBuilder.sell());
 
             client.stop();
 

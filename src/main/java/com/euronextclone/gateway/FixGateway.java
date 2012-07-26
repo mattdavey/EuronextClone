@@ -1,40 +1,21 @@
 package com.euronextclone.gateway;
 
-import static quickfix.Acceptor.SETTING_ACCEPTOR_TEMPLATE;
-import static quickfix.Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS;
-import static quickfix.Acceptor.SETTING_SOCKET_ACCEPT_PORT;
+import org.quickfixj.jmx.JmxExporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.*;
+import quickfix.mina.acceptor.DynamicAcceptorSessionProvider;
+import quickfix.mina.acceptor.DynamicAcceptorSessionProvider.TemplateMapping;
 
+import javax.management.JMException;
+import javax.management.ObjectName;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javax.management.JMException;
-import javax.management.ObjectName;
-
-import org.quickfixj.jmx.JmxExporter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import quickfix.ConfigError;
-import quickfix.DefaultMessageFactory;
-import quickfix.FieldConvertError;
-import quickfix.FileStoreFactory;
-import quickfix.LogFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.RuntimeError;
-import quickfix.ScreenLogFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-import quickfix.SocketAcceptor;
-import quickfix.mina.acceptor.DynamicAcceptorSessionProvider;
-import quickfix.mina.acceptor.DynamicAcceptorSessionProvider.TemplateMapping;
+import static quickfix.Acceptor.*;
 
 public class FixGateway {
     private final static Logger log = LoggerFactory.getLogger(FixGateway.class);
@@ -147,7 +128,7 @@ public class FixGateway {
     public static InputStream getSettingsInputStream(String[] args) throws FileNotFoundException {
         InputStream inputStream = null;
         if (args.length == 0) {
-            inputStream = FixGateway.class.getResourceAsStream("FixGateway.cfg");
+            inputStream = FixGateway.class.getResourceAsStream("FixServer.cfg");
         } else if (args.length == 1) {
             inputStream = new FileInputStream(args[0]);
         }

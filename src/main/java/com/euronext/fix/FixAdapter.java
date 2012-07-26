@@ -1,10 +1,9 @@
-package com.euronext.client.simulator;
+package com.euronext.fix;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.*;
 import quickfix.fix42.MessageCracker;
-import quickfix.fix42.NewOrderSingle;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +56,7 @@ public class FixAdapter extends MessageCracker implements Application {
         crack(message, sessionId);
     }
 
-    public void submitOrder(NewOrderSingle order) throws SessionNotFound {
-        Session.sendToTarget(order, theOnlySessionId);
+    public boolean send(Message message) throws SessionNotFound {
+        return Session.sendToTarget(message, theOnlySessionId);
     }
 }
