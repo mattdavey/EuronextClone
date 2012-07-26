@@ -2,15 +2,7 @@ package com.euronextclone;
 
 public abstract class OrderTypeLimit {
 
-    private OrderType orderType;
-
-    public OrderTypeLimit(final OrderType orderType) {
-        this.orderType = orderType;
-    }
-
-    public OrderType getOrderType() {
-        return orderType;
-    }
+    public abstract boolean acceptsMarketPrice();
 
     public abstract boolean providesLimit();
 

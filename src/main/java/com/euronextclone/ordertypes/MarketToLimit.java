@@ -1,7 +1,6 @@
 package com.euronextclone.ordertypes;
 
 import com.euronextclone.OrderSide;
-import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
 /**
@@ -12,8 +11,9 @@ import com.euronextclone.OrderTypeLimit;
  */
 public class MarketToLimit extends OrderTypeLimit {
 
-    public MarketToLimit() {
-        super(OrderType.MarketToLimit);
+    @Override
+    public boolean acceptsMarketPrice() {
+        return true;
     }
 
     @Override

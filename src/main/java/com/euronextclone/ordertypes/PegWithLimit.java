@@ -1,7 +1,6 @@
 package com.euronextclone.ordertypes;
 
 import com.euronextclone.OrderSide;
-import com.euronextclone.OrderType;
 import com.euronextclone.OrderTypeLimit;
 
 import java.text.DecimalFormat;
@@ -18,8 +17,12 @@ public class PegWithLimit extends OrderTypeLimit {
     private final double limit;
 
     public PegWithLimit(final double limit) {
-        super(OrderType.Peg);
         this.limit = limit;
+    }
+
+    @Override
+    public boolean acceptsMarketPrice() {
+        return false;
     }
 
     @Override

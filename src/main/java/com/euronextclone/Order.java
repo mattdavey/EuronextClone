@@ -34,21 +34,14 @@ public class Order {
         final int EQUAL = 0;
         final int AFTER = 1;
 
-        final OrderType thisOrderType = this.orderTypeLimit.getOrderType();
-        final OrderType otherOrderType = other.orderTypeLimit.getOrderType();
-
-        if (isMarket(thisOrderType) && !isMarket(otherOrderType)) {
+        if (this.orderTypeLimit.acceptsMarketPrice() && !other.orderTypeLimit.acceptsMarketPrice()) {
             return AFTER;
         }
-        if (!isMarket(thisOrderType) && isMarket(otherOrderType)) {
+        if (!this.orderTypeLimit.acceptsMarketPrice() && other.orderTypeLimit.acceptsMarketPrice()) {
             return BEFORE;
         }
 
         return EQUAL;
-    }
-
-    private boolean isMarket(OrderType type) {
-        return type == OrderType.MarketOrder || type == OrderType.MarketToLimit;
     }
 
     private int comparePrice(final Order anOrder, final Double bestLimit) {
