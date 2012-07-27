@@ -3,6 +3,14 @@ package com.euronextclone;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Order {
+    private static AtomicInteger c = new AtomicInteger(0);
+    private String orderId;
+    private final String broker;
+    private int quantity;
+    private final OrderType orderType;
+    private final OrderSide side;
+    private final int id;
+
     public int compareTo(final Order anOrder, final Double bestLimit) {
         final int BEFORE = -1;
         final int EQUAL = 0;
@@ -76,8 +84,9 @@ public class Order {
         return EQUAL;
     }
 
-    public Order(final String broker, final int quantity, final OrderType orderType, final OrderSide side) {
+    public Order(final String orderId, final String broker, final int quantity, final OrderType orderType, final OrderSide side) {
         id = c.incrementAndGet();
+        this.orderId = orderId;
         this.orderType = orderType;
         this.side = side;
         this.broker = broker;
@@ -86,6 +95,10 @@ public class Order {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public String getOrderId() {
+        return orderId;
     }
 
     public String getBroker() {
@@ -109,13 +122,6 @@ public class Order {
     }
 
     public Order convertTo(OrderType orderType) {
-        return new Order(broker, quantity, orderType, side);
+        return new Order(orderId, broker, quantity, orderType, side);
     }
-
-    private static AtomicInteger c = new AtomicInteger(0);
-    private final OrderType orderType;
-    private final OrderSide side;
-    private final String broker;
-    private int quantity;
-    private final int id;
 }

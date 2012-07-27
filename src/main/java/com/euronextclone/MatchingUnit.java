@@ -352,7 +352,7 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     public void addOrder(final OrderEntry orderEntry) {
-        final Order order = new Order(orderEntry.getBroker(), orderEntry.getQuantity(), orderEntry.getOrderType(), orderEntry.getSide());
+        final Order order = new Order(orderEntry.getOrderId(), orderEntry.getBroker(), orderEntry.getQuantity(), orderEntry.getOrderType(), orderEntry.getSide());
         final OrderSide side = orderEntry.getSide();
         boolean topOfTheBook = getBook(side).add(order) == 0;
 
@@ -431,8 +431,12 @@ public class MatchingUnit implements Observable<Trade> {
     }
 
     private void generateTrade(final Order newOrder, final Order order, final int tradeQuantity, final double price) {
-        notifier.next(new Trade(newOrder.getSide() == OrderSide.Buy ? newOrder.getBroker() : order.getBroker(),
-                newOrder.getSide() == OrderSide.Sell ? newOrder.getBroker() : order.getBroker(),
+        Order buyOrder = newOrder.getSide() == OrderSide.Buy ? newOrder : order;
+        Order sellOrder = newOrder == buyOrder ? order : newOrder;
+
+        notifier.next(new Trade(
+                buyOrder.getOrderId(), buyOrder.getBroker(),
+                sellOrder.getOrderId(), sellOrder.getBroker(),
                 tradeQuantity, price));
     }
 

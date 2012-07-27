@@ -6,13 +6,17 @@ import com.euronextclone.OrderEntry;
 import com.euronextclone.Trade;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import quickfix.*;
+import quickfix.field.ExecID;
+import quickfix.field.OrderID;
 import quickfix.field.Side;
+import quickfix.field.Symbol;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +30,9 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     private Map<String, SessionID> sessionByBroker;
     // TODO: this is temporary. Matching units will be outside of FIX server, likely in a different process
     private final MatchingUnit matchingUnit;
+    // TODO: this is temporary until symbol is added to OrderEntry
+    private final Symbol symbol = new Symbol("MSFT");
+
 
     // TODO: to correctly route execution reports to relevant party looks like I need:
     // a) a mapping from OrderId to Broker (TargetCompID)
@@ -89,11 +96,17 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     }
 
     private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
-        final String broker = side.getValue() == Side.BUY ? trade.getBuyBroker() : trade.getSellBroker();
+        final boolean buy = side.getValue() == Side.BUY;
+        final String orderId = buy ? trade.getBuyOrderId() : trade.getSellOrderId();
+        final String broker = buy ? trade.getBuyBroker() : trade.getSellBroker();
         final SessionID sessionID = sessionByBroker.get(broker);
         if (sessionID != null) {
-            ExecutionReport executionReport = new ExecutionReport(null, null, null, null, null, null, side, null, null, null);
+            ExecutionReport executionReport = new ExecutionReport(new OrderID(orderId), generateExecId(), null, null, null, symbol, side, null, null, null);
             Session.sendToTarget(executionReport, sessionID);
         }
+    }
+
+    private ExecID generateExecId() {
+        return new ExecID(UUID.randomUUID().toString());
     }
 }
