@@ -24,7 +24,7 @@ public class FixClient implements Observer {
     public void init(String[] args) throws Exception {
         InputStream inputStream = null;
         if (args.length == 0) {
-            inputStream = FixClient.class.getResourceAsStream("FixClient.cfg");
+            inputStream = FixClient.class.getResourceAsStream("FixBrokerA.cfg");
         } else if (args.length == 1) {
             inputStream = new FileInputStream(args[0]);
         }

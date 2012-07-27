@@ -4,6 +4,7 @@ import com.euronext.fix.FixAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.*;
+import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
 
@@ -17,6 +18,7 @@ public class FixClient extends FixAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(FixAdapter.class);
     private final SocketInitiator socketInitiator;
+    private SessionID sessionId;
 
     public FixClient(final SessionSettings settings) throws ConfigError {
 
@@ -29,7 +31,14 @@ public class FixClient extends FixAdapter {
     @Override
     public void onCreate(SessionID sessionId) {
         logger.info("Session created: {}", sessionId);
+
+        this.sessionId = sessionId;
         Session.lookupSession(sessionId).logon();
+    }
+
+    @Override
+    public void onMessage(ExecutionReport message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+        logger.debug("Received execution report");
     }
 
     public void start() throws ConfigError {
@@ -41,6 +50,6 @@ public class FixClient extends FixAdapter {
     }
 
     public void submitOrder(NewOrderSingle order) throws SessionNotFound {
-        Session.sendToTarget(order);
+        Session.sendToTarget(order, sessionId);
     }
 }

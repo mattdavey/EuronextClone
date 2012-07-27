@@ -1,15 +1,11 @@
 package com.euronext.fix.server;
 
 import com.euronext.fix.FixAdapter;
-import com.euronextclone.MatchingUnit;
-import com.euronextclone.OrderEntry;
-import com.euronextclone.Trade;
+import com.euronextclone.*;
+import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import quickfix.*;
-import quickfix.field.ExecID;
-import quickfix.field.OrderID;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
+import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
@@ -48,6 +44,8 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
 
         matchingUnit = new MatchingUnit();
         matchingUnit.register(this);
+        matchingUnit.setTradingMode(TradingMode.Continuous);
+        matchingUnit.setTradingPhase(TradingPhase.CoreContinuous);
     }
 
     public void start() throws ConfigError {
@@ -91,8 +89,9 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private OrderEntry convertToOrderEntry(NewOrderSingle orderSingle, String broker) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    private OrderEntry convertToOrderEntry(NewOrderSingle orderSingle, String broker) throws FieldNotFound {
+        OrderSide side = orderSingle.getSide().getValue() == Side.BUY ? OrderSide.Buy : OrderSide.Sell;
+        return new OrderEntry(side, broker, (int) orderSingle.getOrderQty().getValue(), new Limit(10));
     }
 
     private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
@@ -101,7 +100,17 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
         final String broker = buy ? trade.getBuyBroker() : trade.getSellBroker();
         final SessionID sessionID = sessionByBroker.get(broker);
         if (sessionID != null) {
-            ExecutionReport executionReport = new ExecutionReport(new OrderID(orderId), generateExecId(), null, null, null, symbol, side, null, null, null);
+            ExecutionReport executionReport = new ExecutionReport(
+                    new OrderID(orderId),
+                    generateExecId(),
+                    new ExecTransType(ExecTransType.STATUS),
+                    new ExecType(ExecType.PARTIAL_FILL),
+                    new OrdStatus(OrdStatus.PARTIALLY_FILLED),
+                    symbol,
+                    side,
+                    new LeavesQty(),
+                    new CumQty(),
+                    new AvgPx());
             Session.sendToTarget(executionReport, sessionID);
         }
     }
