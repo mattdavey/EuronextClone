@@ -16,7 +16,7 @@ import quickfix.fix42.NewOrderSingle;
  */
 public class FixClient extends FixAdapter {
 
-    private static Logger logger = LoggerFactory.getLogger(FixAdapter.class);
+    private static Logger logger = LoggerFactory.getLogger(FixClient.class);
     private final SocketInitiator socketInitiator;
     private SessionID sessionId;
 
