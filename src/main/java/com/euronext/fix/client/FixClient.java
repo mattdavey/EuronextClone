@@ -4,6 +4,7 @@ import com.euronext.fix.FixAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.*;
+import quickfix.field.Side;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
@@ -38,7 +39,9 @@ public class FixClient extends FixAdapter {
 
     @Override
     public void onMessage(ExecutionReport message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
-        logger.debug("Received execution report");
+        String side = message.getSide().getValue() == Side.BUY? "Buy" : "Sell";
+        double qty = message.getOrderQty().getValue();
+        logger.debug("Received execution report: {} {}", side, qty);
     }
 
     public void start() throws ConfigError {
