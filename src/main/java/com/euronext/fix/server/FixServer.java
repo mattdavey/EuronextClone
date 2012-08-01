@@ -42,7 +42,7 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
         socketAcceptor = new SocketAcceptor(this, messageStoreFactory, settings, logFactory, messageFactory);
         sessionByBroker = new HashMap<String, SessionID>();
 
-        matchingUnit = new MatchingUnit();
+        matchingUnit = new MatchingUnit("MSFT");
         matchingUnit.register(this);
         matchingUnit.setTradingMode(TradingMode.Continuous);
         matchingUnit.setTradingPhase(TradingPhase.CoreContinuous);

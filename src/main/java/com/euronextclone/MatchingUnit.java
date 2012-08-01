@@ -27,8 +27,10 @@ public class MatchingUnit implements Observable<Trade> {
      * The observable helper.
      */
     private final DefaultObservable<Trade> notifier = new DefaultObservable<Trade>();
+    private final String instrument;
 
-    public MatchingUnit() {
+    public MatchingUnit(String instrument) {
+        this.instrument = instrument;
         buyOrderBook = new OrderBook();
         sellOrderBook = new OrderBook();
     }

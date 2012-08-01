@@ -10,7 +10,7 @@ import java.util.List;
 public class World {
 
     private final List<Trade> generatedTrades = new ArrayList<Trade>();
-    private final MatchingUnit matchingUnit = new MatchingUnit();
+    private final MatchingUnit matchingUnit = new MatchingUnit("MSFT");
 
     public List<Trade> getGeneratedTrades() {
         return generatedTrades;

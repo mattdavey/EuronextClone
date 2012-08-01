@@ -187,7 +187,7 @@ public class FixGatewayApplication extends quickfix.MessageCracker implements qu
 
     // Hack
     private void sendToMatchingEngine(NewOrderSingle order, SessionID sessionID, OrderQty orderQty, Price price) throws FieldNotFound {
-        final MatchingUnit matchingUnit = new MatchingUnit();
+        final MatchingUnit matchingUnit = new MatchingUnit("MSFT");
         final char side = order.getChar(Side.FIELD);
         final OrderEntry orderEntry = new OrderEntry(
                 side == Side.BUY ? OrderSide.Buy : OrderSide.Sell,
