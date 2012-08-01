@@ -1,5 +1,5 @@
-EuronextClone
-=============
+# EuronextClone
+
 
 Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) based on Euronext documentation publically available:
 
@@ -18,3 +18,9 @@ Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) base
 [Stop Order](http://www.euronext.com/fic/000/010/550/105509.pdf)
 
 [IMP/TOP calculation](http://www.asx.com.au/products/calculate-open-close-prices.htm)
+
+## Simple architecture Proof Of Concept (PoC)
+!(docs/basic.jpg)
+
+## Rapid Failover based on multiple copies and heartbeating
+!(docs/complex.jpg)
