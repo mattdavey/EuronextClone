@@ -23,4 +23,4 @@ Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) base
 ![Basic Architecture](https://github.com/mattdavey/EuronextClone/blob/master/basic.jpg)
 
 ## Rapid Failover based on multiple copies and heart-beating
-![Failover Architecture](https://github.com/mattdavey/EuronextClone/blob/master/complex.jpg
+![Failover Architecture](complex.jpg)
