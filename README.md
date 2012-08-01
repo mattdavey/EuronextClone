@@ -20,7 +20,7 @@ Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) base
 [IMP/TOP calculation](http://www.asx.com.au/products/calculate-open-close-prices.htm)
 
 ## Simple architecture Proof Of Concept (PoC)
-![Basic Architecture](./basic.jpg)
+![Alt Basic Architecture](basic.jpg)
 
 ## Rapid Failover based on multiple copies and heart-beating
-![Failover Architecture](./complex.jpg)
+![Alt Failover Architecture](complex.jpg)
