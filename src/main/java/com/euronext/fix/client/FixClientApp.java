@@ -45,11 +45,12 @@ public class FixClientApp {
             System.out.println("Exiting...");
 
             clientA.stop();
+            clientB.stop();
 
         } catch (ConfigError configError) {
-            configError.printStackTrace();
+            logger.error(configError.getMessage(), configError);
         } catch (SessionNotFound sessionNotFound) {
-            sessionNotFound.printStackTrace();
+            logger.error(sessionNotFound.getMessage(), sessionNotFound);
         }
     }
 
