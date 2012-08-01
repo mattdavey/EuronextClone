@@ -112,6 +112,8 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
                     new CumQty(),
                     new AvgPx());
 
+            executionReport.set(new LastShares(trade.getQuantity()));
+            executionReport.set(new LastPx(trade.getPrice()));
             Session.sendToTarget(executionReport, sessionID);
         }
     }

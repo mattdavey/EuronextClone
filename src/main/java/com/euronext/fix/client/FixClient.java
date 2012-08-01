@@ -39,9 +39,11 @@ public class FixClient extends FixAdapter {
 
     @Override
     public void onMessage(ExecutionReport message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
-        String side = message.getSide().getValue() == Side.BUY? "Buy" : "Sell";
-        double qty = message.getOrderQty().getValue();
-        logger.debug("Received execution report: {} {}", side, qty);
+        String side = message.getSide().getValue() == Side.BUY ? "Bought" : "Sold";
+        double tradeQty = message.getLastShares().getValue();
+        String symbol = message.getSymbol().getValue();
+        double tradePrice = message.getLastPx().getValue();
+        logger.debug("Received execution report: {} {} shares of {} at {}", new Object[]{side, tradeQty, symbol, tradePrice});
     }
 
     public void start() throws ConfigError {
