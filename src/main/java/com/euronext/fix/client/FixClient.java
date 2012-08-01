@@ -1,10 +1,10 @@
 package com.euronext.fix.client;
 
 import com.euronext.fix.FixAdapter;
+import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.*;
-import quickfix.field.Side;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
@@ -20,6 +20,7 @@ public class FixClient extends FixAdapter {
     private static Logger logger = LoggerFactory.getLogger(FixClient.class);
     private final SocketInitiator socketInitiator;
     private SessionID sessionId;
+    private EventHandler<ExecutionReport> executionReportEventHandler;
 
     public FixClient(final SessionSettings settings) throws ConfigError {
 
@@ -39,11 +40,11 @@ public class FixClient extends FixAdapter {
 
     @Override
     public void onMessage(ExecutionReport message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
-        String side = message.getSide().getValue() == Side.BUY ? "Bought" : "Sold";
-        double tradeQty = message.getLastShares().getValue();
-        String symbol = message.getSymbol().getValue();
-        double tradePrice = message.getLastPx().getValue();
-        logger.debug("Received execution report: {} {} shares of {} at {}", new Object[]{side, tradeQty, symbol, tradePrice});
+        try {
+            executionReportEventHandler.onEvent(message, 0L, true);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public void start() throws ConfigError {
@@ -56,5 +57,9 @@ public class FixClient extends FixAdapter {
 
     public void submitOrder(NewOrderSingle order) throws SessionNotFound {
         Session.sendToTarget(order, sessionId);
+    }
+
+    public void handleExecutions(EventHandler<ExecutionReport> handler) {
+        executionReportEventHandler = handler;
     }
 }
