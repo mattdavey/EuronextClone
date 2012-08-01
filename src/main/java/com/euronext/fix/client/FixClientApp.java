@@ -25,30 +25,16 @@ public class FixClientApp {
     public static void main(String args[]) {
 
         try {
-            final InputStream config = FixClientApp.class.getClassLoader().getResourceAsStream("FixBrokerA.cfg");
-            final FixClient client = new FixClient(new SessionSettings(config));
-            client.start();
+            final FixClient clientA = createClient("A");
+            final FixClient clientB = createClient("B");
 
             final OrderBuilder orderBuilder = new OrderBuilder()
                     .withSymbol("MSFT")
                     .withOrderType(OrdType.LIMIT)
                     .withQuantity(1000);
 
-            client.handleExecutions(new EventHandler<ExecutionReport>() {
-
-                @Override
-                public void onEvent(ExecutionReport report, long sequence, boolean endOfBatch) throws Exception {
-                    String side = report.getSide().getValue() == Side.BUY ? "Bought" : "Sold";
-                    double tradeQty = report.getLastShares().getValue();
-                    String symbol = report.getSymbol().getValue();
-                    double tradePrice = report.getLastPx().getValue();
-                    logger.debug("Received execution report: {} {} shares of {} at {}", new Object[]{side, tradeQty, symbol, tradePrice});
-
-                }
-            });
-
-            client.submitOrder(orderBuilder.buy());
-            client.submitOrder(orderBuilder.sell());
+            clientA.submitOrder(orderBuilder.buy());
+            clientB.submitOrder(orderBuilder.sell());
 
             Scanner scanner = new Scanner(System.in);
             System.out.println("[Enter] q to exit");
@@ -58,12 +44,31 @@ public class FixClientApp {
 
             System.out.println("Exiting...");
 
-            client.stop();
+            clientA.stop();
 
         } catch (ConfigError configError) {
             configError.printStackTrace();
         } catch (SessionNotFound sessionNotFound) {
             sessionNotFound.printStackTrace();
         }
+    }
+
+    private static FixClient createClient(final String broker) throws ConfigError {
+        final InputStream config = FixClientApp.class.getClassLoader().getResourceAsStream("FixBroker" + broker + ".cfg");
+        final FixClient client = new FixClient(new SessionSettings(config));
+        client.start();
+
+        client.handleExecutions(new EventHandler<ExecutionReport>() {
+
+            @Override
+            public void onEvent(ExecutionReport report, long sequence, boolean endOfBatch) throws Exception {
+                String side = report.getSide().getValue() == Side.BUY ? "bought" : "sold";
+                double tradeQty = report.getLastShares().getValue();
+                String symbol = report.getSymbol().getValue();
+                double tradePrice = report.getLastPx().getValue();
+                logger.debug("Broker {} {} {} shares of {} at {}", new Object[]{broker, side, tradeQty, symbol, tradePrice});
+            }
+        });
+        return client;
     }
 }
