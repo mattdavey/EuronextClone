@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.lab49.matching</groupId>
+    <groupId>com.mattdavey.matching</groupId>
     <artifactId>EuronextClone</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
