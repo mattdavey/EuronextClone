@@ -17,6 +17,7 @@ public class OrderBuilder {
     private char orderType;
     private double quantity;
     private char side;
+    private double price;
 
     public OrderBuilder withSymbol(String symbol) {
         this.symbol = symbol;
@@ -30,6 +31,11 @@ public class OrderBuilder {
 
     public OrderBuilder withQuantity(double quantity) {
         this.quantity = quantity;
+        return this;
+    }
+
+    public OrderBuilder at(double price) {
+        this.price = price;
         return this;
     }
 
@@ -53,6 +59,7 @@ public class OrderBuilder {
                 new OrdType(orderType));
 
         order.set(new OrderQty(quantity));
+        order.set(new Price(price));
         return order;
     }
 }

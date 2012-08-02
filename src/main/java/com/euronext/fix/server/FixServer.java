@@ -3,7 +3,10 @@ package com.euronext.fix.server;
 import com.euronext.fix.FixAdapter;
 import com.euronextclone.*;
 import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.Market;
 import hu.akarnokd.reactive4java.reactive.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -21,6 +24,8 @@ import java.util.UUID;
  * Time: 10:38 PM
  */
 public class FixServer extends FixAdapter implements Observer<Trade> {
+
+    private static Logger logger = LoggerFactory.getLogger(FixServer.class);
 
     private final SocketAcceptor socketAcceptor;
     private Map<String, SessionID> sessionByBroker;
@@ -62,10 +67,11 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     }
 
     @Override
-    public void onMessage(NewOrderSingle message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+    public void onMessage(NewOrderSingle order, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 
         String broker = sessionID.getTargetCompID();
-        OrderEntry orderEntry = convertToOrderEntry(message, broker);
+        OrderEntry orderEntry = convertToOrderEntry(order, broker);
+        acceptOrder(orderEntry);
         matchingUnit.addOrder(orderEntry);
     }
 
@@ -75,23 +81,79 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
             sendExecutionReport(trade, new Side(Side.BUY));
             sendExecutionReport(trade, new Side(Side.SELL));
         } catch (SessionNotFound sessionNotFound) {
-            sessionNotFound.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(sessionNotFound.getMessage(), sessionNotFound);
         }
     }
 
     @Override
     public void error(@Nonnull Throwable throwable) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeError(throwable);
     }
 
     @Override
     public void finish() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // Nothing to do
     }
 
     private OrderEntry convertToOrderEntry(NewOrderSingle orderSingle, String broker) throws FieldNotFound {
         OrderSide side = orderSingle.getSide().getValue() == Side.BUY ? OrderSide.Buy : OrderSide.Sell;
-        return new OrderEntry(side, broker, (int) orderSingle.getOrderQty().getValue(), new Limit(10));
+        OrderType orderType = null;
+        switch (orderSingle.getOrdType().getValue()) {
+            case OrdType.MARKET:
+                orderType = new Market();
+                break;
+            case OrdType.LIMIT:
+                orderType = new Limit(orderSingle.getPrice().getValue());
+                break;
+        }
+        return new OrderEntry(
+                side,
+                broker,
+                (int) orderSingle.getOrderQty().getValue(),
+                orderType);
+    }
+
+    private ExecutionReport buildExecutionReport(final String orderId,
+                                                 final ExecTransType execTransType,
+                                                 final ExecType execType,
+                                                 final OrdStatus ordStatus,
+                                                 final Side side) {
+
+        return new ExecutionReport(
+                new OrderID(orderId),
+                generateExecId(),
+                execTransType,
+                execType,
+                ordStatus,
+                symbol,
+                side,
+                new LeavesQty(),
+                new CumQty(),
+                new AvgPx());
+    }
+
+    private void acceptOrder(final OrderEntry orderEntry) {
+        final String broker = orderEntry.getBroker();
+        final SessionID sessionID = sessionByBroker.get(broker);
+
+        if (sessionID != null) {
+            final Side side = new Side(orderEntry.getSide() == OrderSide.Buy ? Side.BUY : Side.SELL);
+            final ExecutionReport report = buildExecutionReport(
+                    orderEntry.getOrderId(),
+                    new ExecTransType(ExecTransType.NEW),
+                    new ExecType(ExecType.NEW),
+                    new OrdStatus(OrdStatus.NEW),
+                    side);
+            sendToTarget(report, sessionID);
+        }
+    }
+
+    private boolean sendToTarget(ExecutionReport report, SessionID sessionID) {
+        try {
+            return Session.sendToTarget(report, sessionID);
+        } catch (SessionNotFound sessionNotFound) {
+            throw new RuntimeError(sessionNotFound);
+        }
     }
 
     private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
@@ -114,7 +176,7 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
 
             executionReport.set(new LastShares(trade.getQuantity()));
             executionReport.set(new LastPx(trade.getPrice()));
-            Session.sendToTarget(executionReport, sessionID);
+            sendToTarget(executionReport, sessionID);
         }
     }
 
