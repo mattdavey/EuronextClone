@@ -1,17 +1,22 @@
 package com.euronext.fix.client;
 
+import com.euronext.fix.client.commands.ClientCommand;
+import com.euronext.fix.client.commands.PlaceLimitOrder;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.ConfigError;
 import quickfix.SessionNotFound;
 import quickfix.SessionSettings;
-import quickfix.field.OrdType;
 import quickfix.field.Side;
 import quickfix.fix42.ExecutionReport;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,36 +26,65 @@ import java.util.Scanner;
  */
 public class FixClientApp {
     private static Logger logger = LoggerFactory.getLogger(FixClientApp.class);
+    private static List<ClientCommand> commands = new ArrayList<ClientCommand>();
 
     public static void main(String args[]) {
 
+        commands.add(new PlaceLimitOrder());
+
         try {
-            final FixClient clientA = createClient("A");
-            final FixClient clientB = createClient("B");
-
-            final OrderBuilder orderBuilder = new OrderBuilder()
-                    .withSymbol("MSFT")
-                    .withOrderType(OrdType.LIMIT)
-                    .withQuantity(1000);
-
-            clientA.submitOrder(orderBuilder.buy());
-            clientB.submitOrder(orderBuilder.sell());
+            final String broker = getBroker(args, "A");
+            final FixClient client = createClient(broker);
 
             Scanner scanner = new Scanner(System.in);
-            System.out.println("[Enter] q to exit");
-            while (!scanner.nextLine().trim().equals("q")) {
-                System.out.println("[Enter] q to exit");
+            System.out.println("Enter [q] to exit, or [h] to list commands");
+            while (true) {
+                System.out.print("Broker " + broker + "> ");
+                final String command = scanner.nextLine().trim();
+                if (command.equals("q")) {
+                    break;
+                }
+
+                if (command.equals("h")) {
+                    listCommands();
+                    continue;
+                }
+
+                for (ClientCommand clientCommand : commands) {
+                    final Matcher matcher = clientCommand.pattern().matcher(command);
+                    if (matcher.matches()) {
+                        clientCommand.execute(client, matcher);
+                        break;
+                    }
+                }
             }
 
             System.out.println("Exiting...");
 
-            clientA.stop();
-            clientB.stop();
+            client.stop();
 
         } catch (ConfigError configError) {
             logger.error(configError.getMessage(), configError);
         } catch (SessionNotFound sessionNotFound) {
             logger.error(sessionNotFound.getMessage(), sessionNotFound);
+        }
+    }
+
+    private static String getBroker(String[] args, String defaultBroker) {
+        // TODO: replace with some Java library for command arg parsing
+        String result = defaultBroker;
+        for (String arg : args) {
+            final Matcher matcher = Pattern.compile("--broker=(\\S)").matcher(arg);
+            if (matcher.matches()) {
+                result = matcher.group(1);
+            }
+        }
+        return result;
+    }
+
+    private static void listCommands() {
+        for (ClientCommand command : commands) {
+            System.out.println(command.name() + ":\t" + command.pattern().pattern());
         }
     }
 

@@ -4,6 +4,8 @@ import com.euronext.fix.FixAdapter;
 import com.euronextclone.*;
 import com.euronextclone.ordertypes.Limit;
 import hu.akarnokd.reactive4java.reactive.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -21,6 +23,8 @@ import java.util.UUID;
  * Time: 10:38 PM
  */
 public class FixServer extends FixAdapter implements Observer<Trade> {
+
+    private static Logger logger = LoggerFactory.getLogger(FixServer.class);
 
     private final SocketAcceptor socketAcceptor;
     private Map<String, SessionID> sessionByBroker;
@@ -75,23 +79,27 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
             sendExecutionReport(trade, new Side(Side.BUY));
             sendExecutionReport(trade, new Side(Side.SELL));
         } catch (SessionNotFound sessionNotFound) {
-            sessionNotFound.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(sessionNotFound.getMessage(), sessionNotFound);
         }
     }
 
     @Override
     public void error(@Nonnull Throwable throwable) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeError(throwable);
     }
 
     @Override
     public void finish() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // Nothing to do
     }
 
     private OrderEntry convertToOrderEntry(NewOrderSingle orderSingle, String broker) throws FieldNotFound {
         OrderSide side = orderSingle.getSide().getValue() == Side.BUY ? OrderSide.Buy : OrderSide.Sell;
-        return new OrderEntry(side, broker, (int) orderSingle.getOrderQty().getValue(), new Limit(10));
+        return new OrderEntry(
+                side,
+                broker,
+                (int) orderSingle.getOrderQty().getValue(),
+                new Limit(orderSingle.getPrice().getValue()));
     }
 
     private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
