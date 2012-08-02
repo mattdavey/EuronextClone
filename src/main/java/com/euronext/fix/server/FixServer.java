@@ -17,12 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eprystupa
- * Date: 7/25/12
- * Time: 10:38 PM
- */
 public class FixServer extends FixAdapter implements Observer<Trade> {
 
     private static Logger logger = LoggerFactory.getLogger(FixServer.class);
