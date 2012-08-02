@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import quickfix.ConfigError;
 import quickfix.SessionNotFound;
 import quickfix.SessionSettings;
+import quickfix.field.ExecType;
 import quickfix.field.Side;
 import quickfix.fix42.ExecutionReport;
 
@@ -97,11 +98,18 @@ public class FixClientApp {
 
             @Override
             public void onEvent(ExecutionReport report, long sequence, boolean endOfBatch) throws Exception {
+                String orderId = report.getOrderID().getValue();
                 String side = report.getSide().getValue() == Side.BUY ? "bought" : "sold";
-                double tradeQty = report.getLastShares().getValue();
+                ExecType execType = report.getExecType();
                 String symbol = report.getSymbol().getValue();
-                double tradePrice = report.getLastPx().getValue();
-                logger.debug("Broker {} {} {} shares of {} at {}", new Object[]{broker, side, tradeQty, symbol, tradePrice});
+
+                if (execType.getValue() == ExecType.NEW) {
+                    logger.debug("Order {} accepted", orderId);
+                } else {
+                    double tradeQty = report.getLastShares().getValue();
+                    double tradePrice = report.getLastPx().getValue();
+                    logger.debug("Broker {} {} {} shares of {} at {}", new Object[]{broker, side, tradeQty, symbol, tradePrice});
+                }
             }
         });
         return client;

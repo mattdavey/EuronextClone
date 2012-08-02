@@ -66,10 +66,11 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     }
 
     @Override
-    public void onMessage(NewOrderSingle message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+    public void onMessage(NewOrderSingle order, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 
         String broker = sessionID.getTargetCompID();
-        OrderEntry orderEntry = convertToOrderEntry(message, broker);
+        OrderEntry orderEntry = convertToOrderEntry(order, broker);
+        acceptOrder(orderEntry);
         matchingUnit.addOrder(orderEntry);
     }
 
@@ -102,6 +103,49 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
                 new Limit(orderSingle.getPrice().getValue()));
     }
 
+    private ExecutionReport buildExecutionReport(final String orderId,
+                                                 final ExecTransType execTransType,
+                                                 final ExecType execType,
+                                                 final OrdStatus ordStatus,
+                                                 final Side side) {
+
+        return new ExecutionReport(
+                new OrderID(orderId),
+                generateExecId(),
+                execTransType,
+                execType,
+                ordStatus,
+                symbol,
+                side,
+                new LeavesQty(),
+                new CumQty(),
+                new AvgPx());
+    }
+
+    private void acceptOrder(final OrderEntry orderEntry) {
+        final String broker = orderEntry.getBroker();
+        final SessionID sessionID = sessionByBroker.get(broker);
+
+        if (sessionID != null) {
+            final Side side = new Side(orderEntry.getSide() == OrderSide.Buy ? Side.BUY : Side.SELL);
+            final ExecutionReport report = buildExecutionReport(
+                    orderEntry.getOrderId(),
+                    new ExecTransType(ExecTransType.NEW),
+                    new ExecType(ExecType.NEW),
+                    new OrdStatus(OrdStatus.NEW),
+                    side);
+            sendToTarget(report, sessionID);
+        }
+    }
+
+    private boolean sendToTarget(ExecutionReport report, SessionID sessionID) {
+        try {
+            return Session.sendToTarget(report, sessionID);
+        } catch (SessionNotFound sessionNotFound) {
+            throw new RuntimeError(sessionNotFound);
+        }
+    }
+
     private void sendExecutionReport(Trade trade, Side side) throws SessionNotFound {
         final boolean buy = side.getValue() == Side.BUY;
         final String orderId = buy ? trade.getBuyOrderId() : trade.getSellOrderId();
@@ -122,7 +166,7 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
 
             executionReport.set(new LastShares(trade.getQuantity()));
             executionReport.set(new LastPx(trade.getPrice()));
-            Session.sendToTarget(executionReport, sessionID);
+            sendToTarget(executionReport, sessionID);
         }
     }
 
