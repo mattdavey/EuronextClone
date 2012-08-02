@@ -3,6 +3,7 @@ package com.euronext.fix.server;
 import com.euronext.fix.FixAdapter;
 import com.euronextclone.*;
 import com.euronextclone.ordertypes.Limit;
+import com.euronextclone.ordertypes.Market;
 import hu.akarnokd.reactive4java.reactive.Observer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,11 +97,20 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
 
     private OrderEntry convertToOrderEntry(NewOrderSingle orderSingle, String broker) throws FieldNotFound {
         OrderSide side = orderSingle.getSide().getValue() == Side.BUY ? OrderSide.Buy : OrderSide.Sell;
+        OrderType orderType = null;
+        switch (orderSingle.getOrdType().getValue()) {
+            case OrdType.MARKET:
+                orderType = new Market();
+                break;
+            case OrdType.LIMIT:
+                orderType = new Limit(orderSingle.getPrice().getValue());
+                break;
+        }
         return new OrderEntry(
                 side,
                 broker,
                 (int) orderSingle.getOrderQty().getValue(),
-                new Limit(orderSingle.getPrice().getValue()));
+                orderType);
     }
 
     private ExecutionReport buildExecutionReport(final String orderId,
