@@ -2,6 +2,7 @@ package com.euronext.fix.client;
 
 import com.euronext.fix.client.commands.ClientCommand;
 import com.euronext.fix.client.commands.PlaceLimitOrder;
+import com.euronext.fix.client.commands.PlaceMarketOrder;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ public class FixClientApp {
     public static void main(String args[]) {
 
         commands.add(new PlaceLimitOrder());
+        commands.add(new PlaceMarketOrder());
 
         try {
             final String broker = getBroker(args, "A");
