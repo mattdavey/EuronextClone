@@ -20,7 +20,7 @@ Inspired from Price-Time Matching [Engine](https://gist.github.com/2855852) base
 [IMP/TOP calculation](http://www.asx.com.au/products/calculate-open-close-prices.htm)
 
 ## Quick Links
-[FIX support](./docs/FIX.md)
+[FIX support](https://github.com/mattdavey/EuronextClone/blob/master/docs/FIX.md)
 
 ## Simple architecture Proof Of Concept (PoC)
 Primarily this PoC architecture is aimed at joining all the dots together to ensure a client can submit an FIX order, and receive appropriate ExecutionReports

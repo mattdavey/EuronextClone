@@ -8,15 +8,15 @@ FIX Server entry point is located at [FixServerApp](../src/main/java/com/euronex
 FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).
 FIX Client currently supports the following command line arguments:
 
- --broker=BROKER
+ **--broker=BROKER**
 
  The broker argument configures the FIX client for a specific broker configuration.
  For example, passing **--broker=A** uses [FixBrokerA.cfg](../src/main/resources/FixBrokerA.cfg) configuration. And passing **--broker=B** uses [FixBrokerB.cfg](../src/main/resources/FixBrokerB.cfg) configuration.
 
  You can start multiple copies of FIX Client, with different **"--broker"** configured. When the FIX client starts it is ready to accept user's input.
 
- * typing "q" terminates the FIX Client
- * typing "h" lists all available commands
+ * typing "**q**" terminates the FIX Client
+ * typing "**h**" lists all available commands
 
 The following commands are currently supported:
 
