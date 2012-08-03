@@ -14,12 +14,19 @@ Inspired by github Price-Time Matching [Engine](https://gist.github.com/2855852)
 ## Quick Links
 [FIX support](https://github.com/mattdavey/EuronextClone/blob/master/docs/FIX.md)
 
-## Simple architecture Proof Of Concept (PoC)
+## History
+The project initially started in the distance past as a Proof Of Concept (PoC) (see below) mainly aimed at attempting to model the data flows of a matching server in Java.
+
+Over time, work and though has been put in to add ancillary services around the core order book with the aim of moving towards the the high level architecture detailed below, offering Master/Slave with heart-beating from a resiliance perspective.
+
+It is hoped that at some point in the future performance numbers can be provide on suitable hardware to allow appropriate tuning and improve the architecture from a latency perspective.
+
+## Proof Of Concept (PoC)
 Primarily this PoC architecture is aimed at joining all the dots together to ensure a client can submit an FIX order, and receive appropriate ExecutionReports
 
 ![Basic](https://github.com/mattdavey/EuronextClone/raw/master/assets/basic.jpg)
 
-## Rapid Failover - Master/Slave with heart-beating
+## High Level Architecture
 The architecture below is based on the [LMAX](http://martinfowler.com/articles/lmax.html) architecture, but leveraging ZeroMQ instead of [Informatica](http://www.informatica.com/us/products/messaging/) Ultra Messaging. Further reading available [here](http://mdavey.wordpress.com/2012/08/01/financial-messaging-zeromq-random-reading/)
 
 ![Basic](https://github.com/mattdavey/EuronextClone/raw/master/assets/complex.jpg).
