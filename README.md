@@ -1,7 +1,6 @@
-# EuronextClone
+# Euronext Clone
 
-
-Inspired github Price-Time Matching [Engine](https://gist.github.com/2855852), based on Euronext documentation publically available:
+Inspired by github Price-Time Matching [Engine](https://gist.github.com/2855852), based on Euronext documentation publically available, and the madness of too many years in finance:
 
 *   [The Peg Orders](http://www.euronext.com/fic/000/041/609/416094.pdf)
 *   [Pure Market Order](http://www3.production.euronext.com/fic/000/041/480/414808.pdf)
@@ -20,7 +19,7 @@ Primarily this PoC architecture is aimed at joining all the dots together to ens
 
 ![Basic](https://github.com/mattdavey/EuronextClone/raw/master/assets/basic.jpg)
 
-## Rapid Failover based on multiple copies and heart-beating
+## Rapid Failover - Master/Slave with heart-beating
 The architecture below is based on the [LMAX](http://martinfowler.com/articles/lmax.html) architecture, but leveraging ZeroMQ instead of [Informatica](http://www.informatica.com/us/products/messaging/) Ultra Messaging. Further reading available [here](http://mdavey.wordpress.com/2012/08/01/financial-messaging-zeromq-random-reading/)
 
 ![Basic](https://github.com/mattdavey/EuronextClone/raw/master/assets/complex.jpg).
