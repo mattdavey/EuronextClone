@@ -3,7 +3,7 @@
 ## Notes
 * The following architecture diagram does not capture high availability and/or failover aspect of the overall design; only the main messaging flow is presented
 * FIX server communicates with the clients over standard FIX protocol (clients not shown on the diagram)
-* Each FIX server is responsoble for a subset of clients (brokers)
+* Each FIX server is responsoble for a configured subset of clients (brokers)
     * When orders come over FIX from those brokers they are published using multicast with the instrument name as the topic (routing key)
     * Each FIX server subscribes for execution updates related to its subset of brokers and relays them over FIX
 * Each matching engine (ME) is responsible for its range of instruments (maybe configured statically or dynamically)
