@@ -1,5 +1,4 @@
 # Euronext Clone
-
 Inspired by github Price-Time Matching [Engine](https://gist.github.com/2855852), based on Euronext documentation publically available, and the madness of too many years in finance:
 
 *   [The Peg Orders](http://www.euronext.com/fic/000/041/609/416094.pdf)
