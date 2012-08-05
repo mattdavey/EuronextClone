@@ -1,7 +1,7 @@
 # FIX to Matching Engine Cluster Architecture
 
 ## Notes
-* This architecture does not capture high availability and/or failover aspect of the overall design; only the main messaging flow is presented
+* The following architecture diagram does not capture high availability and/or failover aspect of the overall design; only the main messaging flow is presented
 * FIX server communicates with the clients over standard FIX protocol (clients not shown on the diagram)
 * Each FIX server is responsoble for a subset of clients (brokers)
     * When orders come over FIX from those brokers they are published using multicast with the instrument name as the topic (routing key)
