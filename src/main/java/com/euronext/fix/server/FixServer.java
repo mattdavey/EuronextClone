@@ -1,6 +1,7 @@
 package com.euronext.fix.server;
 
 import com.euronext.fix.FixAdapter;
+import com.euronext.fix.messaging.Publisher;
 import com.euronextclone.*;
 import com.euronextclone.ordertypes.Limit;
 import com.euronextclone.ordertypes.Market;
@@ -27,13 +28,15 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     private final MatchingUnit matchingUnit;
     // TODO: this is temporary until symbol is added to OrderEntry
     private final Symbol symbol = new Symbol("MSFT");
+    private final Publisher orderPublisher;
 
 
     // TODO: to correctly route execution reports to relevant party looks like I need:
     // a) a mapping from OrderId to Broker (TargetCompID)
     // b) a mapping from Broker (TargetCompId) to SessionID
 
-    public FixServer(final SessionSettings settings) throws ConfigError {
+    public FixServer(final SessionSettings settings, final Publisher orderPublisher) throws ConfigError {
+        this.orderPublisher = orderPublisher;
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         SLF4JLogFactory logFactory = new SLF4JLogFactory(settings);
         MessageFactory messageFactory = new DefaultMessageFactory();
@@ -63,9 +66,14 @@ public class FixServer extends FixAdapter implements Observer<Trade> {
     @Override
     public void onMessage(NewOrderSingle order, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 
-        String broker = sessionID.getTargetCompID();
+        final String broker = sessionID.getTargetCompID();
         OrderEntry orderEntry = convertToOrderEntry(order, broker);
         acceptOrder(orderEntry);
+
+        final String symbol = order.getSymbol().getValue();
+        orderPublisher.publish(symbol, orderEntry, OrderEntry.class);
+
+        // TODO: this is going away soon when subscribe is ready on the matching engine side
         matchingUnit.addOrder(orderEntry);
     }
 

@@ -1,5 +1,6 @@
 package com.euronext.fix.server;
 
+import com.euronext.fix.messaging.Publisher;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
 
@@ -18,7 +19,9 @@ public class FixServerApp {
 
         final InputStream config = FixServerApp.class.getClassLoader().getResourceAsStream("FixServer.cfg");
 
-        FixServer fixServer = new FixServer(new SessionSettings(config));
+        FixServer fixServer = new FixServer(
+                new SessionSettings(config),
+                new Publisher("tcp://*:5555"));
         fixServer.start();
 
         Scanner scanner = new Scanner(System.in);
