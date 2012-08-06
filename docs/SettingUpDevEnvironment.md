@@ -37,7 +37,16 @@ This assumes that native 0MQ library is available at **/usr/local/lib** unless y
 ### FIX Client
 
 FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).
-FIX Client currently supports the following command line arguments:
+
+To run FIX Client using Maven (as broker A):
+
+    mvn exec:exec -Prun-fix-client-a
+
+To run FIX Client using Maven (as broker B):
+
+    mvn exec:exec -Prun-fix-client-b
+
+If you running FIX Client manually or from your favorite IDE then you can pass the following command line arguments:
 
  **--broker=BROKER**
 
