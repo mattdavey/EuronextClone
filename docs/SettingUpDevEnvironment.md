@@ -34,6 +34,8 @@ To run FIX Server using Maven:
 
 This assumes that native 0MQ library is available at **/usr/local/lib** unless you have overriden its location using **zmq.library.path** environment variable.
 
+If you are running FIX Server manually or from your favorite IDE make sure that -Djava.library.path=... is set to the location where you have installed 0MQ library to.
+
 ### FIX Client
 
 FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).
