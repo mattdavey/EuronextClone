@@ -11,7 +11,7 @@ Inspired by github Price-Time Matching [Engine](https://gist.github.com/2855852)
 *   [IMP/TOP calculation](http://www.asx.com.au/products/calculate-open-close-prices.htm)
 
 ## Quick Links
-[FIX support](https://github.com/mattdavey/EuronextClone/blob/master/docs/FIX.md)
+[Setting up dev environment](https://github.com/mattdavey/EuronextClone/blob/master/docs/SettingUpDevEnvironment.md)
 
 [FIX to matching eninge flows over 0MQ](https://github.com/mattdavey/EuronextClone/blob/master/docs/Fix%20to%20Matching%20Cluster%20Architecture.md)
 
