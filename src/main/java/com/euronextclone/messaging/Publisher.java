@@ -22,12 +22,12 @@ public class Publisher {
         publisher.bind(endpoint);
     }
 
-    public <T> boolean publish(final String topic, final T payload, Class<T> typeClass) {
+    public <T> boolean publish(final String topic, final T payload, final Class<T> typeClass) {
 
         publisher.send(topic.getBytes(), ZMQ.SNDMORE);
-        Schema<T> schema = RuntimeSchema.getSchema(typeClass);
-        LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-        byte[] message = ProtostuffIOUtil.toByteArray(payload, schema, buffer);
+        final Schema<T> schema = RuntimeSchema.getSchema(typeClass);
+        final LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
+        final byte[] message = ProtostuffIOUtil.toByteArray(payload, schema, buffer);
         return publisher.send(message, 0);
     }
 }
