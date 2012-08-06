@@ -1,4 +1,4 @@
-package com.euronext.fix.client;
+package com.euronextclone.fix.client;
 
 import quickfix.field.*;
 import quickfix.fix42.NewOrderSingle;

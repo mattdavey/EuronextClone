@@ -1,8 +1,8 @@
-package com.euronext.fix.server;
+package com.euronextclone.fix.server;
 
-import com.euronext.fix.FixAdapter;
-import com.euronext.fix.messaging.Publisher;
 import com.euronextclone.*;
+import com.euronextclone.fix.FixAdapter;
+import com.euronextclone.messaging.Publisher;
 import com.euronextclone.ordertypes.Limit;
 import com.euronextclone.ordertypes.Market;
 import hu.akarnokd.reactive4java.reactive.Observer;

@@ -25,7 +25,7 @@ is a separate from FIX Server, and you can run multiple copies of those too.
 
 ### FIX Server
 
-FIX Server entry point is located at [FixServerApp](../src/main/java/com/euronext/fix/server/FixServerApp.java). FIX Server is preconfigured to accept connections from BROKER-A and BROKER-B clients.
+FIX Server entry point is located at [FixServerApp](../src/main/java/com/euronextclone/fix/server/FixServerApp.java). FIX Server is preconfigured to accept connections from BROKER-A and BROKER-B clients.
 (See [FixServer.cfg](../src/main/resources/FixServer.cfg))
 
 To run FIX Server using Maven:
@@ -38,7 +38,7 @@ If you are running FIX Server manually or from your favorite IDE make sure that 
 
 ### FIX Client
 
-FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).
+FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronextclone/fix/client/FixClientApp.java).
 
 To run FIX Client using Maven (as broker A):
 

@@ -1,7 +1,7 @@
-package com.euronext.fix.client.commands;
+package com.euronextclone.fix.client.commands;
 
-import com.euronext.fix.client.FixClient;
-import com.euronext.fix.client.OrderBuilder;
+import com.euronextclone.fix.client.FixClient;
+import com.euronextclone.fix.client.OrderBuilder;
 import quickfix.SessionNotFound;
 import quickfix.field.OrdType;
 import quickfix.fix42.NewOrderSingle;

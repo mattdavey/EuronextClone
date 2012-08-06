@@ -1,6 +1,6 @@
-package com.euronext.fix.server;
+package com.euronextclone.fix.server;
 
-import com.euronext.fix.messaging.Publisher;
+import com.euronextclone.messaging.Publisher;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
 

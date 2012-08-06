@@ -160,7 +160,7 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
                                 <argument>-Djava.library.path=${zmq.library.path}</argument>
-                                <argument>com.euronext.fix.server.FixServerApp</argument>
+                                <argument>com.euronextclone.fix.server.FixServerApp</argument>
                             </arguments>
                         </configuration>
                     </plugin>
@@ -189,7 +189,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>com.euronext.fix.client.FixClientApp</argument>
+                                <argument>com.euronextclone.fix.client.FixClientApp</argument>
                                 <argument>--broker=A</argument>
                             </arguments>
                         </configuration>
@@ -218,7 +218,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>com.euronext.fix.client.FixClientApp</argument>
+                                <argument>com.euronextclone.fix.client.FixClientApp</argument>
                                 <argument>--broker=B</argument>
                             </arguments>
                         </configuration>

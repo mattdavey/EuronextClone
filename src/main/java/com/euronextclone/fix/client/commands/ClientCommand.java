@@ -1,6 +1,6 @@
-package com.euronext.fix.client.commands;
+package com.euronextclone.fix.client.commands;
 
-import com.euronext.fix.client.FixClient;
+import com.euronextclone.fix.client.FixClient;
 import quickfix.SessionNotFound;
 
 import java.util.regex.Matcher;

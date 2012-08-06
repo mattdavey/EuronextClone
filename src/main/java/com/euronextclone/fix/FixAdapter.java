@@ -1,4 +1,4 @@
-package com.euronext.fix;
+package com.euronextclone.fix;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

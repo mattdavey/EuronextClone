@@ -1,4 +1,4 @@
-package com.euronext.fix.messaging;
+package com.euronextclone.messaging;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;

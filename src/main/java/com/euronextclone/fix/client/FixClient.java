@@ -1,6 +1,6 @@
-package com.euronext.fix.client;
+package com.euronextclone.fix.client;
 
-import com.euronext.fix.FixAdapter;
+import com.euronextclone.fix.FixAdapter;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

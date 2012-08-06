@@ -1,8 +1,8 @@
-package com.euronext.fix.client;
+package com.euronextclone.fix.client;
 
-import com.euronext.fix.client.commands.ClientCommand;
-import com.euronext.fix.client.commands.PlaceLimitOrder;
-import com.euronext.fix.client.commands.PlaceMarketOrder;
+import com.euronextclone.fix.client.commands.ClientCommand;
+import com.euronextclone.fix.client.commands.PlaceLimitOrder;
+import com.euronextclone.fix.client.commands.PlaceMarketOrder;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
