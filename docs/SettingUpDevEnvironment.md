@@ -11,7 +11,7 @@ First use [git](http://git-scm.com/) to clone this repo:
     git clone https://github.com/mattdavey/EuronextClone.git
     cd EuronextClone
 
-EuronextClone is built with [Maven](http://maven.apache.org/)
+EuronextClone is built with [Maven](http://maven.apache.org/).
 
     mvn clean install
 
@@ -45,5 +45,10 @@ FIX Client currently supports the following command line arguments:
 
 The following commands are currently supported:
 
-* Place Limit Order (Example: **buy MSFT 10@34**)
-* Place Market Order (Example: **sell MSFT 5**)
+#### Place Limit Order
+
+    buy MSFT 10@34
+
+#### Place Market Order
+
+    sell MSFT 5
