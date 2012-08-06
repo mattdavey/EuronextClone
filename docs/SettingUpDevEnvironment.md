@@ -3,7 +3,7 @@
 ## Prerequisites
 The only prerequisite required is that your system has [0MQ library](http://www.zeromq.org/) built and installed. 0MQ is a native dependecy used for messaging and is not automatically resolved by Maven build.
 
-Detailed instructions on how to build and install 0MQ on your system are available on [ZeroMQ site](http://www.zeromq.org/intro:get-the-software)
+Detailed instructions on how to build and install 0MQ on your system are available on [ZeroMQ site](http://www.zeromq.org/intro:get-the-software).
 
 ## Build
 First use [git](http://git-scm.com/) to clone this repo:
@@ -17,18 +17,18 @@ EuronextClone is built with [Maven](http://maven.apache.org/)
 
 The above will build the prototype and run all unit tests (cucumber-jvm over JUnit runner).
 
-## Running
+## Run
 
-There are currently two application available in the prototype: [FIX Server](#FIXServer) and [FIX client](#FIXClient). You can run a sinle copy of FIX server and one or more copies of FIX Client.
+There are currently two application available in the prototype: [FIX Server](#fix-server) and [FIX client](#fix-client). You can run a sinle copy of FIX server and one or more copies of FIX Client.
 This is changing soon though, so check this page often. We are moving to architecture where multiple FIX Servers may run, and we are moving to architecture where matching engine (ME)
 is a separate from FIX Server, and you can run multiple copies of those too.
 
-### <a id="FIXServer"></a>FIX Server
+### FIX Server
 
 FIX Server entry point is located at [FixServerApp](../src/main/java/com/euronext/fix/server/FixServerApp.java). FIX Server is preconfigured to accept connections from BROKER-A and BROKER-B clients.
 (See [FixServer.cfg](../src/main/resources/FixServer.cfg))
 
-### <a id="FIXClient"></a>FIX Client
+### FIX Client
 
 FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).
 FIX Client currently supports the following command line arguments:
