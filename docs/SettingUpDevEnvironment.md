@@ -28,6 +28,12 @@ is a separate from FIX Server, and you can run multiple copies of those too.
 FIX Server entry point is located at [FixServerApp](../src/main/java/com/euronext/fix/server/FixServerApp.java). FIX Server is preconfigured to accept connections from BROKER-A and BROKER-B clients.
 (See [FixServer.cfg](../src/main/resources/FixServer.cfg))
 
+To run FIX Server using Maven:
+
+    mvn exec:exec -Prun-fix-server
+
+This assumes that native 0MQ library is available at **/usr/local/lib** unless you have overriden its location using **zmq.library.path** environment variable.
+
 ### FIX Client
 
 FIX Client entry point is located at [FixClientApp](../src/main/java/com/euronext/fix/client/FixClientApp.java).

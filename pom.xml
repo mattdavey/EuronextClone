@@ -12,6 +12,8 @@
 
     <properties>
         <cucumber-jvm.version>1.0.11</cucumber-jvm.version>
+
+        <zmq.library.path>env.zmq.library.path</zmq.library.path>
     </properties>
 
     <dependencies>
@@ -121,5 +123,50 @@
             <url>file://${basedir}/libs</url>
         </repository>
     </repositories>
+
+    <profiles>
+
+        <profile>
+            <id>default-zmq-library-path</id>
+            <activation>
+                <property>
+                    <name>!zmq.library.path</name>
+                </property>
+            </activation>
+
+            <properties>
+                <zmq.library.path>/usr/local/lib</zmq.library.path>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>run-fix-server</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>-Djava.library.path=${zmq.library.path}</argument>
+                                <argument>com.euronext.fix.server.FixServerApp</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
