@@ -16,11 +16,11 @@ Inspired by github Price-Time Matching [Engine](https://gist.github.com/2855852)
 [FIX to matching eninge flows over 0MQ](https://github.com/mattdavey/EuronextClone/blob/master/docs/Fix%20to%20Matching%20Cluster%20Architecture.md)
 
 ## History
-The project initially started in the distance past as a Proof Of Concept (PoC) (see below) mainly aimed at attempting to model the data flows of a matching server in Java.
+The project initially started in the distant past as a Proof Of Concept (PoC) (see below) mainly aimed at attempting to model the data flows of a matching server in Java.
 
-Over time, work and though has been put in to add ancillary services around the core order book with the aim of moving towards the the high level architecture detailed below, offering Master/Slave with heart-beating from a resiliance perspective.
+Over time, work and thought has been put in to add ancillary services around the core order book with the aim of moving towards the high level architecture detailed below, offering Master/Slave with heart-beating from a resiliance perspective.
 
-It is hoped that at some point in the future performance numbers can be provide on suitable hardware to allow appropriate tuning and improve the architecture from a latency perspective.
+It is hoped that at some point in the future performance numbers can be provided on suitable hardware to allow appropriate tuning and improve the architecture from a latency perspective.
 
 ## Proof Of Concept (PoC)
 Primarily this PoC architecture is aimed at joining all the dots together to ensure a client can submit an FIX order, and receive appropriate ExecutionReports
